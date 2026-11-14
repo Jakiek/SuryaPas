@@ -1,0 +1,20 @@
+{
+  "appName": "SuryaPas",
+  "routes": {
+    "landing": { "title": "Panel surya yang pas untuk rumah Anda" },
+    "plan": { "title": "Rencanakan panel surya Anda" },
+    "result": { "title": "Hasil perhitungan Anda" },
+    "assumptions": { "title": "Asumsi di balik angka" },
+    "account": { "title": "Akun" },
+    "installers": { "title": "Instalatur" },
+    "admin": { "title": "Admin" }
+  },
+  "placeholder": {
+    "body": "Halaman ini sedang disiapkan.",
+    "resultId": "Kode hasil: {id}"
+  },
+  "comingSoon": {
+    "title": "Segera hadir",
+    "body": "Fitur ini belum tersedia. Kami sedang mengerjakannya."
+  }
+}
