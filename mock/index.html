@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuryaPas: panel surya yang pas untuk rumah Anda</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="mocknote">Mock desain, arah kedua · layar 1 dari 3 · angka contoh</div>
+
+<div class="day">
+  <div class="inner">
+    <header class="top">
+      <a class="mark" href="index.html" aria-label="SuryaPas, beranda">Surya<b>Pas</b></a>
+      <nav class="langs" aria-label="Bahasa"><span aria-current="true">ID</span><a href="#" lang="en">EN</a></nav>
+    </header>
+
+    <section class="hero">
+      <h1 class="poster">Panel surya yang <b>pas</b> untuk rumah Anda</h1>
+      <div class="hero-grid">
+        <form class="ask" action="atap.html">
+          <label for="addr">Mulai dari alamat rumah Anda</label>
+          <div class="row">
+            <input id="addr" type="text" placeholder="Contoh: Jl. Kaliurang Km 5, Sleman" autocomplete="street-address">
+            <button class="btn" type="submit">Hitung</button>
+          </div>
+          <p class="meta"><span>Gratis</span><span>± 3 menit</span><span>Tanpa daftar</span><a href="hasil.html">Lihat contoh hasil</a></p>
+        </form>
+        <p class="lede">Berapa panel, berapa biayanya, kapan balik modal. Dihitung dari atap dan pemakaian listrik siang Anda.</p>
+      </div>
+    </section>
+  </div>
+  <div class="clock" aria-hidden="true"><span class="n">Malam</span><span class="d">Siang · panel bekerja</span><span class="n">Malam</span></div>
+</div>
+
+<main>
+  <section class="why">
+    <div class="inner why-grid">
+      <div>
+        <h2 class="poster">Lebih banyak panel belum tentu lebih hemat</h2>
+        <p class="lead">Sejak 2024, listrik surya yang mengalir ke jaringan PLN <mark>tidak lagi dibayar</mark>. Yang menghemat tagihan hanyalah listrik yang langsung Anda pakai pada siang hari.</p>
+        <p class="src soft">Dasar: <a href="https://www.esdm.go.id/id/media-center/arsip-berita/aturan-terbaru-plts-atap-terbit-kini-kapasitas-pemasangan-tidak-dibatasi">Peraturan Menteri ESDM No. 2/2024</a></p>
+      </div>
+
+      <div class="versus" aria-label="Rumah yang sama dengan dua jumlah panel">
+        <figure>
+          <div class="head"><span class="fig" id="aN"></span><span class="tag">Yang pas</span></div>
+          <svg id="aChart" viewBox="0 0 340 184" role="img" aria-label="Hampir semua listrik panel langsung dipakai"></svg>
+          <dl><dt>Listrik panel yang terbuang</dt><dd id="aWaste"></dd><dt>Biaya awal</dt><dd id="aCost"></dd><dt>Balik modal</dt><dd id="aPay"></dd></dl>
+        </figure>
+        <figure>
+          <div class="head"><span class="fig" id="bN"></span><span class="tag">Terlalu banyak</span></div>
+          <svg id="bChart" viewBox="0 0 340 184" role="img" aria-label="Lebih dari separuh listrik panel terbuang ke jaringan"></svg>
+          <dl><dt>Listrik panel yang terbuang</dt><dd id="bWaste"></dd><dt>Biaya awal</dt><dd id="bCost"></dd><dt>Balik modal</dt><dd id="bPay"></dd></dl>
+        </figure>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="night foot">
+  <div class="inner">
+    <p>Rumah contoh: Yogyakarta, 2.200 VA, tagihan Rp650.000 per bulan. Hasil SuryaPas adalah perkiraan, bukan penawaran harga. Angka akhir ditentukan oleh survei pemasang.</p>
+  </div>
+</footer>
+
+<script src="model.js"></script>
+<script>
+  const fill = (p, r) => {
+    document.getElementById(p + "N").textContent = r.panels + " panel";
+    drawDay(document.getElementById(p + "Chart"), r, { labels: false });
+    document.getElementById(p + "Waste").textContent = r.wasted + "%";
+    document.getElementById(p + "Cost").textContent = plain(jutaRange(r.up.low, r.up.high));
+    document.getElementById(p + "Pay").textContent = plain(payText(r.base.pay));
+  };
+  fill("a", REC); fill("b", pick(MAX));
+</script>
+</body>
+</html>

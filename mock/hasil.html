@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hasil · SuryaPas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="mocknote">Mock desain, arah kedua · layar 3 dari 3 · angka dari model sederhana, bukan mesin hitung sebenarnya</div>
+
+<main class="result">
+  <div class="lead">
+    <section class="night verdict-band">
+      <div class="inner">
+        <header class="top">
+          <a class="mark" href="index.html" aria-label="SuryaPas, beranda">Surya<b>Pas</b></a>
+          <nav class="langs" aria-label="Bahasa"><span aria-current="true">ID</span><a href="#" lang="en">EN</a></nav>
+        </header>
+        <p class="where soft">Yogyakarta · 2.200 VA pascabayar · tagihan Rp650.000 per bulan</p>
+        <div class="answer">
+          <h1 class="poster"><span id="lede">Yang pas untuk rumah ini</span><i id="count" style="font-style:normal">3 panel</i></h1>
+          <p class="sub"><span id="kwp">1,65</span> kWp · memakai sekitar <span id="area">8</span> m² atap. <span class="soft">kWp adalah daya puncak panel.</span></p>
+        </div>
+        <div class="duo">
+          <div><span class="kicker">Biaya awal</span><span class="fig" id="cost"></span></div>
+          <div><span class="kicker">Balik modal</span><span class="fig" id="payback"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="day picker-band" aria-labelledby="pick-h">
+      <div class="inner">
+        <h2 id="pick-h">Coba jumlah panel lain</h2>
+        <div class="picker" id="picker" role="group" aria-label="Jumlah panel"></div>
+        <p class="say" id="say" role="status"></p>
+      </div>
+    </section>
+  </div>
+
+  <div class="report">
+    <div class="inner">
+      <section class="block" aria-labelledby="day-h">
+        <h2 class="poster" id="day-h">Satu hari di rumah Anda</h2>
+        <figure class="plot">
+          <svg id="dayChart" viewBox="0 0 340 184" role="img" aria-labelledby="daySummary"></svg>
+          <figcaption id="daySummary"></figcaption>
+        </figure>
+        <dl class="ledger">
+          <div><dt>Hemat per bulan</dt><dd class="fig" id="monthly"></dd></div>
+          <div><dt>Listrik panel yang terpakai</dt><dd class="fig" id="share"></dd></div>
+          <div><dt>Hemat bersih dalam 25 tahun</dt><dd class="fig" id="net"></dd></div>
+          <div><dt>CO₂ yang dihindari</dt><dd class="fig" id="co2"></dd></div>
+        </dl>
+      </section>
+
+      <section class="block" aria-labelledby="pay-h">
+        <h2 class="poster" id="pay-h">Kapan balik modal</h2>
+        <figure class="plot">
+          <svg id="payChart" viewBox="0 0 340 170" role="img" aria-labelledby="paySummary"></svg>
+          <figcaption id="paySummary"></figcaption>
+        </figure>
+      </section>
+
+      <section class="block" aria-labelledby="bat-h">
+        <h2 class="poster" id="bat-h"></h2>
+        <p class="note">Baterai menyimpan kelebihan listrik siang untuk dipakai malam. Baterai juga berguna saat listrik padam, tetapi manfaat itu tidak kami hitung dalam rupiah.</p>
+        <table class="cmp">
+          <thead><tr><th></th><th scope="col">Tanpa baterai</th><th scope="col">Dengan baterai 5 kWh</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Biaya awal</th><td id="b0cost"></td><td id="b1cost"></td></tr>
+            <tr><th scope="row">Hemat per bulan</th><td id="b0month"></td><td id="b1month"></td></tr>
+            <tr><th scope="row">Balik modal</th><td id="b0pay"></td><td id="b1pay"></td></tr>
+            <tr><th scope="row">Hemat bersih, 25 th</th><td id="b0net"></td><td id="b1net"></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" aria-labelledby="next-h">
+        <h2 class="poster" id="next-h">Langkah berikutnya</h2>
+        <ol class="next">
+          <li><div><strong>Minta survei pemasang</strong>Pemasang memeriksa atap Anda dan memberi harga pasti.</div></li>
+          <li><div><strong>Ajukan permohonan ke PLN</strong>Sistem yang tersambung ke jaringan perlu persetujuan PLN.</div></li>
+          <li><div><strong>Pasang setelah disetujui</strong></div></li>
+        </ol>
+        <div class="caveat"><strong>Persetujuan bergantung pada kuota</strong>PLN menetapkan kuota PLTS atap per wilayah. SuryaPas tidak mengetahui sisa kuota di wilayah Anda.</div>
+        <div class="acts">
+          <button class="btn soon" type="button" id="quote">Minta penawaran pemasang <small>Segera hadir</small></button>
+          <button class="btn line plain" type="button" id="copy">Salin tautan hasil</button>
+        </div>
+        <p class="status" id="quoteMsg" role="status"></p>
+        <div class="more"><a class="textlink" href="#">Lihat asumsi perhitungan</a><a class="textlink" href="atap.html">Ubah data</a></div>
+      </section>
+    </div>
+    <footer class="foot soft"><div class="inner"><p>Hasil SuryaPas adalah perkiraan, bukan penawaran harga. Angka akhir ditentukan oleh survei pemasang.</p></div></footer>
+  </div>
+</main>
+
+<script src="model.js"></script>
+<script src="hasil.js"></script>
+</body>
+</html>

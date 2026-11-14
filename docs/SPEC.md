@@ -35,7 +35,9 @@ Routes carry the locale: `/id/...` and `/en/...`. `/` redirects to `/id`.
 
 ### 2.1 Landing (`/[locale]`)
 
-One headline, one start button, and three short lines explaining why sizing changed when net metering ended. A second button, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
+The hero is the first input of the tool: the headline and an address field with a "Hitung" button. Submitting carries the typed address into step 1, where it is searched and the pin is set. A link, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
+
+Below the hero, the page makes its argument with evidence: a short statement that exported power is no longer paid for, then the example house shown twice, once with the recommended panel count and once with far too many, each with its one-day chart, share of solar wasted, upfront cost and payback. These figures are computed by the engine from the example house, never typed in.
 
 ### 2.2 Input flow (`/[locale]/plan`)
 
@@ -64,7 +66,7 @@ Submitting step 4 computes the result, saves it and redirects to the result page
 In reading order:
 
 1. **Three headline numbers**: recommended size (kWp and panel count), upfront cost as a range, payback as a range in years.
-2. **Size slider**: from the smallest system to the largest that fits the roof. Every number and both charts update as it moves. The recommended size is marked. Slider exploration is local and is not saved.
+2. **Panel picker**: a row of panels, from one up to the largest count that fits the roof (at most twelve shown). Tapping a panel selects that count; every number and both charts update. The recommended count is marked "pas". Counts below the smallest system cannot be selected. Exploration is local and is not saved.
 3. **Typical-day chart**: the home's average hourly usage against average hourly solar output for the selected size, with the overlap (solar used on site) shaded and the surplus visibly distinct.
 4. **Supporting numbers**: monthly savings, share of solar used on site, net savings over the analysis horizon, CO₂ avoided.
 5. **Cost-versus-savings chart**: cumulative savings against upfront cost over the horizon, crossing at the payback year, with a band for the low-to-high cost range.
@@ -187,7 +189,7 @@ Placeholder routes `/[locale]/account`, `/[locale]/installers` and `/[locale]/ad
 | Flow and accessibility tests | Playwright with axe |
 | Hosting | Vercel free tier; GitHub repository, private until stage 1 is live |
 
-The engine runs in both places: on the server when a result is first computed and saved, and in the browser when the slider moves. The saved result includes the sun series reference needed for the browser to recompute.
+The engine runs in both places: on the server when a result is first computed and saved, and in the browser when the user picks another panel count. The saved result includes the sun series reference needed for the browser to recompute.
 
 ### 5.1 Server routes
 
