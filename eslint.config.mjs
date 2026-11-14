@@ -80,6 +80,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "playwright-report/**",
     "test-results/**",
+    // Static design mock, not application code.
+    "mock/**",
   ]),
 ]);
 
