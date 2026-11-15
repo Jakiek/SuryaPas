@@ -1,0 +1,307 @@
+{
+  "title": "Asumsi di balik angka-angka",
+  "intro": "Semua harga, tarif, dan faktor yang dipakai untuk hasil Anda, lengkap dengan asalnya dan seberapa jauh bisa dipercaya. Angka yang boleh diubah bisa Anda ubah sendiri, lalu Anda kembali ke hasil yang memakai angka Anda.",
+  "version": "Kumpulan asumsi, versi {version}",
+  "margin": {
+    "heading": "Seberapa dekat dengan kenyataan?",
+    "body": "Bagian sinar matahari dalam perhitungan kami sudah kami cocokkan dengan PVGIS, alat perkiraan hasil panel surya dari Komisi Eropa, di tiga kota Indonesia. Pada atap datar, angka listrik tahunan kami selisihnya sekitar 10% dari PVGIS. Jadi baca hasilnya sebagai perkiraan yang layak untuk merencanakan dan membandingkan, bukan penawaran harga: hasil atap Anda sendiri bergantung pada bayangan, kemiringan, dan cuaca tahun itu."
+  },
+  "confidence": {
+    "heading": "Seberapa jauh angka bisa dipercaya",
+    "intro": "Setiap angka diberi satu dari lima label. Label ini menunjukkan seberapa pasti kami tahu angkanya, bukan seberapa penting angka itu.",
+    "labels": {
+      "sourced": {
+        "name": "Bersumber",
+        "meaning": "Diambil langsung dari sumber yang kami tautkan: peraturan, daftar harga, atau lembar data pabrik."
+      },
+      "thin": {
+        "name": "Sumber tipis",
+        "meaning": "Ada sumbernya, tetapi hanya satu atau kurang kuat. Kemungkinan besar mendekati benar, belum pasti."
+      },
+      "judgment": {
+        "name": "Perkiraan kami",
+        "meaning": "Nilai lazim yang kami pilih sendiri dan belum punya sumber. Anggap sebagai tebakan yang masuk akal."
+      },
+      "decision": {
+        "name": "Keputusan",
+        "meaning": "Pilihan produk yang kami tetapkan, bukan fakta yang bisa dicari."
+      },
+      "open": {
+        "name": "Belum ada",
+        "meaning": "Belum ada nilai yang layak. Angka sementara dipakai agar kalkulator tetap jalan, jadi tanyakan ke pemasang."
+      }
+    }
+  },
+  "sections": {
+    "tariffs": {
+      "heading": "Tarif PLN",
+      "intro": "Harga PLN untuk tiap kWh menurut daya yang terpasang di rumah Anda. Tagihan Anda diubah menjadi kWh dengan tarif ini."
+    },
+    "regulation": {
+      "heading": "Aturan",
+      "intro": "Satu aturan penagihan PLN yang menentukan berapa tagihan yang masih tersisa setelah memakai panel surya."
+    },
+    "cost": {
+      "heading": "Biayanya",
+      "intro": "Harga sistem dan biaya merawatnya selama umur pakai. Inilah angka di balik rentang biaya dan balik modal."
+    },
+    "panels": {
+      "heading": "Panel dan atap",
+      "intro": "Perangkatnya, dan seberapa banyak atap Anda bisa dipakai."
+    },
+    "sunlight": {
+      "heading": "Dari sinar menjadi listrik",
+      "intro": "Berapa bagian energi matahari yang menjadi listrik, dan apa yang mengurangi sebagian darinya."
+    },
+    "battery": {
+      "heading": "Baterai",
+      "intro": "Cara kerja baterai rumah, dan kapan kami anggap baterai layak disarankan."
+    },
+    "household": {
+      "heading": "Cara rumah Anda memakai listrik",
+      "intro": "Panel hanya menghemat listrik yang terpakai selama matahari bersinar, jadi kami menaksir berapa bagian pemakaian sehari yang jatuh di siang hari."
+    },
+    "finance": {
+      "heading": "Uang dari tahun ke tahun, dan karbon",
+      "intro": "Berapa lama penghematan dihitung, apakah harga listrik naik, dan karbon yang digantikan listrik surya."
+    }
+  },
+  "tariffs": {
+    "upTo": "Sampai {va} VA, {subsidy}",
+    "above": "Di atas {va} VA, {subsidy}",
+    "subsidised": "bersubsidi",
+    "notSubsidised": "tanpa subsidi",
+    "minimumCharge": "Ada tagihan minimum bulanan.",
+    "noMinimumCharge": "Tanpa tagihan minimum bulanan; sebagai gantinya ada biaya beban tetap."
+  },
+  "orientation": {
+    "heading": "Kemiringan dan arah atap",
+    "explanation": "Seberapa banyak sinar yang diterima atap miring dibandingkan atap datar, yang dihitung sebagai satu. Dekat khatulistiwa matahari tinggi, jadi atap yang lebih curam kehilangan sinar, paling banyak bila menghadap menjauhi khatulistiwa.",
+    "row": "{slope}, {facing}",
+    "slope": {
+      "gentle": "Atap landai",
+      "steep": "Atap curam"
+    },
+    "facing": {
+      "towardEquator": "menghadap khatulistiwa",
+      "eastWest": "menghadap timur atau barat",
+      "awayFromEquator": "membelakangi khatulistiwa"
+    }
+  },
+  "batterySizes": {
+    "name": "Ukuran baterai yang ditawarkan",
+    "explanation": "Ukuran simpanan yang kami bandingkan ketika menimbang apakah baterai sepadan."
+  },
+  "units": {
+    "per": "per {unit}",
+    "hours": "jam",
+    "year": "tahun",
+    "years": "tahun",
+    "share": "sebagai pecahan",
+    "shareYear": "sebagai pecahan per tahun",
+    "multiplier": "pengali"
+  },
+  "row": {
+    "changedByYou": "Diubah oleh Anda",
+    "original": "Semula: {value}",
+    "reset": "Kembalikan ke semula",
+    "collected": "dikumpulkan {date}",
+    "opensInNewTab": "terbuka di tab baru"
+  },
+  "edit": {
+    "label": "Angka Anda untuk {name}",
+    "help": "Yang boleh: {range}.",
+    "rangeBetween": "dari {min} sampai {max}",
+    "rangeAtLeast": "sedikitnya {min}"
+  },
+  "errors": {
+    "notANumber": "Itu bukan angka. Ketik angka saja, misalnya 12,5.",
+    "outOfRange": "Angka itu di luar batas yang boleh. Pakai angka {range}."
+  },
+  "actions": {
+    "resetAll": "Kembalikan semua ke semula",
+    "backToResult": "Kembali ke hasil saya",
+    "backAndRecalculate": "Hitung ulang hasil saya",
+    "toPlan": "Kembali ke rencana saya",
+    "working": "Menghitung…",
+    "retry": "Coba lagi",
+    "fixFirst": "Perbaiki angka yang ditandai di atas untuk lanjut."
+  },
+  "failures": {
+    "invalid": {
+      "title": "Kami butuh jawaban Anda dulu",
+      "body": "Perubahan Anda sudah tersimpan, tetapi belum ada jawaban tentang rumah ini yang bisa dihitung ulang. Selesaikan rencananya dan perubahan Anda akan dipakai.",
+      "link": "Ke rencana"
+    },
+    "failed": {
+      "title": "Belum bisa menghitung ulang",
+      "body": "Perubahan Anda sudah tersimpan dan tidak ada yang hilang. Periksa sambungan internet lalu coba lagi."
+    }
+  },
+  "entries": {
+    "minCharge": {
+      "hours": {
+        "name": "Tagihan minimum, dalam jam nyala",
+        "explanation": "PLN menagih pelanggan pascabayar reguler sedikitnya sekian jam dari daya terpasangnya setiap bulan, sekecil apa pun pemakaiannya. Karena itu tagihan tidak bisa menjadi nol meski ada panel surya."
+      }
+    },
+    "capex": {
+      "perKwp": {
+        "low": {
+          "name": "Biaya pasang, perkiraan rendah",
+          "explanation": "Biaya sistem yang sudah jadi untuk tiap kWp (satu kWp adalah seribu watt panel), sudah termasuk panel, inverter, dan pemasangan, diambil dari penawaran termurah yang kami temukan."
+        },
+        "typical": {
+          "name": "Biaya pasang, umumnya",
+          "explanation": "Harga per kWp yang sama di tengah-tengah penawaran yang kami temukan. Rentang biaya Anda berpusat pada angka ini."
+        },
+        "high": {
+          "name": "Biaya pasang, perkiraan tinggi",
+          "explanation": "Harga per kWp yang sama di ujung penawaran yang mahal."
+        }
+      }
+    },
+    "battery": {
+      "fixedCost": {
+        "name": "Baterai: bagian harga yang tetap",
+        "explanation": "Bagian harga sistem baterai yang tidak ikut naik saat ukuran bertambah, terutama inverter hibrida (kotak yang membuat panel dan baterai bekerja bersama), dikurangi inverter biasa yang digantikannya."
+      },
+      "costPerKwh": {
+        "name": "Baterai: harga tiap kWh",
+        "explanation": "Harga baterai itu sendiri untuk tiap kWh simpanannya. Ongkos pasang belum termasuk."
+      },
+      "replacementYear": {
+        "name": "Tahun ganti baterai",
+        "explanation": "Tahun ketika kami anggap baterai sudah aus dan harus dibeli lagi, diperkirakan dari garansi dan jumlah siklus pengisian yang dijanjikan pabrik."
+      },
+      "roundTripEfficiency": {
+        "name": "Efisiensi baterai",
+        "explanation": "Bagian listrik yang masuk ke baterai dan kembali keluar. Sisanya hilang menjadi panas."
+      },
+      "usableFraction": {
+        "name": "Bagian baterai yang bisa dipakai",
+        "explanation": "Bagian dari kapasitas baterai yang boleh dipakai tanpa memperpendek umurnya."
+      },
+      "minFillShare": {
+        "name": "Baterai terkecil yang layak disarankan",
+        "explanation": "Kami baru menyarankan baterai jika kelebihan listrik surya pada hari biasa mengisi sedikitnya sekian bagian dari baterai terkecil yang ditawarkan."
+      }
+    },
+    "opex": {
+      "yearlyShareOfCapex": {
+        "name": "Perawatan tahunan",
+        "explanation": "Biaya pembersihan dan pemeriksaan tiap tahun, sebagai bagian dari biaya pasang sistem."
+      }
+    },
+    "inverter": {
+      "replacementYear": {
+        "name": "Tahun ganti inverter",
+        "explanation": "Inverter mengubah keluaran panel menjadi arus yang dipakai rumah Anda, dan lebih cepat aus daripada panel. Kami anggap inverter diganti pada tahun ini."
+      },
+      "replacementShareOfCapex": {
+        "name": "Biaya ganti inverter",
+        "explanation": "Harga inverter baru, sebagai bagian dari biaya pasang sistem."
+      }
+    },
+    "panel": {
+      "wattPeak": {
+        "name": "Daya satu panel",
+        "explanation": "Daya yang dihasilkan satu panel pada kondisi uji standar, dalam watt-peak (Wp). Angka ini menentukan berapa panel yang membentuk satu kWp."
+      },
+      "areaM2": {
+        "name": "Luas atap untuk satu panel",
+        "explanation": "Luas yang ditutup satu panel, dalam meter persegi. Angka ini menentukan berapa panel yang muat di atap Anda."
+      }
+    },
+    "system": {
+      "minKwp": {
+        "name": "Sistem terkecil",
+        "explanation": "Sistem terkecil yang lazim dijual pemasang. Kami tidak pernah menyarankan yang lebih kecil dari ini."
+      }
+    },
+    "roof": {
+      "usableFraction": {
+        "name": "Bagian atap yang bisa dipakai",
+        "explanation": "Bagian dari luas atap yang Anda isi yang benar-benar bisa dipasangi panel, setelah menyisakan tepi, jalur injak, dan lubang udara. Anda mengaturnya sendiri di langkah atap; ini angka awalnya."
+      }
+    },
+    "pv": {
+      "performanceRatio": {
+        "name": "Rasio kinerja",
+        "explanation": "Bagian energi sinar matahari yang sampai ke meter Anda sebagai listrik, setelah dikurangi rugi panas, kabel, dan inverter."
+      },
+      "degradationPerYear": {
+        "name": "Penurunan panel per tahun",
+        "explanation": "Seberapa berkurang listrik yang dihasilkan panel untuk setiap tahun usianya."
+      }
+    },
+    "shade": {
+      "none": {
+        "name": "Sinar yang terpakai tanpa bayangan",
+        "explanation": "Bagian sinar matahari yang masih dihitung bila atap tidak terkena bayangan."
+      },
+      "some": {
+        "name": "Sinar yang terpakai dengan sedikit bayangan",
+        "explanation": "Bagian yang masih dihitung bila pohon atau bangunan menaungi atap pada sebagian pagi atau sore."
+      },
+      "heavy": {
+        "name": "Sinar yang terpakai dengan bayangan berat",
+        "explanation": "Bagian yang masih dihitung bila atap banyak ternaungi. Pada kondisi ini pemasang perlu datang melihat atap sebelum Anda memercayai perkiraan apa pun."
+      }
+    },
+    "load": {
+      "daytimeShare": {
+        "base": {
+          "name": "Pemakaian siang: titik awal",
+          "explanation": "Bagian listrik sehari yang dipakai rumah pada jam terang saat tidak ada orang di rumah di hari kerja. Angka-angka berikutnya menambah atau mengurangi dari sini."
+        },
+        "homeOnWeekdays": {
+          "name": "Pemakaian siang: ada orang di rumah",
+          "explanation": "Ditambahkan pada porsi siang bila ada orang di rumah pada hari kerja."
+        },
+        "daytimeAc": {
+          "name": "Pemakaian siang: pendingin ruangan",
+          "explanation": "Ditambahkan bila pendingin ruangan menyala di siang hari."
+        },
+        "workFromHome": {
+          "name": "Pemakaian siang: bekerja dari rumah",
+          "explanation": "Ditambahkan bila ada anggota rumah yang bekerja dari rumah."
+        },
+        "electricVehicle": {
+          "name": "Pemakaian siang: kendaraan listrik",
+          "explanation": "Dikurangkan dari porsi siang, karena kami anggap kendaraan listrik diisi pada malam hari."
+        },
+        "floor": {
+          "name": "Pemakaian siang: batas bawah",
+          "explanation": "Porsi siang tidak pernah lebih rendah dari ini, berapa pun hasil penjumlahan jawaban Anda."
+        },
+        "cap": {
+          "name": "Pemakaian siang: batas atas",
+          "explanation": "Porsi siang tidak pernah lebih tinggi dari ini, berapa pun hasil penjumlahan jawaban Anda."
+        }
+      }
+    },
+    "bill": {
+      "overheadShare": {
+        "name": "Pajak dan biaya dalam tagihan",
+        "explanation": "Bagian dari yang Anda bayar yang berupa pajak atau biaya dan tidak membeli listrik, terutama pajak penerangan jalan yang berbeda tiap daerah. Kami keluarkan lebih dulu sebelum menghitung berapa listrik yang Anda pakai."
+      }
+    },
+    "finance": {
+      "horizonYears": {
+        "name": "Lama penghematan yang dihitung",
+        "explanation": "Berapa tahun penghematan yang kami jumlahkan. Angkanya kurang lebih sama dengan umur pakai panel."
+      },
+      "tariffEscalationPerYear": {
+        "name": "Kenaikan harga listrik per tahun",
+        "explanation": "Seberapa naik harga listrik PLN per kWh yang kami anggap tiap tahun. Tarif belakangan ini tidak naik, jadi nilai awalnya nol; kenaikan yang lebih besar membuat panel lebih cepat balik modal."
+      }
+    },
+    "grid": {
+      "emissionKgCo2PerKwh": {
+        "name": "Karbon dalam listrik jaringan",
+        "explanation": "Kilogram CO₂ yang dilepas untuk tiap kWh dari jaringan Jawa-Bali. Listrik surya yang Anda pakai menggantikan listrik dengan jejak ini."
+      }
+    }
+  }
+}

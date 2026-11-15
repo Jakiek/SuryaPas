@@ -1,0 +1,307 @@
+{
+  "title": "The assumptions behind the numbers",
+  "intro": "Every price, rate and factor your result is built from, with where it came from and how far to trust it. Where an entry can be changed, change it and send yourself back to a result that uses your number.",
+  "version": "Assumption set, version {version}",
+  "margin": {
+    "heading": "How close is it?",
+    "body": "We checked the sunlight side of the model against PVGIS, the European Commission's solar yield tool, at three Indonesian cities. On a flat roof our yearly electricity figure came out within about 10% of PVGIS. So read the result as a sound estimate for planning and comparing, not as a quote: what your own roof makes depends on its shade, its angle and the weather of the year."
+  },
+  "confidence": {
+    "heading": "How far to trust a number",
+    "intro": "Each entry carries one of five labels. They describe how well we know the number, not how much it matters.",
+    "labels": {
+      "sourced": {
+        "name": "Sourced",
+        "meaning": "Taken straight from a source we link: a regulation, a price list or a maker's datasheet."
+      },
+      "thin": {
+        "name": "Thin source",
+        "meaning": "From a source, but a single or weak one. Probably about right, not firmly established."
+      },
+      "judgment": {
+        "name": "Judgment",
+        "meaning": "A typical value we chose, with no source yet. Treat it as a reasonable guess."
+      },
+      "decision": {
+        "name": "Decision",
+        "meaning": "A product choice we made, not a fact that could be looked up."
+      },
+      "open": {
+        "name": "Open",
+        "meaning": "No good value found yet. A placeholder keeps the calculator running, so check it with an installer."
+      }
+    }
+  },
+  "sections": {
+    "tariffs": {
+      "heading": "PLN tariffs",
+      "intro": "What PLN charges for each kWh, by the power connected to your home. Your bill is converted into kWh with these."
+    },
+    "regulation": {
+      "heading": "Rules",
+      "intro": "A rule of PLN's billing that shapes what is left on your bill after solar."
+    },
+    "cost": {
+      "heading": "What it costs",
+      "intro": "The price of a system and what it costs to keep running over its life. These are the numbers behind the cost and payback ranges."
+    },
+    "panels": {
+      "heading": "Panels and roof",
+      "intro": "The hardware, and how much of your roof it can use."
+    },
+    "sunlight": {
+      "heading": "From sunlight to electricity",
+      "intro": "How much of the sun's energy becomes electricity, and what takes some of it away."
+    },
+    "battery": {
+      "heading": "Battery",
+      "intro": "How a home battery behaves, and when we think one is worth suggesting."
+    },
+    "household": {
+      "heading": "How your home uses power",
+      "intro": "Panels only save the power you use while the sun is up, so we estimate how much of your day's use falls in daylight."
+    },
+    "finance": {
+      "heading": "Money over time, and carbon",
+      "intro": "How long we count savings, whether the price of electricity rises, and the carbon that solar replaces."
+    }
+  },
+  "tariffs": {
+    "upTo": "Up to {va} VA, {subsidy}",
+    "above": "Above {va} VA, {subsidy}",
+    "subsidised": "subsidised",
+    "notSubsidised": "not subsidised",
+    "minimumCharge": "A minimum monthly bill applies.",
+    "noMinimumCharge": "No minimum monthly bill; a fixed charge applies instead."
+  },
+  "orientation": {
+    "heading": "Roof angle and direction",
+    "explanation": "How much sunlight a sloping roof receives compared with a flat one, which counts as one. Near the equator the sun is high, so a steeper roof loses sunlight, most of all when it faces away from the equator.",
+    "row": "{slope}, {facing}",
+    "slope": {
+      "gentle": "Gentle slope",
+      "steep": "Steep slope"
+    },
+    "facing": {
+      "towardEquator": "facing the equator",
+      "eastWest": "facing east or west",
+      "awayFromEquator": "facing away from the equator"
+    }
+  },
+  "batterySizes": {
+    "name": "Battery sizes we offer",
+    "explanation": "The storage sizes we compare when we ask whether a battery is worth it."
+  },
+  "units": {
+    "per": "per {unit}",
+    "hours": "hours",
+    "year": "year",
+    "years": "years",
+    "share": "as a fraction",
+    "shareYear": "as a fraction a year",
+    "multiplier": "multiplier"
+  },
+  "row": {
+    "changedByYou": "Changed by you",
+    "original": "Original: {value}",
+    "reset": "Reset to original",
+    "collected": "collected {date}",
+    "opensInNewTab": "opens in a new tab"
+  },
+  "edit": {
+    "label": "Your value for {name}",
+    "help": "Allowed: {range}.",
+    "rangeBetween": "from {min} to {max}",
+    "rangeAtLeast": "at least {min}"
+  },
+  "errors": {
+    "notANumber": "That is not a number. Type digits only, for example 12.5.",
+    "outOfRange": "That is outside the allowed range. Use a value {range}."
+  },
+  "actions": {
+    "resetAll": "Reset all changes",
+    "backToResult": "Back to my result",
+    "backAndRecalculate": "Recalculate my result",
+    "toPlan": "Back to my plan",
+    "working": "Working it out…",
+    "retry": "Try again",
+    "fixFirst": "Fix the values marked above to go on."
+  },
+  "failures": {
+    "invalid": {
+      "title": "We need your answers first",
+      "body": "Your changes are saved, but there are no answers for this home to recalculate. Finish the plan and your changes will be used.",
+      "link": "Go to the plan"
+    },
+    "failed": {
+      "title": "We could not recalculate",
+      "body": "Your changes are saved and nothing is lost. Check your connection and try again."
+    }
+  },
+  "entries": {
+    "minCharge": {
+      "hours": {
+        "name": "Minimum bill, in hours of full power",
+        "explanation": "PLN bills every home on the regular postpaid plan for at least this many hours of its connected power each month, however little it uses. It stops solar from taking the bill to zero."
+      }
+    },
+    "capex": {
+      "perKwp": {
+        "low": {
+          "name": "Installed cost, low estimate",
+          "explanation": "What a finished system costs for each kWp (a kWp is a thousand watts of panels), panels, inverter and fitting included, taken from the cheapest quotes we found."
+        },
+        "typical": {
+          "name": "Installed cost, typical",
+          "explanation": "The same price per kWp at the middle of the quotes we found. This is the one your cost range is centred on."
+        },
+        "high": {
+          "name": "Installed cost, high estimate",
+          "explanation": "The same price per kWp at the expensive end of the quotes we found."
+        }
+      }
+    },
+    "battery": {
+      "fixedCost": {
+        "name": "Battery: fixed part of the price",
+        "explanation": "The part of a battery system's price that does not grow with its size: mostly the hybrid inverter (the box that lets panels and battery work together), less the ordinary inverter it replaces."
+      },
+      "costPerKwh": {
+        "name": "Battery: price for each kWh",
+        "explanation": "What the battery itself costs for each kWh of storage. Fitting labour is not included."
+      },
+      "replacementYear": {
+        "name": "Battery replacement year",
+        "explanation": "The year we assume the battery wears out and is bought again, judged from its warranty and its rated number of charge cycles."
+      },
+      "roundTripEfficiency": {
+        "name": "Battery efficiency",
+        "explanation": "The share of the electricity put into the battery that comes back out. The rest is lost as heat."
+      },
+      "usableFraction": {
+        "name": "Battery usable share",
+        "explanation": "The share of a battery's stated capacity that can be used without shortening its life."
+      },
+      "minFillShare": {
+        "name": "Smallest battery worth suggesting",
+        "explanation": "We only suggest a battery when a typical day's spare solar fills at least this share of the smallest one on offer."
+      }
+    },
+    "opex": {
+      "yearlyShareOfCapex": {
+        "name": "Yearly upkeep",
+        "explanation": "What cleaning and checks cost each year, as a share of what the system cost to install."
+      }
+    },
+    "inverter": {
+      "replacementYear": {
+        "name": "Inverter replacement year",
+        "explanation": "An inverter turns the panels' output into the current your home uses, and it wears out sooner than the panels. We assume it is replaced in this year."
+      },
+      "replacementShareOfCapex": {
+        "name": "Inverter replacement cost",
+        "explanation": "What a new inverter costs, as a share of what the system cost to install."
+      }
+    },
+    "panel": {
+      "wattPeak": {
+        "name": "Power of one panel",
+        "explanation": "How much one panel produces in standard test conditions, in watt-peak (Wp). It sets how many panels make a kWp."
+      },
+      "areaM2": {
+        "name": "Roof space for one panel",
+        "explanation": "The area one panel covers, in square metres. It sets how many panels your roof can hold."
+      }
+    },
+    "system": {
+      "minKwp": {
+        "name": "Smallest system",
+        "explanation": "The smallest system installers commonly sell. We never suggest anything below it."
+      }
+    },
+    "roof": {
+      "usableFraction": {
+        "name": "Usable share of your roof",
+        "explanation": "The share of the roof area you give us that can really hold panels, after gaps for edges, walkways and vents. You set your own on the roof step; this is where it starts."
+      }
+    },
+    "pv": {
+      "performanceRatio": {
+        "name": "Performance ratio",
+        "explanation": "The share of the sunlight's energy that reaches your meter as electricity, after heat, wiring and inverter losses."
+      },
+      "degradationPerYear": {
+        "name": "Yearly panel wear",
+        "explanation": "How much less electricity the panels make with each year they age."
+      }
+    },
+    "shade": {
+      "none": {
+        "name": "Sunlight kept with no shade",
+        "explanation": "The share of the sunlight that still counts when nothing shades the roof."
+      },
+      "some": {
+        "name": "Sunlight kept with some shade",
+        "explanation": "The share that still counts when a tree or building shades the roof for part of the morning or afternoon."
+      },
+      "heavy": {
+        "name": "Sunlight kept with heavy shade",
+        "explanation": "The share that still counts under heavy shade. With this much, an installer should visit before you trust any estimate."
+      }
+    },
+    "load": {
+      "daytimeShare": {
+        "base": {
+          "name": "Daytime use: starting point",
+          "explanation": "The share of a day's electricity a home uses in daylight hours when nobody is home on weekdays. The next entries add to or take from it."
+        },
+        "homeOnWeekdays": {
+          "name": "Daytime use: someone home",
+          "explanation": "Added to the daytime share when someone is home on weekdays."
+        },
+        "daytimeAc": {
+          "name": "Daytime use: air conditioning",
+          "explanation": "Added when air conditioning runs during the day."
+        },
+        "workFromHome": {
+          "name": "Daytime use: working from home",
+          "explanation": "Added when someone works from home."
+        },
+        "electricVehicle": {
+          "name": "Daytime use: electric vehicle",
+          "explanation": "Taken off the daytime share, because we assume an electric vehicle charges at night."
+        },
+        "floor": {
+          "name": "Daytime use: lowest allowed",
+          "explanation": "The daytime share never goes below this, however the answers add up."
+        },
+        "cap": {
+          "name": "Daytime use: highest allowed",
+          "explanation": "The daytime share never goes above this, however the answers add up."
+        }
+      }
+    },
+    "bill": {
+      "overheadShare": {
+        "name": "Tax and fees in your bill",
+        "explanation": "The share of what you pay that is tax or fees and buys no electricity, mainly the street-lighting tax, which differs by region. We take it out before working out how much power you use."
+      }
+    },
+    "finance": {
+      "horizonYears": {
+        "name": "Years of savings counted",
+        "explanation": "How many years of savings we add up. It is about the working life of a panel."
+      },
+      "tariffEscalationPerYear": {
+        "name": "Yearly rise in the electricity price",
+        "explanation": "How much we assume PLN's price per kWh goes up each year. Tariffs have not risen lately, so it starts at zero; a higher rise makes solar pay back sooner."
+      }
+    },
+    "grid": {
+      "emissionKgCo2PerKwh": {
+        "name": "Carbon in grid electricity",
+        "explanation": "The kilograms of CO₂ released for each kWh from the Java-Bali grid. Solar power you use replaces electricity with this footprint."
+      }
+    }
+  }
+}
