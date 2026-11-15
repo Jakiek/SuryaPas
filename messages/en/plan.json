@@ -1,0 +1,144 @@
+{
+  "steps": {
+    "location": {
+      "name": "Location",
+      "heading": "Where is your home?",
+      "intro": "Where the house stands decides how much sun your roof gets across the year.",
+      "next": "Next: the roof"
+    },
+    "roof": {
+      "name": "Roof",
+      "heading": "What does your roof look like?",
+      "intro": "Pick the roof face that is largest and least shaded. A rough figure is fine.",
+      "next": "Next: electricity"
+    },
+    "electricity": {
+      "name": "Electricity",
+      "heading": "How much power do you use?",
+      "intro": "What you spend on electricity tells us how many rupiah solar can save.",
+      "next": "Next: habits"
+    },
+    "lifestyle": {
+      "name": "Habits",
+      "heading": "When does your home use power?",
+      "intro": "Panels only save the power you use while the sun is up. These four questions help us guess when your home uses it.",
+      "next": "Show my result"
+    }
+  },
+  "nav": {
+    "back": "Back",
+    "sending": "Working it out…",
+    "retry": "Try again",
+    "incomplete": "Answer every question above to continue."
+  },
+  "location": {
+    "latitude": {
+      "label": "Latitude",
+      "help": "The latitude of your home, for example -7.78."
+    },
+    "longitude": {
+      "label": "Longitude",
+      "help": "The longitude of your home, for example 110.37."
+    }
+  },
+  "roof": {
+    "area": {
+      "label": "Roof area",
+      "help": "The area of the roof face you chose, in square metres."
+    },
+    "slope": {
+      "legend": "Roof slope",
+      "flat": "Flat",
+      "gentle": "Gentle",
+      "steep": "Steep"
+    },
+    "facing": {
+      "legend": "Which way does it face?",
+      "north": "North",
+      "east": "East",
+      "south": "South",
+      "west": "West"
+    },
+    "shade": {
+      "legend": "Is the roof in shade?",
+      "none": "None",
+      "some": "Some",
+      "heavy": "A lot"
+    }
+  },
+  "electricity": {
+    "billing": {
+      "legend": "How do you pay for electricity?",
+      "help": "This changes how we ask about your spending.",
+      "prepaid": "Tokens",
+      "prepaidNote": "prepaid",
+      "postpaid": "Monthly bill",
+      "postpaidNote": "postpaid"
+    },
+    "power": {
+      "label": "Connected power",
+      "help": "Printed on your meter or your bill.",
+      "placeholder": "Choose your connected power",
+      "option": "{va} VA",
+      "optionSubsidised": "{va} VA, subsidised",
+      "optionUnsubsidised": "{va} VA, not subsidised"
+    },
+    "spend": {
+      "prepaid": {
+        "legend": "How much do you top up in a month?",
+        "help": "Add up every token you buy in one month.",
+        "single": "Token top-ups per month"
+      },
+      "postpaid": {
+        "legend": "How big is your monthly electricity bill?",
+        "help": "Check the PLN Mobile app or a payment receipt.",
+        "single": "Bill per month"
+      },
+      "monthLabel": "Month {number}",
+      "moreMonthsNote": "One month is enough. Each extra month sharpens the estimate. With 12 months, enter them from January to December; with fewer, we use the average.",
+      "fullYearNote": "All twelve months are filled in. We read them in order, January to December.",
+      "addMonth": "Add another month",
+      "count": "{count} of {max}",
+      "removeMonth": "Remove the last month"
+    }
+  },
+  "lifestyle": {
+    "yes": "Yes",
+    "no": "No",
+    "homeOnWeekdays": {
+      "legend": "Is someone home on weekdays?",
+      "help": "A parent at home, a retiree, a child studying from home."
+    },
+    "daytimeAc": {
+      "legend": "Is the air conditioning on in the daytime?",
+      "help": "Any air conditioning that runs while the sun is up."
+    },
+    "workFromHome": {
+      "legend": "Does anyone work from home?",
+      "help": "Computers and lights left on all day add to daytime use."
+    },
+    "electricVehicle": {
+      "legend": "Is an electric vehicle charged at home?",
+      "help": "An electric car or motorbike plugged in at your house."
+    }
+  },
+  "privacy": "Your result is saved under a random code nobody can guess: the pin location, roof, electricity and habits you entered. No name, email or account.",
+  "submitFailed": {
+    "title": "Your result was not saved",
+    "body": "Your answers are still safe on this device. Check your connection, then press Try again."
+  },
+  "errors": {
+    "billRequired": "The amount is missing. Type it in rupiah, for example 650,000.",
+    "billingRequired": "Choose how you pay: tokens or a monthly bill.",
+    "powerRequired": "Connected power is not chosen. Pick one from the list; it is printed on your meter or bill.",
+    "tooManyMonths": "Twelve months at most. Remove the extra months.",
+    "answerRequired": "This question is not answered. Choose Yes or No.",
+    "latitudeInvalid": "Latitude must be a number between -90 and 90, for example -7.78.",
+    "longitudeInvalid": "Longitude must be a number between -180 and 180, for example 110.37.",
+    "areaInvalid": "The roof area is missing. Type the number in square metres, for example 48.",
+    "usableInvalid": "The usable share of the roof must be above 0 and at most 100%.",
+    "facingRequired": "Choose which way the roof faces.",
+    "slopeRequired": "Choose the roof slope.",
+    "shadeRequired": "Choose how much shade the roof gets."
+  }
+}

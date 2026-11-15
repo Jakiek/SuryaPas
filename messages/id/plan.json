@@ -1,0 +1,144 @@
+{
+  "steps": {
+    "location": {
+      "name": "Lokasi",
+      "heading": "Di mana rumah Anda?",
+      "intro": "Letak rumah menentukan berapa banyak sinar matahari yang diterima atap Anda sepanjang tahun.",
+      "next": "Lanjut ke atap"
+    },
+    "roof": {
+      "name": "Atap",
+      "heading": "Seperti apa atap Anda?",
+      "intro": "Pilih sisi atap yang paling luas dan paling sedikit terhalang. Perkiraan saja sudah cukup.",
+      "next": "Lanjut ke listrik"
+    },
+    "electricity": {
+      "name": "Listrik",
+      "heading": "Berapa listrik yang Anda pakai?",
+      "intro": "Dari pengeluaran listrik inilah kami tahu berapa rupiah yang bisa dihemat.",
+      "next": "Lanjut ke kebiasaan"
+    },
+    "lifestyle": {
+      "name": "Kebiasaan",
+      "heading": "Kapan rumah memakai listrik?",
+      "intro": "Panel hanya menghemat listrik yang terpakai saat matahari bersinar. Empat pertanyaan ini membantu kami menebak jam pemakaian rumah Anda.",
+      "next": "Hitung hasil"
+    }
+  },
+  "nav": {
+    "back": "Kembali",
+    "sending": "Menghitung…",
+    "retry": "Coba lagi",
+    "incomplete": "Jawab semua pertanyaan di atas untuk lanjut."
+  },
+  "location": {
+    "latitude": {
+      "label": "Lintang",
+      "help": "Angka lintang titik rumah Anda, misalnya -7,78."
+    },
+    "longitude": {
+      "label": "Bujur",
+      "help": "Angka bujur titik rumah Anda, misalnya 110,37."
+    }
+  },
+  "roof": {
+    "area": {
+      "label": "Luas atap",
+      "help": "Luas sisi atap yang dipilih, dalam meter persegi."
+    },
+    "slope": {
+      "legend": "Kemiringan atap",
+      "flat": "Datar",
+      "gentle": "Landai",
+      "steep": "Curam"
+    },
+    "facing": {
+      "legend": "Menghadap ke mana?",
+      "north": "Utara",
+      "east": "Timur",
+      "south": "Selatan",
+      "west": "Barat"
+    },
+    "shade": {
+      "legend": "Apakah atap terkena bayangan?",
+      "none": "Tidak ada",
+      "some": "Sebagian",
+      "heavy": "Banyak"
+    }
+  },
+  "electricity": {
+    "billing": {
+      "legend": "Bagaimana Anda membayar listrik?",
+      "help": "Pilihan ini mengubah cara kami menanyakan pengeluaran Anda.",
+      "prepaid": "Token",
+      "prepaidNote": "prabayar",
+      "postpaid": "Tagihan bulanan",
+      "postpaidNote": "pascabayar"
+    },
+    "power": {
+      "label": "Daya listrik",
+      "help": "Tertulis di meteran atau di tagihan Anda.",
+      "placeholder": "Pilih daya listrik",
+      "option": "{va} VA",
+      "optionSubsidised": "{va} VA, bersubsidi",
+      "optionUnsubsidised": "{va} VA, tidak bersubsidi"
+    },
+    "spend": {
+      "prepaid": {
+        "legend": "Berapa rupiah token yang Anda isi tiap bulan?",
+        "help": "Jumlahkan semua token dalam satu bulan.",
+        "single": "Isi token per bulan"
+      },
+      "postpaid": {
+        "legend": "Berapa tagihan listrik Anda tiap bulan?",
+        "help": "Lihat di aplikasi PLN Mobile atau di struk pembayaran.",
+        "single": "Tagihan per bulan"
+      },
+      "monthLabel": "Bulan ke-{number}",
+      "moreMonthsNote": "Satu bulan sudah cukup. Makin banyak bulan yang Anda isi, makin tajam perkiraannya. Dengan 12 bulan, urutkan dari Januari sampai Desember; kurang dari itu, kami memakai rata-ratanya.",
+      "fullYearNote": "Kedua belas bulan terisi. Kami membacanya berurutan dari Januari sampai Desember.",
+      "addMonth": "Tambah bulan lain",
+      "count": "{count} dari {max}",
+      "removeMonth": "Hapus bulan terakhir"
+    }
+  },
+  "lifestyle": {
+    "yes": "Ya",
+    "no": "Tidak",
+    "homeOnWeekdays": {
+      "legend": "Ada orang di rumah pada hari kerja?",
+      "help": "Misalnya ibu rumah tangga, pensiunan, atau anak yang belajar dari rumah."
+    },
+    "daytimeAc": {
+      "legend": "AC menyala pada siang hari?",
+      "help": "AC yang dinyalakan saat matahari bersinar."
+    },
+    "workFromHome": {
+      "legend": "Ada yang bekerja dari rumah?",
+      "help": "Komputer dan lampu yang menyala sepanjang hari menambah pemakaian siang."
+    },
+    "electricVehicle": {
+      "legend": "Ada kendaraan listrik yang diisi di rumah?",
+      "help": "Mobil atau motor listrik yang dicas di rumah."
+    }
+  },
+  "privacy": "Hasil Anda disimpan dengan kode acak yang sulit ditebak: titik lokasi, data atap, listrik, dan kebiasaan Anda. Tidak ada nama, email, atau akun.",
+  "submitFailed": {
+    "title": "Hasil belum tersimpan",
+    "body": "Jawaban Anda masih aman di perangkat ini. Periksa sambungan internet, lalu tekan Coba lagi."
+  },
+  "errors": {
+    "billRequired": "Jumlahnya belum diisi. Ketik dalam rupiah, misalnya 650.000.",
+    "billingRequired": "Cara membayar belum dipilih. Pilih token atau tagihan bulanan.",
+    "powerRequired": "Daya listrik belum dipilih. Pilih satu dari daftar; angkanya ada di meteran atau tagihan.",
+    "tooManyMonths": "Paling banyak 12 bulan. Hapus bulan yang berlebih.",
+    "answerRequired": "Pertanyaan ini belum dijawab. Pilih Ya atau Tidak.",
+    "latitudeInvalid": "Lintang harus berupa angka antara -90 dan 90, misalnya -7,78.",
+    "longitudeInvalid": "Bujur harus berupa angka antara -180 dan 180, misalnya 110,37.",
+    "areaInvalid": "Luas atap belum diisi. Ketik angkanya dalam meter persegi, misalnya 48.",
+    "usableInvalid": "Bagian atap yang bisa dipasangi harus lebih dari 0 dan paling banyak 100%.",
+    "facingRequired": "Arah atap belum dipilih. Pilih salah satu.",
+    "slopeRequired": "Kemiringan atap belum dipilih. Pilih salah satu.",
+    "shadeRequired": "Bayangan pada atap belum dipilih. Pilih salah satu."
+  }
+}
