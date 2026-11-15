@@ -105,11 +105,13 @@ Lives in `src/engine/`, pure TypeScript. Every numeric value named below is an e
 ```
 location        latitude, longitude
 roof            areaM2, usableFraction, facing (N|E|S|W|none), slope (flat|gentle|steep), shade (none|some|heavy)
-electricity     billing (prepaid|postpaid), powerClass, monthlySpendRp[1..12]
+electricity     billing (prepaid|postpaid), connectedVa, subsidised, monthlySpendRp[1..12]
 lifestyle       homeOnWeekdays, daytimeAc, workFromHome, electricVehicle
 sunSeries       8,760 hourly values of global horizontal irradiance (W/m²), local solar time, plus a flag: live or fallback
 assumptions     one versioned assumption set, with any user overrides applied
 ```
+
+The tariff class is derived from `connectedVa` and `subsidised`; the minimum charge needs the connected power itself, which a class name alone does not give for the 3,500 VA and larger classes. The form offers PLN's standard connected powers. Twelve spend values are read as January to December; fewer are averaged and applied to every month.
 
 ### 3.2 Pipeline
 

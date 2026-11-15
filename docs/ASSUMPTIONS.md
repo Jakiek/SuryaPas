@@ -2,7 +2,7 @@
 
 Every number the engine uses. `docs/SPEC.md` section 3 defines how each is used.
 
-**Source of truth.** Until the engine exists, this file holds the values. Once `src/engine/assumptions/v1.ts` exists, that file is authoritative for values, and this file is the research record behind them: sources, confidence and open items, under the same keys.
+**Source of truth.** `src/engine/assumptions/v1.ts` is authoritative for values. This file is the research record behind them: sources, confidence and open items, under the same keys. A changed value means a new version file (SPEC 4.2) and an update here.
 
 **Confidence labels.** The assumptions screen shows these to users, so they must be honest.
 
@@ -102,6 +102,7 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 â
 | `battery.roundTripEfficiency` | 0.90 | judgment | |
 | `battery.usableFraction` | 0.90 | judgment | |
 | `battery.sizesKwh` | 5, 10 | decision | |
+| `battery.minFillShare` | 0.5 | decision | A battery is offered only when a typical day's useful surplus fills at least this share of the smallest battery's usable capacity. Added with the engine (T04) |
 
 ### Orientation factor (multiplier on horizontal irradiance)
 
@@ -122,6 +123,7 @@ Provisional. T07 replaces these with values derived from PVGIS runs.
 | `load.daytimeShare.daytimeAc` | +0.15 | judgment | |
 | `load.daytimeShare.workFromHome` | +0.05 | judgment | |
 | `load.daytimeShare.electricVehicle` | âˆ’0.05 | judgment | Assumes charging at night |
+| `load.daytimeShare.floor` | 0.15 | judgment | Lower limit. Added with the engine (T04) |
 | `load.daytimeShare.cap` | 0.75 | judgment | |
 | `bill.overheadShare` | 0.05 | judgment | Share of spend that is tax or fees and buys no energy. Was 0 (open). The regional street-lighting tax is the main part: 2.4% in Jakarta, taken from the top-up before it becomes kWh ([PLN statement, JawaPos 2026-06-02](https://www.jawapos.com/energi/2606010167/begini-cara-menghitung-tagihan-listrik-dan-mengelola-pemakaian-energi-menurut-pln)); set by each region, up to 10% by law ([PP 4/2023 via DDTC](https://news.ddtc.co.id/new-gov-reg-issued-government-sets-pbjt-regulation-for-electricity-46002)). The 5% is our midpoint between the 2.4% floor we found and typical regional rates; no national average exists. Zero would overstate energy use and oversize the system. Also in the bill but not counted: stamp duty (amount not stated by PLN) and a payment-channel admin fee (not PLN's; varies). VAT is said to apply only to some customer groups; the search results point to R-3 above 6,600 VA, not verified |
 
