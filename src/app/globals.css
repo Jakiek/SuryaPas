@@ -1,3 +1,269 @@
 @import "tailwindcss";
 
-/* Colour and type tokens from docs/DESIGN.md arrive in T08. */
+/*
+  Design tokens for SuryaPas. Every value here comes from docs/DESIGN.md
+  (or, where that file is silent, from mock/styles.css). Components read
+  these tokens through Tailwind classes, so a colour or a size changes in
+  this file and nowhere else.
+
+  How to read this file:
+    1. @theme            fixed tokens: colours, type sizes, widths, breakpoints
+    2. :root             plain CSS variables that are not Tailwind tokens
+    3. [data-band]       the six "band" variables that flip between day,
+                         night and paper
+    4. @theme inline     Tailwind names for the band variables and the fonts
+    5. @utility          the four type styles and the heavy rule
+    6. base rules        body, focus ring, reduced motion
+*/
+
+/* ---------- 1. Fixed tokens ---------- */
+
+@theme {
+  /* Tailwind's own palette, radii and shadows are removed on purpose:
+     DESIGN.md allows seven colours, square corners and no shadows, so
+     classes such as bg-gray-100, rounded-lg or shadow-md must not exist. */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --blur-*: initial;
+
+  /* Colour (DESIGN.md "Colour") */
+  --color-sun: #ffcf33; /* day */
+  --color-sun-soft: #fff1bf; /* background under hatching */
+  --color-night: #0f1b3d; /* night, and all text */
+  --color-paper: #ffffff; /* the report */
+  --color-ink-soft: #4a556f; /* secondary text on white */
+  --color-alert: #c8371b; /* the bar of a caveat; never text */
+  /* Hover fill of a navy button. From the mock; DESIGN.md is silent. */
+  --color-night-lift: #1c2c5c;
+
+  /* Type sizes (DESIGN.md "Type"; the clamp() values are the mock's) */
+  --text-poster-hero: clamp(64px, 20vw, 168px); /* landing headline */
+  --text-poster-answer: clamp(88px, 29vw, 150px); /* "3 PANEL" on the result */
+  --text-poster-page: clamp(44px, 13vw, 76px); /* heading of a flow step */
+  --text-poster-statement: clamp(40px, 11vw, 84px); /* landing argument */
+  --text-poster-section: clamp(36px, 10vw, 54px); /* section of the report */
+  --text-figure-sm: 30px; /* a figure in a ledger row */
+  --text-figure-md: 40px; /* a figure standing alone */
+  --text-figure-fluid: clamp(27px, 7.6vw, 38px); /* two figures side by side */
+  --text-label: 12px;
+  --text-wordmark: 22px;
+  /* Small text keeps the body's line-height of 1.5, as in the mock.
+     (Tailwind's own text-xs and text-sm are tighter.) */
+  --text-xs--line-height: 1.5;
+  --text-sm--line-height: 1.5;
+
+  /* Widths (DESIGN.md "Layout") */
+  --container-page: 1180px; /* the widest a page's content gets */
+  --container-measure: 680px; /* text blocks and charts stop here */
+
+  /* Breakpoints (DESIGN.md "Layout"). Only these two are designed for. */
+  --breakpoint-sm: 620px; /* hero input and buttons go side by side */
+  --breakpoint-lg: 880px; /* two-column layouts */
+}
+
+/* ---------- 2. Plain variables ---------- */
+
+:root {
+  /* Space between the screen edge and the content: 20 px on phones. */
+  --gutter: 20px;
+  /* The thick rule above sections and around controls. */
+  --rule-heavy: 2.5px;
+  /* Height of a button, and of a text field (2 px taller in the mock). */
+  --control-height: 56px;
+  --field-height: 58px;
+  /* How long a hover or selection change takes (DESIGN.md "Motion"). */
+  --motion-ease: 200ms;
+}
+
+@media (min-width: 880px) {
+  :root {
+    --gutter: 40px;
+  }
+}
+
+/* ---------- 3. Bands ---------- */
+
+/*
+  A screen is made of full-width bands: sun (day), night, or paper.
+  Each band sets the same six variables, and components read only these.
+  That is why one <Button> is navy on a yellow band and yellow on a navy
+  band without being told which band it is in.
+
+    --band-bg            the band's own colour
+    --band-fg            text, rules and outlines
+    --band-soft          secondary text (contrast checked in DESIGN.md)
+    --band-rule          1 px hairline between rows
+    --band-action        fill of the primary button
+    --band-on-action     text on that fill
+    --band-action-hover  the fill while the pointer is over it
+*/
+
+:root,
+[data-band="paper"] {
+  --band-bg: var(--color-paper);
+  --band-fg: var(--color-night);
+  --band-soft: var(--color-ink-soft);
+  --band-rule: color-mix(in srgb, var(--color-night) 20%, transparent);
+  --band-action: var(--color-night);
+  --band-on-action: var(--color-paper);
+  --band-action-hover: var(--color-night-lift);
+}
+
+[data-band="sun"] {
+  --band-bg: var(--color-sun);
+  --band-fg: var(--color-night);
+  /* "Secondary text on sun is night at 75% or more." */
+  --band-soft: color-mix(in srgb, var(--color-night) 75%, transparent);
+  --band-rule: color-mix(in srgb, var(--color-night) 20%, transparent);
+  --band-action: var(--color-night);
+  --band-on-action: var(--color-paper);
+  --band-action-hover: var(--color-night-lift);
+}
+
+[data-band="night"] {
+  --band-bg: var(--color-night);
+  --band-fg: var(--color-paper);
+  /* "Secondary text on night is paper at 72% or more." */
+  --band-soft: color-mix(in srgb, var(--color-paper) 72%, transparent);
+  --band-rule: color-mix(in srgb, var(--color-paper) 30%, transparent);
+  --band-action: var(--color-sun);
+  --band-on-action: var(--color-night);
+  /* The mock does not change a yellow button on hover. */
+  --band-action-hover: var(--color-sun);
+}
+
+[data-band] {
+  background-color: var(--band-bg);
+  color: var(--band-fg);
+}
+
+/* ---------- 4. Tailwind names for the band variables and fonts ---------- */
+
+/*
+  "inline" makes Tailwind write var(--band-fg) into the class itself, so
+  the value is looked up where the class is used (inside its band) and
+  not once at the top of the page.
+*/
+@theme inline {
+  --color-band: var(--band-bg); /* bg-band */
+  --color-fg: var(--band-fg); /* text-fg, border-fg, bg-fg */
+  --color-soft: var(--band-soft); /* text-soft */
+  --color-rule: var(--band-rule); /* border-rule */
+  --color-action: var(--band-action); /* bg-action, border-action */
+  --color-on-action: var(--band-on-action); /* text-on-action */
+  --color-action-hover: var(--band-action-hover);
+
+  /* --font-archivo and --font-jakarta are set by next/font in layout.tsx. */
+  --font-sans:
+    var(--font-jakarta), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-archivo), var(--font-jakarta), system-ui, sans-serif;
+
+  --spacing-gutter: var(--gutter); /* px-gutter, -mx-gutter */
+  --spacing-control: var(--control-height); /* min-h-control */
+  --spacing-field: var(--field-height); /* min-h-field */
+}
+
+/* ---------- 5. Type styles and the heavy rule ---------- */
+
+/* Poster: page and section headings. Size comes from a text-poster-* class. */
+@utility type-poster {
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.005em;
+  word-spacing: 0.08em;
+}
+
+/* Figure: every number a user reads as a result. */
+@utility type-figure {
+  font-family: var(--font-display);
+  font-stretch: 88%;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Label: small capitals above figures and over table columns. */
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Wordmark: SURYA followed by boxed PAS. */
+@utility type-wordmark {
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-weight: 800;
+  font-size: var(--text-wordmark);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* The 2.5 px rule, as a border width on all sides or on one side. */
+@utility border-heavy {
+  border-width: var(--rule-heavy);
+}
+@utility border-t-heavy {
+  border-top-width: var(--rule-heavy);
+}
+@utility border-b-heavy {
+  border-bottom-width: var(--rule-heavy);
+}
+@utility border-l-heavy {
+  border-left-width: var(--rule-heavy);
+}
+
+/* ---------- 6. Base rules ---------- */
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-night);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  /*
+    One focus ring for every control: 3 px, in the band's text colour, set
+    3 px away from the control. The mock used currentColor, which made the
+    ring of a navy button white on a white page; the band colour is always
+    visible against its own band.
+  */
+  :focus-visible {
+    outline: 3px solid var(--band-fg);
+    outline-offset: 3px;
+  }
+
+  /* DESIGN.md "Motion": with reduced motion, every change is instant. */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --motion-ease: 0ms;
+    }
+
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

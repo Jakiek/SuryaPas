@@ -1,4 +1,7 @@
 import { useTranslations } from "next-intl";
+import { Inner } from "./Band";
+import { PageShell } from "./PageShell";
+import { PosterHeading } from "./PosterHeading";
 
 type PlaceholderPageProps = {
   // Which entry of common.routes supplies the title.
@@ -25,11 +28,17 @@ export function PlaceholderPage({
   const t = useTranslations("common");
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-3 px-4 py-8">
-      <h1 className="text-2xl font-semibold">{t(`routes.${route}.title`)}</h1>
-      <p>{comingSoon ? t("comingSoon.title") : t("placeholder.body")}</p>
-      {comingSoon && <p>{t("comingSoon.body")}</p>}
-      {detail && <p>{detail}</p>}
-    </main>
+    <PageShell>
+      <Inner className="pb-12 pt-6">
+        <PosterHeading as="h1" size="page">
+          {t(`routes.${route}.title`)}
+        </PosterHeading>
+        <div className="mt-3 max-w-measure text-[17px] font-medium">
+          <p>{comingSoon ? t("comingSoon.title") : t("placeholder.body")}</p>
+          {comingSoon && <p>{t("comingSoon.body")}</p>}
+          {detail && <p>{detail}</p>}
+        </div>
+      </Inner>
+    </PageShell>
   );
 }

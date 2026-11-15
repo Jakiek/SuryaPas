@@ -1,13 +1,27 @@
 {
   "appName": "SuryaPas",
   "routes": {
-    "landing": { "title": "Panel surya yang pas untuk rumah Anda" },
-    "plan": { "title": "Rencanakan panel surya Anda" },
-    "result": { "title": "Hasil perhitungan Anda" },
-    "assumptions": { "title": "Asumsi di balik angka" },
-    "account": { "title": "Akun" },
-    "installers": { "title": "Instalatur" },
-    "admin": { "title": "Admin" }
+    "landing": {
+      "title": "Panel surya yang pas untuk rumah Anda"
+    },
+    "plan": {
+      "title": "Rencanakan panel surya Anda"
+    },
+    "result": {
+      "title": "Hasil perhitungan Anda"
+    },
+    "assumptions": {
+      "title": "Asumsi di balik angka"
+    },
+    "account": {
+      "title": "Akun"
+    },
+    "installers": {
+      "title": "Instalatur"
+    },
+    "admin": {
+      "title": "Admin"
+    }
   },
   "placeholder": {
     "body": "Halaman ini sedang disiapkan.",
@@ -16,5 +30,173 @@
   "comingSoon": {
     "title": "Segera hadir",
     "body": "Fitur ini belum tersedia. Kami sedang mengerjakannya."
+  },
+  "wordmark": {
+    "homeLabel": "SuryaPas, beranda"
+  },
+  "language": {
+    "navLabel": "Bahasa",
+    "names": {
+      "id": "Bahasa Indonesia",
+      "en": "English"
+    }
+  },
+  "skipToContent": "Langsung ke isi halaman",
+  "progress": {
+    "label": "Langkah {current} dari {total}"
+  },
+  "dayBand": {
+    "night": "Malam",
+    "day": "Siang",
+    "hour": "{hour}.00"
+  },
+  "footer": {
+    "disclaimer": "Hasil SuryaPas adalah perkiraan, bukan penawaran harga. Angka akhir ditentukan oleh survei pemasang."
+  },
+  "dev": {
+    "title": "Komponen",
+    "intro": "Semua komponen bersama dalam setiap keadaannya, untuk dibandingkan dengan mock. Angka di halaman ini hanya contoh.",
+    "names": {
+      "header": "Kepala halaman",
+      "posterHero": "Judul poster · hero",
+      "heroInput": "Input hero",
+      "dayBanner": "Pita hari · lebar",
+      "progress": "Kemajuan",
+      "posterPage": "Judul poster · langkah",
+      "segmentedTall": "Pilihan bersegmen · bergambar",
+      "segmentedShort": "Pilihan bersegmen · pendek",
+      "segmentedNote": "Pilihan bersegmen · dengan catatan",
+      "textField": "Kolom teks",
+      "numberField": "Kolom angka",
+      "fieldError": "Kolom angka · salah isi",
+      "fieldDisabled": "Kolom · tidak aktif",
+      "dock": "Tautan teks dan tombol",
+      "buttons": "Tombol · setiap keadaan",
+      "buttonsOnSun": "Tombol di atas kuning",
+      "buttonsOnNight": "Tombol di atas biru malam",
+      "posterAnswer": "Label dan judul poster · jawaban",
+      "figures": "Angka dengan satuan",
+      "posterSection": "Bagian dengan judul poster",
+      "dayChart": "Pita hari · di bawah grafik",
+      "ledger": "Baris angka",
+      "ledgerDense": "Baris angka · rapat",
+      "comparison": "Baris angka · perbandingan",
+      "caveat": "Peringatan",
+      "colours": "Warna",
+      "type": "Huruf",
+      "footers": "Kaki halaman"
+    },
+    "hero": {
+      "heading": "Panel surya yang <box>pas</box> untuk rumah Anda",
+      "label": "Mulai dari alamat rumah Anda",
+      "placeholder": "Contoh: Jl. Kaliurang Km 5, Sleman",
+      "button": "Hitung",
+      "free": "Gratis",
+      "time": "± 3 menit",
+      "noSignup": "Tanpa daftar",
+      "example": "Lihat contoh hasil",
+      "dayLabel": "Siang · panel bekerja"
+    },
+    "step": {
+      "name": "Atap",
+      "heading": "Tandai atap Anda",
+      "intro": "Ketuk tiap sudut atap pada foto. Pilih sisi yang paling luas dan paling sedikit terhalang.",
+      "back": "Kembali",
+      "next": "Lanjut ke listrik"
+    },
+    "slope": {
+      "legend": "Kemiringan atap",
+      "help": "Kebanyakan atap genteng termasuk landai.",
+      "flat": "Datar",
+      "gentle": "Landai",
+      "steep": "Curam"
+    },
+    "facing": {
+      "legend": "Menghadap ke mana?",
+      "help": "Arah sisi atap yang Anda tandai.",
+      "north": "Utara",
+      "east": "Timur",
+      "south": "Selatan",
+      "west": "Barat"
+    },
+    "shade": {
+      "legend": "Apakah atap terkena bayangan?",
+      "help": "Dari pohon, tandon air, atau bangunan di sebelah.",
+      "none": "Tidak ada",
+      "some": "Sebagian",
+      "someNote": "pagi atau sore",
+      "heavy": "Banyak"
+    },
+    "fields": {
+      "addressLabel": "Alamat rumah",
+      "addressHelp": "Nama jalan dan kota sudah cukup.",
+      "billLabel": "Tagihan listrik bulan lalu",
+      "billHelp": "Lihat di aplikasi PLN Mobile atau di struk pembayaran.",
+      "billError": "Tagihan belum diisi. Ketik jumlahnya dalam rupiah, misalnya 650.000.",
+      "areaLabel": "Luas atap",
+      "areaHelp": "Perkiraan saja sudah cukup.",
+      "powerLabel": "Daya listrik",
+      "powerHelp": "Terisi sendiri dari golongan tarif Anda.",
+      "powerValue": "{power} VA"
+    },
+    "buttons": {
+      "solid": "Lanjut ke listrik",
+      "outline": "Salin tautan hasil",
+      "quote": "Minta penawaran pemasang",
+      "soon": "Segera hadir",
+      "disabled": "Lengkapi langkah ini dulu",
+      "link": "Rencanakan panel Anda",
+      "assumptions": "Lihat asumsi perhitungan",
+      "edit": "Ubah data"
+    },
+    "verdict": {
+      "where": "Yogyakarta · {power} VA pascabayar · tagihan {bill} per bulan",
+      "lede": "Yang pas untuk rumah ini",
+      "answer": "{count} panel",
+      "sub": "{size} kWp · memakai sekitar {area} m² atap.",
+      "kwp": "kWp adalah daya puncak panel.",
+      "cost": "Biaya awal",
+      "payback": "Balik modal"
+    },
+    "report": {
+      "dayHeading": "Satu hari di rumah Anda",
+      "dayCaption": "Panel menghasilkan {generated} kWh sehari. {used} kWh langsung dipakai di rumah, {exported} kWh mengalir ke jaringan tanpa dibayar.",
+      "chartNote": "Grafiknya digambar di layar hasil. Pita hari berada tepat di bawahnya.",
+      "monthly": "Hemat per bulan",
+      "share": "Listrik panel yang terpakai",
+      "net": "Hemat bersih dalam {years} tahun",
+      "co2": "CO₂ yang dihindari",
+      "co2Unit": "ton/tahun",
+      "batteryHeading": "Baterai belum sepadan",
+      "batteryNote": "Baterai menyimpan kelebihan listrik siang untuk dipakai malam. Baterai juga berguna saat listrik padam, tetapi manfaat itu tidak kami hitung dalam rupiah.",
+      "batteryCaption": "Sistem yang sama tanpa baterai dan dengan baterai",
+      "without": "Tanpa baterai",
+      "with": "Dengan baterai {size} kWh",
+      "netShort": "Hemat bersih, {years} th",
+      "nextHeading": "Langkah berikutnya",
+      "caveatTitle": "Persetujuan bergantung pada kuota",
+      "caveatBody": "PLN menetapkan kuota PLTS atap per wilayah. SuryaPas tidak mengetahui sisa kuota di wilayah Anda.",
+      "fits": "Yang pas",
+      "wasted": "Listrik panel yang terbuang"
+    },
+    "colours": {
+      "sun": "Siang. Pita hero dan aksi utama di atas biru malam.",
+      "sunSoft": "Latar di bawah arsiran, untuk listrik surya yang terbuang.",
+      "night": "Malam. Semua teks dan garis.",
+      "paper": "Laporan.",
+      "inkSoft": "Teks sekunder di atas putih.",
+      "rule": "Garis tipis antarbaris: night pada 20%.",
+      "alert": "Batang kiri sebuah peringatan. Bukan untuk teks."
+    },
+    "type": {
+      "poster": "Poster",
+      "posterSample": "Panel surya",
+      "figure": "Angka",
+      "label": "Label",
+      "labelSample": "Biaya awal",
+      "text": "Teks",
+      "textSample": "Yang menghemat tagihan hanyalah listrik yang langsung Anda pakai pada siang hari."
+    },
+    "footerNote": "Rumah contoh: Yogyakarta, {power} VA, tagihan {bill} per bulan."
   }
 }

@@ -1,13 +1,27 @@
 {
   "appName": "SuryaPas",
   "routes": {
-    "landing": { "title": "Rooftop solar sized just right for your home" },
-    "plan": { "title": "Plan your solar panels" },
-    "result": { "title": "Your results" },
-    "assumptions": { "title": "The assumptions behind the numbers" },
-    "account": { "title": "Account" },
-    "installers": { "title": "Installers" },
-    "admin": { "title": "Admin" }
+    "landing": {
+      "title": "Rooftop solar sized just right for your home"
+    },
+    "plan": {
+      "title": "Plan your solar panels"
+    },
+    "result": {
+      "title": "Your results"
+    },
+    "assumptions": {
+      "title": "The assumptions behind the numbers"
+    },
+    "account": {
+      "title": "Account"
+    },
+    "installers": {
+      "title": "Installers"
+    },
+    "admin": {
+      "title": "Admin"
+    }
   },
   "placeholder": {
     "body": "This page is still being built.",
@@ -16,5 +30,173 @@
   "comingSoon": {
     "title": "Coming soon",
     "body": "This feature is not available yet. We are working on it."
+  },
+  "wordmark": {
+    "homeLabel": "SuryaPas, home"
+  },
+  "language": {
+    "navLabel": "Language",
+    "names": {
+      "id": "Bahasa Indonesia",
+      "en": "English"
+    }
+  },
+  "skipToContent": "Skip to the page content",
+  "progress": {
+    "label": "Step {current} of {total}"
+  },
+  "dayBand": {
+    "night": "Night",
+    "day": "Day",
+    "hour": "{hour}:00"
+  },
+  "footer": {
+    "disclaimer": "A SuryaPas result is an estimate, not a price offer. The final figure comes from an installer's survey of your roof."
+  },
+  "dev": {
+    "title": "Components",
+    "intro": "Every shared component in every state, for checking against the mock. The numbers on this page are samples.",
+    "names": {
+      "header": "Page header",
+      "posterHero": "Poster heading · hero",
+      "heroInput": "Hero input",
+      "dayBanner": "Day band · banner",
+      "progress": "Progress",
+      "posterPage": "Poster heading · step",
+      "segmentedTall": "Segmented choice · with drawings",
+      "segmentedShort": "Segmented choice · short",
+      "segmentedNote": "Segmented choice · with a note",
+      "textField": "Text field",
+      "numberField": "Number field",
+      "fieldError": "Number field · with an error",
+      "fieldDisabled": "Field · disabled",
+      "dock": "Text link and button",
+      "buttons": "Button · every state",
+      "buttonsOnSun": "Buttons on yellow",
+      "buttonsOnNight": "Buttons on navy",
+      "posterAnswer": "Label and poster heading · answer",
+      "figures": "Figure with unit",
+      "posterSection": "Section with poster heading",
+      "dayChart": "Day band · under a chart",
+      "ledger": "Ledger",
+      "ledgerDense": "Ledger · dense",
+      "comparison": "Ledger · comparison",
+      "caveat": "Caveat",
+      "colours": "Colour",
+      "type": "Type",
+      "footers": "Footer"
+    },
+    "hero": {
+      "heading": "Solar that fits your home <box>just right</box>",
+      "label": "Start with your home address",
+      "placeholder": "For example: Jl. Kaliurang Km 5, Sleman",
+      "button": "Calculate",
+      "free": "Free",
+      "time": "About 3 minutes",
+      "noSignup": "No sign-up",
+      "example": "See an example result",
+      "dayLabel": "Day · panels at work"
+    },
+    "step": {
+      "name": "Roof",
+      "heading": "Mark your roof",
+      "intro": "Tap each corner of the roof on the photo. Pick the side that is largest and least blocked.",
+      "back": "Back",
+      "next": "On to electricity"
+    },
+    "slope": {
+      "legend": "How steep is the roof?",
+      "help": "Most tiled roofs count as gentle.",
+      "flat": "Flat",
+      "gentle": "Gentle",
+      "steep": "Steep"
+    },
+    "facing": {
+      "legend": "Which way does it face?",
+      "help": "The direction of the side you marked.",
+      "north": "North",
+      "east": "East",
+      "south": "South",
+      "west": "West"
+    },
+    "shade": {
+      "legend": "Does anything shade the roof?",
+      "help": "Trees, a water tank, or the building next door.",
+      "none": "Nothing",
+      "some": "Partly",
+      "someNote": "morning or afternoon",
+      "heavy": "A lot"
+    },
+    "fields": {
+      "addressLabel": "Home address",
+      "addressHelp": "A street name and a city are enough.",
+      "billLabel": "Last month's electricity bill",
+      "billHelp": "Find it in the PLN Mobile app or on your payment receipt.",
+      "billError": "The bill is empty. Type the amount in rupiah, for example 650,000.",
+      "areaLabel": "Roof area",
+      "areaHelp": "A rough figure is enough.",
+      "powerLabel": "Power capacity",
+      "powerHelp": "Filled in from your tariff class.",
+      "powerValue": "{power} VA"
+    },
+    "buttons": {
+      "solid": "On to electricity",
+      "outline": "Copy the result link",
+      "quote": "Ask for installer quotes",
+      "soon": "Coming soon",
+      "disabled": "Finish this step first",
+      "link": "Plan your panels",
+      "assumptions": "See the assumptions",
+      "edit": "Change your answers"
+    },
+    "verdict": {
+      "where": "Yogyakarta · {power} VA postpaid · {bill} a month",
+      "lede": "The right fit for this home",
+      "answer": "{count} panels",
+      "sub": "{size} kWp · uses about {area} m² of roof.",
+      "kwp": "kWp is the panels' peak output.",
+      "cost": "Upfront cost",
+      "payback": "Payback"
+    },
+    "report": {
+      "dayHeading": "One day at your home",
+      "dayCaption": "The panels make {generated} kWh a day. {used} kWh is used at home as it is made; {exported} kWh flows to the grid unpaid.",
+      "chartNote": "The chart itself is drawn on the result screen. The day band sits directly under it.",
+      "monthly": "Saved each month",
+      "share": "Solar power used at home",
+      "net": "Net savings over {years} years",
+      "co2": "CO₂ avoided",
+      "co2Unit": "tonnes/year",
+      "batteryHeading": "A battery is not worth it yet",
+      "batteryNote": "A battery stores spare daytime power for the night. It also helps in a blackout, but we do not put a rupiah value on that.",
+      "batteryCaption": "The same system without and with a battery",
+      "without": "No battery",
+      "with": "With a {size} kWh battery",
+      "netShort": "Net savings, {years} yrs",
+      "nextHeading": "What happens next",
+      "caveatTitle": "Approval depends on quota",
+      "caveatBody": "PLN sets a rooftop solar quota for each area. SuryaPas does not know how much is left in yours.",
+      "fits": "The right fit",
+      "wasted": "Solar power that goes unused"
+    },
+    "colours": {
+      "sun": "Day. The hero band and the main action on navy.",
+      "sunSoft": "The ground under hatching, for surplus solar.",
+      "night": "Night. All text and rules.",
+      "paper": "The report.",
+      "inkSoft": "Secondary text on white.",
+      "rule": "Hairlines between rows: night at 20%.",
+      "alert": "The left bar of a caveat. Never text."
+    },
+    "type": {
+      "poster": "Poster",
+      "posterSample": "Rooftop solar",
+      "figure": "Figure",
+      "label": "Label",
+      "labelSample": "Upfront cost",
+      "text": "Text",
+      "textSample": "Only the power you use while the sun is up lowers your bill."
+    },
+    "footerNote": "Example home: Yogyakarta, {power} VA, {bill} a month."
   }
 }

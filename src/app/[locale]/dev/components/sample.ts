@@ -1,0 +1,31 @@
+// Sample figures for this review page only. They are the numbers shown
+// in the approved mock (mock/hasil.html), so the two can be compared
+// side by side. No real screen may hard-code a number like this: there,
+// every figure comes from the engine and the assumption set.
+export const SAMPLE = {
+  powerVa: 2200,
+  monthlyBillRp: 650_000,
+  panels: 3,
+  sizeKwp: 1.65,
+  roofAreaM2: 8,
+  tracedAreaM2: 48,
+  costLowRp: 18_000_000,
+  costHighRp: 25_000_000,
+  paybackLowYears: 6,
+  paybackHighYears: 9,
+  monthlySavingsRp: 280_000,
+  selfUsedPercent: 98,
+  wastedPercent: 2,
+  netSavingsRp: 49_000_000,
+  horizonYears: 25,
+  co2TonnesPerYear: 2,
+  generatedKwh: 6.4,
+  usedKwh: 6.3,
+  exportedKwh: 0.1,
+  batteryKwh: 5,
+  batteryCostLowRp: 37_000_000,
+  batteryCostHighRp: 44_000_000,
+  batteryPaybackLowYears: 22,
+  batteryPaybackHighYears: 24,
+  batteryNetSavingsRp: 6_700_000,
+} as const;
