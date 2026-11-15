@@ -10,6 +10,7 @@ import {
   type AssumptionSet,
   type SunSeries,
 } from "../../../engine";
+import { isInsideIndonesia } from "../../../features/location/indonesia";
 import { assessmentRequestSchema } from "../../../lib/schema";
 import { jsonCopy } from "../../../lib/store/json";
 import type { JsonObject, Store } from "../../../lib/store/types";
@@ -59,6 +60,12 @@ export async function handleCreateAssessment(
   const parsed = assessmentRequestSchema.safeParse(body);
   if (!parsed.success) return errorResponse("invalid_request", 400);
   const { inputs, overrides, locale } = parsed.data;
+
+  // SPEC 2.2 step 1: the pin must fall inside Indonesia. The schema checks
+  // only the coordinate ranges; the flow blocks such a pin, and so does this.
+  if (!isInsideIndonesia(inputs.location.latitude, inputs.location.longitude)) {
+    return errorResponse("outside_indonesia", 400);
+  }
 
   // 2. The user's changes on top of the current set. A change that is not
   //    allowed (wrong key, out of range) is refused here, before any work.

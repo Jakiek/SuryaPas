@@ -75,6 +75,24 @@ describe("POST /api/assessments", () => {
     expect(saved?.result).not.toEqual(JSON.parse(JSON.stringify(plain)));
   });
 
+  it("gives a different upfront cost when the cost per kWp is changed (the assumptions screen's resubmit)", async () => {
+    const store = new MemoryStore();
+    const save = async (overrides: Record<string, number>) => {
+      const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides, locale: "id" }), deps(store));
+      const saved = await store.getAssessment(((await response.json()) as { id: string }).id);
+      return saved?.result as unknown as ReturnType<typeof assess>;
+    };
+
+    const plain = await save({});
+    const dearer = await save({ "capex.perKwp.typical": 25_000_000 });
+
+    const firstSize = (result: ReturnType<typeof assess>) => result.candidates[0];
+    expect(firstSize(dearer).withoutBattery.money.upfrontCostRp.typical).toBeCloseTo(firstSize(dearer).kwp * 25_000_000, 0);
+    expect(firstSize(dearer).withoutBattery.money.upfrontCostRp.typical).not.toBe(
+      firstSize(plain).withoutBattery.money.upfrontCostRp.typical,
+    );
+  });
+
   it("refuses inputs the form would refuse, without saving", async () => {
     const store = new MemoryStore();
     const noRoof = { ...INPUTS, roof: { ...INPUTS.roof, areaM2: -5 } };
@@ -82,6 +100,18 @@ describe("POST /api/assessments", () => {
     const response = await handleCreateAssessment(post({ inputs: noRoof, overrides: {}, locale: "id" }), deps(store));
 
     expect(response.status).toBe(400);
+  });
+
+  it("accepts a pin inside Indonesia and refuses one outside it, without saving", async () => {
+    const store = new MemoryStore();
+    const at = (latitude: number, longitude: number) =>
+      handleCreateAssessment(post({ inputs: { ...INPUTS, location: { latitude, longitude } }, overrides: {}, locale: "id" }), deps(store));
+
+    // Surabaya, then Kuala Lumpur (Malaysia).
+    expect((await at(-7.2575, 112.7521)).status).toBe(201);
+    const outside = await at(3.139, 101.6869);
+    expect(outside.status).toBe(400);
+    expect(await outside.json()).toEqual({ error: "outside_indonesia" });
   });
 
   it("refuses a change to an assumption that is not adjustable", async () => {
