@@ -118,3 +118,80 @@ export interface EnergyAssessment {
     heavyShade: boolean;
   };
 }
+
+/** What a household pays PLN in each month, in rupiah, tax included. */
+export interface BillComparison {
+  beforeRp: Monthly;
+  afterRp: Monthly;
+  /** before − after. Negative when solar would raise the bill (see SPEC 3.2 step 7). */
+  savingsRp: Monthly;
+}
+
+/** A low, typical and high figure, from the low, typical and high installed cost. */
+export interface CostRange {
+  low: number;
+  typical: number;
+  high: number;
+}
+
+/** The money picture of one system over the analysis horizon. */
+export interface MoneyResult {
+  upfrontCostRp: CostRange;
+  /** Savings in the first year, in rupiah. */
+  firstYearSavingsRp: number;
+  /** First-year savings ÷ 12. */
+  monthlySavingsRp: number;
+  /**
+   * The year in which savings have repaid the upfront cost, at the low, typical and high cost.
+   * Null means it does not pay back within the horizon.
+   */
+  paybackYears: { low: number | null; typical: number | null; high: number | null };
+  /** Savings minus every cost over the horizon, at the typical cost. */
+  netSavingsRp: number;
+  /**
+   * Running total of savings less running costs, at the typical cost, year 0 to the horizon.
+   * Payback is where this line crosses the upfront cost.
+   */
+  cumulativeSavingsRp: number[];
+  /** Share of the panels' output used in the home, 0 to 1. */
+  selfConsumedShare: number;
+  co2AvoidedKgPerYear: number;
+}
+
+export interface SystemOption {
+  energy: EnergyResult;
+  money: MoneyResult;
+}
+
+/** One system size with its full assessment. */
+export interface Candidate {
+  panels: number;
+  kwp: number;
+  panelAreaM2: number;
+  withoutBattery: SystemOption;
+  /** Null when the engine offers no battery for this size. */
+  withBattery: (SystemOption & { batteryKwh: number }) | null;
+}
+
+/** Everything the engine returns (SPEC 3.3). */
+export interface Assessment {
+  engineVersion: string;
+  assumptionSetVersion: string;
+  monthlyLoadKwh: Monthly;
+  daytimeShare: { weekday: number; weekend: number };
+  averageLoadByHourKwh: number[];
+  averageSolarByHourPerKwp: number[];
+  yearlyYieldPerKwp: number;
+  /** PLN's minimum monthly charge for this home after solar, tax excluded. Zero in classes without one. */
+  minimumChargeRp: number;
+  candidates: Candidate[];
+  /** Panel count of the recommended candidate. Null when the roof is too small. */
+  recommendedPanels: number | null;
+  roofTooSmall: { requiredAreaM2: number } | null;
+  flags: {
+    fallbackSunData: boolean;
+    heavyShade: boolean;
+    /** True when even the recommended system does not repay its typical cost within the horizon. */
+    doesNotPayBack: boolean;
+  };
+}
