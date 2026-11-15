@@ -1,0 +1,39 @@
+{
+  "search": {
+    "label": "Search for your home's address",
+    "help": "Type a street, a neighbourhood or a town. Pick a result to place the pin.",
+    "placeholder": "For example: Jalan Malioboro, Yogyakarta",
+    "searching": "Searching…",
+    "found": "{count, plural, one {# address found.} other {# addresses found.}} Use the up and down arrow keys, then Enter, to choose one.",
+    "none": "Nothing matches that. Try fewer words, or move the pin on the map yourself.",
+    "unavailable": "Address search can't be reached right now. You can still use your device's location or move the pin on the map.",
+    "results": "Address search results",
+    "chosen": "Pin moved to {label}."
+  },
+  "device": {
+    "button": "Use my location",
+    "working": "Finding your location…",
+    "found": "Pin moved to your device's location.",
+    "denied": "Your device's location isn't available, and that's fine. Search for your address above, or move the pin on the map."
+  },
+  "map": {
+    "label": "Map of your home's location",
+    "hint": "Drag the pin, or tap the map, to put it on your home.",
+    "pin": "Home location pin",
+    "unsupported": "The map can't be shown on this device. Searching for your address above is all you need.",
+    "loading": "Loading the map…"
+  },
+  "position": {
+    "label": "Pin location",
+    "none": "No pin yet.",
+    "value": "Latitude {latitude}, longitude {longitude}"
+  },
+  "outside": {
+    "title": "This pin is outside Indonesia",
+    "body": "SuryaPas only works out homes in Indonesia. Move the pin onto your home, or search for a different address."
+  },
+  "attribution": {
+    "map": "Map © <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>. Data from <osm>OpenStreetMap contributors</osm>.",
+    "search": "Address search by <photon>Photon</photon> (komoot), data © <osm>OpenStreetMap contributors</osm>."
+  }
+}

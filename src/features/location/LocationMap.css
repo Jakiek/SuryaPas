@@ -1,0 +1,71 @@
+/* The pin and the map's own controls, restyled to DESIGN.md: square
+   corners, navy and yellow, no shadow. Plain CSS because MapLibre builds
+   these elements itself, outside React. A plain file and not a CSS module:
+   this project's Turbopack rule sends every .css file through Tailwind,
+   which leaves a module's class names unexported. */
+
+.location-pin {
+  display: block;
+  width: 30px;
+  height: 44px;
+  cursor: grab;
+}
+
+.location-pin:active {
+  cursor: grabbing;
+}
+
+/* The head: a yellow square in a heavy navy outline with a navy centre. */
+.location-pin-head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border: 3px solid #0f1b3d;
+  background: #ffcf33;
+}
+
+.location-pin-head::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  background: #0f1b3d;
+}
+
+/* The stem: its bottom end is the exact spot the pin marks. */
+.location-pin-stem {
+  position: absolute;
+  top: 30px;
+  left: 13.5px;
+  width: 3px;
+  height: 14px;
+  background: #0f1b3d;
+}
+
+/* Zoom buttons: square, 44 px, navy on white, one outlined block. */
+.location-map .maplibregl-ctrl-group {
+  border: 2.5px solid #0f1b3d;
+  border-radius: 0;
+  box-shadow: none;
+  background: #ffffff;
+}
+
+.location-map .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+}
+
+.location-map .maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgb(15 27 61 / 20%);
+}
+
+.location-map .maplibregl-ctrl-icon {
+  filter: none;
+}
+
+.location-map .maplibregl-canvas {
+  outline: none;
+}

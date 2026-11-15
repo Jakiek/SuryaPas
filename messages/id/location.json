@@ -1,0 +1,39 @@
+{
+  "search": {
+    "label": "Cari alamat rumah Anda",
+    "help": "Ketik nama jalan, kampung, atau kota. Pilih satu hasil untuk menaruh pin.",
+    "placeholder": "Contoh: Jalan Malioboro, Yogyakarta",
+    "searching": "Mencari alamat…",
+    "found": "{count, plural, one {# alamat ditemukan.} other {# alamat ditemukan.}} Pilih dengan tombol panah atas dan bawah, lalu Enter.",
+    "none": "Tidak ada alamat yang cocok. Coba tulis lebih singkat, atau geser pin di peta.",
+    "unavailable": "Pencarian alamat sedang tidak bisa dihubungi. Anda tetap bisa memakai lokasi perangkat atau menggeser pin di peta.",
+    "results": "Hasil pencarian alamat",
+    "chosen": "Pin dipindahkan ke {label}."
+  },
+  "device": {
+    "button": "Pakai lokasi saya",
+    "working": "Mencari lokasi Anda…",
+    "found": "Pin dipindahkan ke lokasi perangkat Anda.",
+    "denied": "Lokasi perangkat tidak bisa dipakai. Tidak apa-apa: cari alamat Anda di kolom atas, atau geser pin di peta."
+  },
+  "map": {
+    "label": "Peta lokasi rumah",
+    "hint": "Geser pin, atau ketuk peta, untuk memindahkannya ke rumah Anda.",
+    "pin": "Pin lokasi rumah",
+    "unsupported": "Peta tidak bisa ditampilkan di perangkat ini. Cari alamat Anda di kolom atas, itu sudah cukup.",
+    "loading": "Memuat peta…"
+  },
+  "position": {
+    "label": "Lokasi pin",
+    "none": "Belum ada pin.",
+    "value": "Lintang {latitude}, bujur {longitude}"
+  },
+  "outside": {
+    "title": "Pin ini di luar Indonesia",
+    "body": "SuryaPas hanya menghitung rumah di Indonesia. Geser pin ke rumah Anda, atau cari alamat lain."
+  },
+  "attribution": {
+    "map": "Peta © <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>. Data dari <osm>kontributor OpenStreetMap</osm>.",
+    "search": "Pencarian alamat oleh <photon>Photon</photon> (komoot), data © <osm>kontributor OpenStreetMap</osm>."
+  }
+}

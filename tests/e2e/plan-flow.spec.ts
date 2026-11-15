@@ -5,12 +5,14 @@
 // no "@/" alias in this repo.
 
 import { expect, test, type Page } from "@playwright/test";
+import enLocation from "../../messages/en/location.json";
 import en from "../../messages/en/plan.json";
+import idLocation from "../../messages/id/location.json";
 import id from "../../messages/id/plan.json";
 
 const LOCALES = [
-  { locale: "id", m: id, decimalComma: true, typedPower: "2.2", rupiahGrouped: "12.500.000" },
-  { locale: "en", m: en, decimalComma: false, typedPower: "2,2", rupiahGrouped: "12,500,000" },
+  { locale: "id", m: id, loc: idLocation, decimalComma: true, typedPower: "2.2", rupiahGrouped: "12.500.000" },
+  { locale: "en", m: en, loc: enLocation, decimalComma: false, typedPower: "2,2", rupiahGrouped: "12,500,000" },
 ] as const;
 
 type Copy = (typeof LOCALES)[number];
@@ -18,11 +20,22 @@ type Copy = (typeof LOCALES)[number];
 const next = (page: Page, c: Copy, step: keyof typeof id.steps) =>
   page.getByRole("button", { name: c.m.steps[step].next });
 
-/** Steps 1 and 2: the placeholder inputs, filled with the mouse. */
+/**
+ * Step 1 since T11: search for an address (answered by a fake geocoder, with
+ * map tiles blocked) and pick the result. The pin lands in Yogyakarta.
+ */
+async function chooseHome(page: Page) {
+  await page.route("**/api/geocode*", (route) =>
+    route.fulfill({ json: [{ label: "Jalan Malioboro, Yogyakarta", lat: -7.78, lon: 110.37 }] }),
+  );
+  await page.route("**/tiles.openfreemap.org/**", (route) => route.abort());
+  await page.getByRole("combobox").fill("Malioboro");
+  await page.getByRole("option").first().click();
+}
+
+/** Steps 1 and 2: the home chosen by search, the roof filled with the mouse. */
 async function fillLocationAndRoof(page: Page, c: Copy) {
-  const point = (n: string) => (c.decimalComma ? n.replace(".", ",") : n);
-  await page.getByLabel(c.m.location.latitude.label).fill(point("-7.78"));
-  await page.getByLabel(c.m.location.longitude.label).fill(point("110.37"));
+  await chooseHome(page);
   await next(page, c, "location").click();
 
   await page.getByLabel(c.m.roof.area.label).fill("48");
@@ -53,17 +66,10 @@ for (const c of LOCALES) {
       await page.reload();
     });
 
-    test("next stays disabled until the step is valid, and errors name the fix", async ({ page }) => {
+    test("next stays disabled until a home is chosen", async ({ page }) => {
       const nextButton = next(page, c, "location");
       await expect(nextButton).toBeDisabled();
-      const latitude = page.getByLabel(c.m.location.latitude.label);
-      await latitude.fill("abc");
-      await latitude.blur();
-      await expect(page.getByText(c.m.errors.latitudeInvalid)).toBeVisible();
-      await latitude.fill("200");
-      await expect(nextButton).toBeDisabled();
-      await latitude.fill(c.decimalComma ? "-7,78" : "-7.78");
-      await page.getByLabel(c.m.location.longitude.label).fill(c.decimalComma ? "110,37" : "110.37");
+      await chooseHome(page);
       await expect(nextButton).toBeEnabled();
     });
 
@@ -238,12 +244,18 @@ for (const c of LOCALES) {
         throw new Error(`Tab never reached "${label}"`);
       }
 
-      await tabTo(c.m.location.latitude.label);
-      await page.keyboard.type(c.decimalComma ? "-7,78" : "-7.78");
-      await page.keyboard.press("Tab");
-      await page.keyboard.type(c.decimalComma ? "110,37" : "110.37");
+      await page.route("**/api/geocode*", (route) =>
+        route.fulfill({ json: [{ label: "Jalan Malioboro, Yogyakarta", lat: -7.78, lon: 110.37 }] }),
+      );
+      await page.route("**/tiles.openfreemap.org/**", (route) => route.abort());
+      await tabTo(c.loc.search.label);
+      await page.keyboard.type("Malioboro");
+      await expect(page.getByRole("option")).toHaveCount(1);
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter"); // chooses the address; does not leave the step
       await expect(next(page, c, "location")).toBeEnabled();
-      await page.keyboard.press("Enter"); // Enter in a field submits the step
+      await tabTo(c.m.steps.location.next);
+      await page.keyboard.press("Enter");
 
       await tabTo(c.m.roof.area.label);
       await page.keyboard.type("48");
