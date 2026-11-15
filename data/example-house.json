@@ -1,0 +1,26 @@
+{
+  "about": "The example house behind /r/example and the landing page (SPEC 2.1, 5.1): a 2,200 VA postpaid home in Yogyakarta. The pin is the city centre, inside the 0.5° cell (-7.75, 110.25) whose NASA POWER series is bundled in data/sun-fallback/yogyakarta.json. The usable fraction is the assumption set's default (roof.usableFraction).",
+  "place": "Yogyakarta",
+  "inputs": {
+    "location": { "latitude": -7.7956, "longitude": 110.3695 },
+    "roof": {
+      "areaM2": 48,
+      "usableFraction": 0.65,
+      "facing": "N",
+      "slope": "gentle",
+      "shade": "none"
+    },
+    "electricity": {
+      "billing": "postpaid",
+      "connectedVa": 2200,
+      "subsidised": false,
+      "monthlySpendRp": [650000]
+    },
+    "lifestyle": {
+      "homeOnWeekdays": true,
+      "daytimeAc": false,
+      "workFromHome": false,
+      "electricVehicle": false
+    }
+  }
+}

@@ -28,19 +28,6 @@ export function buildRequest(
   return parsed.success ? parsed.data : null;
 }
 
-/**
- * TEMPORARY, until T13 adds the route: while developing, a 404 from
- * /api/assessments is answered with the reserved id "example" (SPEC 5.1),
- * so the whole flow can be walked end to end. T13 deletes this function.
- */
-function developmentMock(response: Response): SubmitResult | null {
-  const routeNotBuiltYet = response.status === 404;
-  if (process.env.NODE_ENV === "development" && routeNotBuiltYet) {
-    return { ok: true, id: "example" };
-  }
-  return null;
-}
-
 /** Posts the request. The caller keeps the draft whatever the outcome. */
 export async function submitAssessment(
   draft: PlanDraft,
@@ -61,8 +48,6 @@ export async function submitAssessment(
     return { ok: false, reason: "network" };
   }
 
-  const mocked = developmentMock(response);
-  if (mocked) return mocked;
   if (!response.ok) return { ok: false, reason: "server" };
 
   try {
