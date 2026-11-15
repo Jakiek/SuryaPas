@@ -27,6 +27,10 @@
       "title": "Dengan tarif Anda, panel surya kemungkinan tidak balik modal.",
       "body": "Dengan harga pemasang yang biasa, hematnya tidak menutup biaya dalam {years} tahun. Ini wajar untuk golongan bersubsidi dan rumah dengan tagihan kecil."
     },
+    "sizeDoesNotPayBack": {
+      "title": "Pada jumlah panel ini, panel surya tidak balik modal.",
+      "body": "Dengan harga pemasang yang biasa, hematnya tidak menutup biaya dalam {years} tahun. Jumlah yang pas untuk rumah ini, {recommended} panel, balik modal."
+    },
     "heavyShade": {
       "title": "Atap Anda banyak terkena bayangan.",
       "body": "Minta pemasang memeriksa atap dulu sebelum memercayai angka ini. Bayangan bisa memangkas hasil panel lebih banyak dari perkiraan kami."

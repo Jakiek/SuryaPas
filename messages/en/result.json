@@ -27,6 +27,10 @@
       "title": "At your tariff, solar is unlikely to pay for itself.",
       "body": "At a typical installer's price, the savings do not cover the cost within {years} years. That is normal for the subsidised classes and for homes with small bills."
     },
+    "sizeDoesNotPayBack": {
+      "title": "At this number of panels, solar does not pay for itself.",
+      "body": "At a typical installer's price, the savings do not cover the cost within {years} years. The right fit for this home, {recommended, plural, one {# panel} other {# panels}}, does."
+    },
     "heavyShade": {
       "title": "Your roof is heavily shaded.",
       "body": "Have an installer look at the roof before you rely on these figures. Shade can cut the panels' output by more than we allow for."
