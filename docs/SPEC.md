@@ -35,7 +35,7 @@ Routes carry the locale: `/id/...` and `/en/...`. `/` redirects to `/id`.
 
 ### 2.1 Landing (`/[locale]`)
 
-The hero is the first input of the tool: the headline and an address field with a "Hitung" button. Submitting carries the typed address into step 1, where it is searched and the pin is set. A link, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
+The hero is the first input of the tool: the headline and an address field with a "Hitung" button. Submitting carries the typed address into step 1, where it is searched and its results are listed for the user to pick. A pin is never set from a match the user has not seen. A link, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
 
 Below the hero, the page makes its argument with evidence: a short statement that exported power is no longer paid for, then the example house shown twice, once with the recommended panel count and once with far too many, each with its one-day chart, share of solar wasted, upfront cost and payback. These figures are computed by the engine from the example house, never typed in.
 
