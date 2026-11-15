@@ -5,7 +5,9 @@
 //
 // Two halves:
 //   - The engine half runs the real engine (src/engine/) on the bundled NASA POWER series
-//     in data/sun-fallback/, so it needs no network.
+//     in data/sun-fallback/, so it needs no network. Those series are scaled to NASA's
+//     twenty-year mean (SPEC 3.4, task T19); the 2025 year alone, before scaling, is read
+//     from data/sun-fallback/source/ for comparison.
 //   - The PVGIS half reads the responses saved in scripts/validate-pvgis-data/. With --fetch it
 //     asks PVGIS 5.3 (and NASA POWER's monthly API, for a long-term mean) again and overwrites them.
 //     Only city coordinates and system parameters are sent.
@@ -40,12 +42,15 @@ registerHooks({
 
 const engine = await import("../src/engine/index.ts");
 const { FALLBACK_CITIES } = await import("../src/lib/sun/cities.ts");
+const { parseNasaMonthly } = await import("../src/lib/sun/nasaMonthly.ts");
+const { longTermMean, yearlyIrradiation } = await import("../src/lib/sun/longTerm.ts");
 const { ASSUMPTIONS_V1, CURRENT_ASSUMPTIONS, solarPerKwp, valueOf } = engine;
 
 // ------------------------------------------------------------ settings
 
 const DATA_DIR = new URL("./validate-pvgis-data/", import.meta.url);
 const SUN_DIR = new URL("../data/sun-fallback/", import.meta.url);
+const SUN_SOURCE_DIR = new URL("../data/sun-fallback/source/", import.meta.url);
 
 const PVGIS_URL = "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc";
 // The only PVGIS 5.3 database that covers Indonesia (see docs/VALIDATION.md). Named, not left to the default.
@@ -72,7 +77,6 @@ const TILT_SWEEP_DEGREES = [5, 10, 15, 20, 25, 30, 35, 40, 45];
 const ASPECT_OF_FACING = { S: 0, W: 90, N: 180, E: -90 };
 
 const PAUSE_BETWEEN_REQUESTS_MS = 300; // PVGIS allows 30 calls a second; we stay far below
-const DAYS_PER_YEAR = 365;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const cityById = (id) => FALLBACK_CITIES.find((city) => city.id === id);
@@ -177,6 +181,7 @@ async function readJson(url) {
 }
 
 const readSunFile = (cityId) => readJson(new URL(`${cityId}.json`, SUN_DIR));
+const readSunSource = (cityId) => readJson(new URL(`${cityId}.json`, SUN_SOURCE_DIR));
 
 function findRun(runs, cityId, tilt, facing) {
   const run = runs.find((r) => r.cityId === cityId && r.tilt === tilt && r.facing === facing);
@@ -185,15 +190,16 @@ function findRun(runs, cityId, tilt, facing) {
 }
 
 /**
- * NASA POWER's yearly irradiation, kWh/m², for each year in the response.
- * The monthly API gives each year's mean day in kWh/m²/day under the key "YYYY13".
+ * NASA POWER's yearly irradiation, kWh/m², for each year from firstYear to lastYear, worked out
+ * by the sun service's own code (src/lib/sun/longTerm.ts): each month's mean day times its days,
+ * February as 28, so a year here is the same 365 days as the hourly series. Null for a year with
+ * a missing month.
  */
-function nasaYearlyTotals(parameter) {
+function nasaYearlyTotals(saved, firstYear, lastYear) {
+  const record = parseNasaMonthly({ properties: { parameter: saved.parameter } }, firstYear, lastYear);
   const totals = {};
-  for (const [key, meanDay] of Object.entries(parameter.ALLSKY_SFC_SW_DWN)) {
-    if (key.endsWith("13") && meanDay >= 0) totals[Number(key.slice(0, 4))] = meanDay * DAYS_PER_YEAR;
-  }
-  return totals;
+  for (let year = firstYear; year <= lastYear; year++) totals[year] = yearlyIrradiation(record[year]);
+  return { record, totals };
 }
 
 // ------------------------------------------------------------ the engine half
@@ -212,7 +218,9 @@ const fmt0 = (x) => x.toLocaleString("en-US", { maximumFractionDigits: 0 });
 const fmt3 = (x) => x.toFixed(3);
 const pct = (ours, theirs) => {
   const difference = ((ours - theirs) / theirs) * 100;
-  return `${difference >= 0 ? "+" : "−"}${Math.abs(difference).toFixed(1)}%`;
+  const shown = Math.abs(difference).toFixed(1);
+  if (shown === "0.0") return "0.0%"; // no sign on a difference that rounds to nothing
+  return `${difference >= 0 ? "+" : "−"}${shown}%`;
 };
 const round2 = (x) => Math.round(x * 100) / 100;
 const mean = (values) => values.reduce((sum, v) => sum + v, 0) / values.length;
@@ -250,28 +258,43 @@ const lossText = (value) => {
 };
 
 const yieldRows = [];
+const scaleRows = [];
 const sunRows = [];
 const lossRows = [];
 const gapRows = [];
 for (const id of YIELD_CITIES) {
   const city = cityById(id);
-  const sun = await readSunFile(id);
+  const sun = await readSunFile(id); // scaled to the twenty-year mean: what the engine receives
+  const source = await readSunSource(id); // the same year as fetched, before scaling
+  const unscaled = { ...sun, series: source.hourlySeries };
   const flat = findRun(pvgis.runs, id, 0, "flat");
   const pvgisYield = flat.E_y;
   const pvgisSun = flat["H(i)_y"]; // on a flat roof, in-plane irradiation is horizontal irradiation
-  const engineV1 = engineFlatYield(sun, ASSUMPTIONS_V1);
   const engineNow = engineFlatYield(sun, CURRENT_ASSUMPTIONS);
-  yieldRows.push([city.name, fmt0(engineNow), fmt0(pvgisYield), pct(engineNow, pvgisYield), fmt0(engineV1), pct(engineV1, pvgisYield)]);
+  const engineOneYear = engineFlatYield(unscaled, CURRENT_ASSUMPTIONS);
+  yieldRows.push([
+    city.name, fmt0(engineNow), fmt0(pvgisYield), pct(engineNow, pvgisYield), fmt0(engineOneYear), pct(engineOneYear, pvgisYield),
+  ]);
 
-  // Sunlight: the engine's single year, NASA's long-term mean, and ERA5's long-term mean.
-  const nasaGhi = sun.series.reduce((sum, w) => sum + w, 0) / 1000;
-  const nasaYears = nasaYearlyTotals(nasa.responses.find((r) => r.cityId === id).parameter);
-  const longTerm = [];
-  for (let year = LONG_TERM_FIRST_YEAR; year <= LONG_TERM_LAST_YEAR; year++) longTerm.push(nasaYears[year]);
-  const nasaLongTerm = mean(longTerm);
+  // Sunlight: the engine's series, its year alone, NASA's mean over PVGIS's years, and ERA5's mean.
+  const engineGhi = sun.series.reduce((sum, w) => sum + w, 0) / 1000;
+  const oneYearGhi = source.hourlySeries.reduce((sum, w) => sum + w, 0) / 1000;
+  const saved = nasa.responses.find((r) => r.cityId === id);
+  const { record, totals } = nasaYearlyTotals(saved, LONG_TERM_FIRST_YEAR, sun.year);
+  const overlap = [];
+  for (let year = LONG_TERM_FIRST_YEAR; year <= LONG_TERM_LAST_YEAR; year++) overlap.push(totals[year]);
+  const nasaOverlap = mean(overlap);
   sunRows.push([
-    city.name, fmt0(nasaGhi), fmt0(nasaYears[sun.year]), fmt0(nasaLongTerm),
-    `${((standardDeviation(longTerm) / nasaLongTerm) * 100).toFixed(1)}%`, fmt0(pvgisSun),
+    city.name, fmt0(oneYearGhi), fmt0(engineGhi), fmt0(nasaOverlap),
+    `${((standardDeviation(overlap) / nasaOverlap) * 100).toFixed(1)}%`, fmt0(pvgisSun),
+  ]);
+
+  // The bundled factor, checked against the monthly record T07 saved separately for this script.
+  const checkMean = longTermMean(record, sun.year).meanKwhPerM2;
+  scaleRows.push([
+    city.name, `${sun.longTerm.firstYear}–${sun.longTerm.lastYear}`, String(sun.longTerm.yearsUsed.length),
+    fmt0(sun.longTerm.hourlyYearKwhPerM2), fmt0(totals[sun.year]), fmt0(sun.longTerm.meanKwhPerM2), sun.longTerm.factor.toFixed(4),
+    fmt0(checkMean), pct(sun.longTerm.meanKwhPerM2, checkMean),
   ]);
 
   // Losses: the share of that sunlight that reaches the socket.
@@ -282,25 +305,39 @@ for (const id of YIELD_CITIES) {
   ]);
 
   // The gap, split into three factors that multiply to it:
-  //   engine ÷ PVGIS = (engine's year ÷ NASA mean) × (NASA mean ÷ ERA5 mean) × (engine ratio ÷ PVGIS ratio)
+  //   engine ÷ PVGIS = (engine's sun ÷ NASA mean over PVGIS's years) × (that NASA mean ÷ ERA5 mean)
+  //                    × (engine ratio ÷ PVGIS ratio)
   gapRows.push([
-    city.name, pct(nasaGhi, nasaLongTerm), pct(nasaLongTerm, pvgisSun), pct(prCurrent, pvgisRatio), pct(engineNow, pvgisYield),
+    city.name, pct(engineGhi, nasaOverlap), pct(nasaOverlap, pvgisSun), pct(prCurrent, pvgisRatio), pct(engineNow, pvgisYield),
   ]);
 }
 
-console.log("Table 1. Yearly yield, flat roof, no shade (kWh per kWp)\n");
+const firstSun = await readSunFile(YIELD_CITIES[0]);
+const scaledYears = `${firstSun.longTerm.firstYear}–${firstSun.longTerm.lastYear}`;
+console.log(`Engine's sun: ${firstSun.year} hourly, scaled to the NASA ${scaledYears} mean (fetched ${firstSun.fetchedAt})\n`);
+
+console.log(`Table 1. Yearly yield, flat roof, no shade (kWh per kWp), assumption set v${CURRENT_ASSUMPTIONS.version}\n`);
 console.log(table(
-  ["City", `Engine v${CURRENT_ASSUMPTIONS.version}`, "PVGIS", "Difference", `Engine v${ASSUMPTIONS_V1.version}`, `Difference v${ASSUMPTIONS_V1.version}`],
+  ["City", "Engine, scaled sun", "PVGIS", "Difference", `Engine, ${firstSun.year} alone`, "Difference"],
   yieldRows,
 ));
 
 console.log("\nTable 2. Yearly irradiation on a horizontal surface (kWh/m²)\n");
 console.log(table(
   [
-    "City", "NASA hourly, engine's year", "NASA monthly, same year", `NASA ${LONG_TERM_FIRST_YEAR}–${LONG_TERM_LAST_YEAR} mean`,
+    "City", `NASA ${firstSun.year} alone`, `Engine's series (NASA ${scaledYears} mean)`, `NASA ${LONG_TERM_FIRST_YEAR}–${LONG_TERM_LAST_YEAR} mean`,
     "NASA year-to-year spread (1 s.d.)", `ERA5 ${LONG_TERM_FIRST_YEAR}–${LONG_TERM_LAST_YEAR} mean (PVGIS)`,
   ],
   sunRows,
+));
+
+console.log(`\nTable 2a. The scaling in the bundled files, checked against the monthly record this script saved on ${nasa.fetchedAt.slice(0, 10)}\n`);
+console.log(table(
+  [
+    "City", "Years", "Years used", `${firstSun.year}, hourly series`, `${firstSun.year}, monthly record`, "Mean", "Factor",
+    "Mean from the saved record", "Difference",
+  ],
+  scaleRows,
 ));
 
 console.log("\nTable 3. PVGIS losses on a flat roof\n");
@@ -308,7 +345,10 @@ console.log(table(["City", "Yield ÷ irradiation", "Angle of incidence", "Spectr
 
 console.log(`\nTable 4. Where the gap comes from (engine v${CURRENT_ASSUMPTIONS.version} against PVGIS)\n`);
 console.log(table(
-  ["City", "Year: engine's year vs NASA mean", "Database: NASA mean vs ERA5 mean", `Losses: ${prCurrent} vs PVGIS ratio`, "Total gap"],
+  [
+    "City", `Period: NASA ${scaledYears} vs ${LONG_TERM_FIRST_YEAR}–${LONG_TERM_LAST_YEAR}`,
+    `Database: NASA vs ERA5, ${LONG_TERM_FIRST_YEAR}–${LONG_TERM_LAST_YEAR}`, `Losses: ${prCurrent} vs PVGIS ratio`, "Total gap",
+  ],
   gapRows,
 ));
 

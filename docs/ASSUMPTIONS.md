@@ -144,11 +144,14 @@ The load shape is the engine's weakest input and its most important one. Any mea
 | Key | Value | Label | Note |
 | --- | --- | --- | --- |
 | `sun.source` | NASA POWER hourly API | decision | Endpoint `/api/temporal/hourly/point`; hourly data from 2001; default time standard is local solar time; 15 parameters per request at most: [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/) |
-| `sun.year` | most recent complete calendar year | decision | |
+| `sun.year` | most recent complete calendar year | decision | Its hour-by-hour pattern is used; its total is scaled to the long-term mean (next rows) |
+| `sun.longTermSource` | NASA POWER monthly API | decision | Endpoint `/api/temporal/monthly/point`, same parameter `ALLSKY_SFC_SW_DWN` and source (CERES SYN1deg) as the hourly series, in kWh/m²/day per month; a missing month is -999. Agrees with the hourly series on 2025 to the kWh/m² at Medan, Yogyakarta and Makassar (T19, 2026-11-15; `docs/VALIDATION.md`) |
+| `sun.longTermYears` | 20, ending with `sun.year` | decision | SPEC 3.4. One factor per place: mean yearly irradiation of these years ÷ the hourly year's. Approved by the owner 2026-11-15. A year counts 365 days, February as 28, matching the hourly series. Lives in `src/lib/sun/longTerm.ts`, not the engine's assumption set, since the series reaches the engine already scaled |
+| `sun.longTermMinYears` | 10 | decision | SPEC 3.4. A year with a missing month is left out; with fewer usable years the request counts as failed and the fallback is used |
 | `sun.cacheCellDegrees` | 0.5 | decision | |
 | `sun.crossCheck` | PVGIS 5.3, database PVGIS-ERA5 | decision | `https://re.jrc.ec.europa.eu/api/v5_3/`, GET only, 30 calls per second per address: [JRC](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/api-non-interactive-service_en). PVGIS-ERA5 is the only PVGIS 5.3 database that covers Indonesia (T07, 2026-11-15; evidence in `docs/VALIDATION.md`) |
 
-Settled: the NASA POWER parameter is `ALLSKY_SFC_SW_DWN` (T06), and the PVGIS database for Indonesia is PVGIS-ERA5, a reanalysis, since the satellite database PVGIS-SARAH3 stops short of it (T07).
+Settled: the NASA POWER parameter is `ALLSKY_SFC_SW_DWN` (T06), and the PVGIS database for Indonesia is PVGIS-ERA5, a reanalysis, since the satellite database PVGIS-SARAH3 stops short of it (T07). Every series, live or bundled, is scaled to the long-term mean (T19). Each bundled file in `data/sun-fallback/` records its factor and the years used; for 2025 against 2006–2025 they run from 0.995 (Jayapura, the one city where 2025 was brighter than its mean) to 1.070 (Yogyakarta).
 
 ## Open items: T03 record (2026-11-14)
 
