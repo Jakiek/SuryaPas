@@ -89,6 +89,9 @@ for (const c of LOCALES) {
       }
       await expect(add).toBeDisabled();
       await expect(page.getByText(c.m.electricity.spend.fullYearNote)).toBeVisible();
+      // With twelve fields the labels are month names, January first.
+      await expect(page.getByLabel(c.locale === "id" ? "Januari" : "January")).toBeVisible();
+      await expect(page.getByLabel(c.locale === "id" ? "Desember" : "December")).toBeVisible();
       await page.getByRole("button", { name: c.m.electricity.spend.removeMonth }).click();
       await expect(fields).toHaveCount(11);
       await expect(add).toBeEnabled();
@@ -96,11 +99,25 @@ for (const c of LOCALES) {
 
     test("rupiah is accepted with or without separators and shown grouped", async ({ page }) => {
       await fillLocationAndRoof(page, c);
+      await page.getByLabel(c.m.electricity.power.label).selectOption("2200");
       const field = page.getByLabel(c.m.electricity.spend.postpaid.single);
+      await expect(field).toHaveAttribute("placeholder", c.m.electricity.spend.placeholder.replace("{amount}", c.locale === "id" ? "650.000" : "650,000"));
       for (const typed of ["12500000", "12.500.000", "12,500,000"]) {
         await field.fill(typed);
+        await field.blur(); // the text is rewritten grouped when the user leaves the field
         await expect(field).toHaveValue(c.rupiahGrouped);
       }
+      for (const typed of ["12,5", "650.000,50"]) {
+        await field.fill(typed);
+        await field.blur();
+        await expect(page.getByText(c.m.errors.billNotWhole)).toBeVisible();
+      }
+      await field.fill("0");
+      await field.blur();
+      await expect(page.getByText(c.m.errors.billZero)).toBeVisible();
+      await field.fill("6500000"); // an extra zero on 2,200 VA
+      await field.blur();
+      await expect(page.getByText(c.m.errors.billTooHigh)).toBeVisible();
       await field.fill("");
       await field.blur();
       await expect(page.getByText(c.m.errors.billRequired)).toBeVisible();
@@ -110,17 +127,17 @@ for (const c of LOCALES) {
       await fillLocationAndRoof(page, c);
       await page.getByRole("radio", { name: c.m.electricity.billing.prepaid }).check();
       await page.getByLabel(c.m.electricity.power.label).selectOption({ index: 1 });
-      await page.getByLabel(c.m.electricity.spend.prepaid.single).fill("150000");
+      await page.getByLabel(c.m.electricity.spend.prepaid.single).fill("100000");
       await page.getByRole("button", { name: c.m.electricity.spend.addMonth }).click();
-      await page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "2")).fill("175000");
+      await page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "2")).fill("120000");
 
       await page.reload();
 
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(c.m.steps.electricity.heading, { ignoreCase: true });
       await expect(page.getByRole("radio", { name: c.m.electricity.billing.prepaid })).toBeChecked();
       await expect(page.getByLabel(c.m.electricity.power.label)).toHaveValue("450-subsidised");
-      await expect(page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "1"))).toHaveValue(c.locale === "id" ? "150.000" : "150,000");
-      await expect(page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "2"))).toHaveValue(c.locale === "id" ? "175.000" : "175,000");
+      await expect(page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "1"))).toHaveValue(c.locale === "id" ? "100.000" : "100,000");
+      await expect(page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "2"))).toHaveValue(c.locale === "id" ? "120.000" : "120,000");
       // Back to step 2: the roof answers are still there.
       await page.getByRole("button", { name: c.m.nav.back }).click();
       await expect(page.getByLabel(c.m.roof.area.label)).toHaveValue("48");
@@ -163,6 +180,41 @@ for (const c of LOCALES) {
       await expect(page.getByRole("radio", { name: c.m.lifestyle.yes }).first()).toBeChecked();
       await page.getByRole("button", { name: c.m.nav.retry }).click();
       await expect(page).toHaveURL(new RegExp(`/${c.locale}/r/abc123$`), { timeout: 20_000 });
+    });
+
+    test("a restored pair that the select does not offer is reset", async ({ page }) => {
+      await page.evaluate(() =>
+        localStorage.setItem("suryapas.plan.v1", JSON.stringify({ step: 3, electricity: { connectedVa: 2200, subsidised: true, monthlySpendRp: [100000] } })),
+      );
+      await page.reload();
+      await expect(page.getByLabel(c.m.electricity.power.label)).toHaveValue("");
+    });
+
+    test("step 4 restored over an empty draft sends the user to the step to fix", async ({ page }) => {
+      await page.evaluate(() => {
+        const yes = { homeOnWeekdays: true, daytimeAc: true, workFromHome: true, electricVehicle: true };
+        localStorage.setItem("suryapas.plan.v1", JSON.stringify({ step: 4, lifestyle: yes }));
+      });
+      await page.reload();
+      await next(page, c, "lifestyle").click();
+      await expect(page.getByText(c.m.submitInvalid.title)).toBeVisible();
+      await expect(page.getByText(c.m.submitFailed.title)).toHaveCount(0);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(c.m.steps.location.heading, { ignoreCase: true });
+    });
+
+    test("an unanswered radio question shows its own message once passed", async ({ page }) => {
+      await page.evaluate(() => localStorage.setItem("suryapas.plan.v1", JSON.stringify({ step: 4 })));
+      await page.reload();
+      const last = page.getByRole("group", { name: c.m.lifestyle.electricVehicle.legend });
+      await last.getByRole("radio", { name: c.m.lifestyle.yes }).check();
+      // The first three were skipped; each says so under its own question.
+      await expect(page.getByText(c.m.errors.answerRequired)).toHaveCount(3);
+    });
+
+    test("the form stops at the 680 px measure on a wide screen", async ({ page }) => {
+      await page.setViewportSize({ width: 1200, height: 900 });
+      const width = await page.locator("main form").evaluate((el) => el.getBoundingClientRect().width);
+      expect(width).toBeLessThanOrEqual(680);
     });
 
     test("the whole flow can be completed with the keyboard alone", async ({ page }) => {

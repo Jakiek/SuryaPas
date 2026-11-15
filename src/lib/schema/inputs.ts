@@ -12,7 +12,10 @@
 // change to the engine's inputs becomes a type error here, not a bug.
 
 import { z } from "zod";
+import { isOfferedPower } from "./powerChoices";
+import { CURRENT_ASSUMPTIONS, tariffClassOf, valueOf } from "../../engine";
 import type {
+  AssumptionSet,
   AssumptionOverrides,
   EngineInputs,
   ElectricityInput,
@@ -27,11 +30,38 @@ import type {
 const requiredNumber = (missingKey: string) =>
   z.number({ error: missingKey }).refine(Number.isFinite, missingKey);
 
-/** A whole number of rupiah above zero. */
+/** A whole number of rupiah above zero. Zero has its own message. */
 const rupiah = z
   .number({ error: "errors.billRequired" })
-  .int("errors.billRequired")
-  .positive("errors.billRequired");
+  .int("errors.billNotWhole")
+  .gt(0, "errors.billZero");
+
+/**
+ * The most a home could spend on electricity in a month (SPEC 2.2 step 3):
+ * connected kVA x 24 hours x 31 days x the class tariff, with the share of
+ * a bill that buys no energy added back (bill / (1 - share)).
+ *
+ * Example, 2,200 VA (tariff Rp1,444.7 per kWh, overhead share 0.05):
+ *   2.2 kVA x 24 h x 31 days   = 1,636.8 kWh
+ *   1,636.8 kWh x Rp1,444.7    = Rp2,364,684.96
+ *   Rp2,364,684.96 / (1 - 0.05) = Rp2,489,142.06
+ * The tariff and the share come from the assumption set, never from here.
+ */
+export function maxMonthlySpendRp(
+  connectedVa: number,
+  subsidised: boolean,
+  assumptions: AssumptionSet = CURRENT_ASSUMPTIONS,
+): number {
+  const WATTS_PER_KW = 1000;
+  const HOURS_PER_DAY = 24;
+  const DAYS_IN_LONGEST_MONTH = 31;
+  const tariff =
+    assumptions.powerClasses.classes[tariffClassOf(connectedVa, subsidised, assumptions)]
+      .tariffRpPerKwh;
+  const overheadShare = valueOf(assumptions, "bill.overheadShare");
+  const kwhAtFullLoad = (connectedVa / WATTS_PER_KW) * HOURS_PER_DAY * DAYS_IN_LONGEST_MONTH;
+  return (kwhAtFullLoad * tariff) / (1 - overheadShare);
+}
 
 // ---------- Step 1: location (stub; T11 adds the Indonesia check) ----------
 
@@ -67,7 +97,29 @@ export const electricitySchema = z.object({
     .array(rupiah)
     .min(1, "errors.billRequired")
     .max(12, "errors.tooManyMonths"),
-}) satisfies z.ZodType<ElectricityInput>;
+})
+  // Rules that look at two fields at once.
+  .superRefine((electricity, context) => {
+    const { connectedVa, subsidised, monthlySpendRp } = electricity;
+
+    // Only pairs the select offers: 2,200 VA is never subsidised.
+    if (!isOfferedPower(connectedVa, subsidised)) {
+      context.addIssue({ code: "custom", path: ["connectedVa"], message: "errors.powerRequired" });
+      return;
+    }
+
+    // A month above what the connection could use is almost always an extra zero.
+    const ceiling = maxMonthlySpendRp(connectedVa, subsidised);
+    monthlySpendRp.forEach((amount, index) => {
+      if (amount > ceiling) {
+        context.addIssue({
+          code: "custom",
+          path: ["monthlySpendRp", index],
+          message: "errors.billTooHigh",
+        });
+      }
+    });
+  }) satisfies z.ZodType<ElectricityInput>;
 
 // ---------- Step 4: lifestyle ----------
 

@@ -13,3 +13,30 @@ export function FieldError({ id, children }: { id?: string; children: string }) 
     </p>
   );
 }
+
+// One radio question with its own message. The message belongs to the
+// question, so it appears under it, and only once the user has gone past
+// the question without answering: focus left the group (`onLeave`), or
+// the caller says a later question was answered (`error` is then set).
+// Wrapping div's onBlur fires when focus moves between its radios too, so
+// it only counts when the new focus is outside the group.
+export function ChoiceQuestion({
+  error,
+  onLeave,
+  children,
+}: {
+  error?: string;
+  onLeave: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) onLeave();
+      }}
+    >
+      {children}
+      {error && <FieldError>{error}</FieldError>}
+    </div>
+  );
+}

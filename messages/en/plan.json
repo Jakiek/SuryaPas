@@ -95,11 +95,12 @@
         "single": "Bill per month"
       },
       "monthLabel": "Month {number}",
-      "moreMonthsNote": "One month is enough. Each extra month sharpens the estimate. With 12 months, enter them from January to December; with fewer, we use the average.",
-      "fullYearNote": "All twelve months are filled in. We read them in order, January to December.",
+      "moreMonthsNote": "One month is enough. Each extra month sharpens the estimate. We use the average, so the order of the months does not matter.",
+      "fullYearNote": "With all twelve months the order matters: we read them from January to December so the seasons count.",
       "addMonth": "Add another month",
       "count": "{count} of {max}",
-      "removeMonth": "Remove the last month"
+      "removeMonth": "Remove the last month",
+      "placeholder": "Example: {amount}"
     }
   },
   "lifestyle": {
@@ -139,6 +140,13 @@
     "usableInvalid": "The usable share of the roof must be above 0 and at most 100%.",
     "facingRequired": "Choose which way the roof faces.",
     "slopeRequired": "Choose the roof slope.",
-    "shadeRequired": "Choose how much shade the roof gets."
+    "shadeRequired": "Choose how much shade the roof gets.",
+    "billNotWhole": "Type whole rupiah, with no decimals: digits only (650000) or grouped in threes (650,000).",
+    "billZero": "The amount cannot be zero. Type what you spend on electricity in a month, for example 650,000.",
+    "billTooHigh": "That is too much for your connection. Check the number of zeros."
+  },
+  "submitInvalid": {
+    "title": "Some answers are incomplete",
+    "body": "We took you to the step that needs finishing. Fill in what is missing, then continue."
   }
 }

@@ -1,21 +1,31 @@
-// Typing rupiah. Indonesians write 12.500.000 and Americans 12,500,000;
-// a phone keypad gives either, or neither (12500000). All three must work
-// (T10 done-check), so the field reads only the digits.
+// Typing rupiah. A rupiah amount is whole, so the field accepts exactly:
+//   - digits alone:                      12500000
+//   - digits grouped in threes by ".":   12.500.000   (Indonesian)
+//   - digits grouped in threes by ",":   12,500,000   (English)
+// one kind of separator per amount. Anything else ("12,5", "650.000,50",
+// "12.50.000") is not a whole amount and is refused, not guessed at: a
+// guessed reading would turn Rp12,5 into Rp125.
 
-/**
- * Reads the amount from what was typed: only the digits count, so
- * "12.500.000", "12,500,000" and "12500000" all give 12500000.
- *
- * Why not treat "650.000,50" as having cents? The field re-formats as the
- * user types, so pressing backspace on "12.500" produces "12.50", and that
- * must read as 1250, not as 12 with 50 cents. Rupiah has no cents anyway.
- *
- * Returns null for an empty field.
- */
-export function parseRupiah(typed: string): number | null {
-  const digits = typed.replace(/\D/g, "");
-  if (digits === "") return null;
-  return Number(digits);
+/** What a typed text means. */
+export type RupiahReading =
+  | { kind: "empty" }
+  | { kind: "amount"; value: number }
+  | { kind: "notWhole" };
+
+const PLAIN_DIGITS = /^\d+$/;
+const GROUPED_BY_DOT = /^\d{1,3}(\.\d{3})+$/;
+const GROUPED_BY_COMMA = /^\d{1,3}(,\d{3})+$/;
+
+export function readRupiah(typed: string): RupiahReading {
+  // "Rp" and spaces are decoration, not part of the amount.
+  const text = typed.replace(/rp/gi, "").replace(/\s/g, "");
+  if (text === "") return { kind: "empty" };
+
+  const isWhole =
+    PLAIN_DIGITS.test(text) || GROUPED_BY_DOT.test(text) || GROUPED_BY_COMMA.test(text);
+  if (!isWhole) return { kind: "notWhole" };
+
+  return { kind: "amount", value: Number(text.replace(/[.,]/g, "")) };
 }
 
 /** The amount as shown in the field: grouped by the language's separator. */

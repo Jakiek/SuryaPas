@@ -90,4 +90,33 @@ describe("plan store", () => {
     const store = createPlanStore(() => fakeStorage());
     expect(store.getSnapshot()).toBe(store.getSnapshot());
   });
+
+  it("resets a connected-power pair the select does not offer", () => {
+    const storage = fakeStorage();
+    const saved = emptyDraft();
+    saved.electricity = { ...saved.electricity, connectedVa: 2200, subsidised: true };
+    storage.data.set(STORAGE_KEY, JSON.stringify(saved));
+    const restored = readSavedDraft(storage);
+    expect(restored?.electricity.connectedVa).toBeNull();
+    expect(restored?.electricity.subsidised).toBe(false);
+  });
+
+  it("drops values of the wrong kind but keeps empty fields and good ones", () => {
+    const storage = fakeStorage();
+    const saved = {
+      step: 2,
+      location: { latitude: 500, longitude: 110.3 },
+      roof: { slope: "sideways", shade: "some", areaM2: 48 },
+      lifestyle: { daytimeAc: "yes", workFromHome: true },
+    };
+    storage.data.set(STORAGE_KEY, JSON.stringify(saved));
+    const restored = readSavedDraft(storage);
+    expect(restored?.location).toEqual({ latitude: null, longitude: 110.3 });
+    expect(restored?.roof.slope).toBeNull();
+    expect(restored?.roof.shade).toBe("some");
+    expect(restored?.roof.areaM2).toBe(48);
+    expect(restored?.lifestyle.daytimeAc).toBeNull();
+    expect(restored?.lifestyle.workFromHome).toBe(true);
+    expect(restored?.lifestyle.homeOnWeekdays).toBeNull();
+  });
 });

@@ -52,7 +52,11 @@ export function useVisibleErrors(errors: Record<string, string>) {
 
   return {
     touch: (field: string) => setTouched((all) => new Set(all).add(field)),
-    messageFor: (field: string): string | undefined =>
-      touched.has(field) && errors[field] ? t(errors[field] as never) : undefined,
+    // `movedPast`: the user answered a later question, so this one counts as
+    // left behind even if it never had focus (a mouse user can skip it).
+    messageFor: (field: string, movedPast = false): string | undefined =>
+      (touched.has(field) || movedPast) && errors[field]
+        ? t(errors[field] as never)
+        : undefined,
   };
 }

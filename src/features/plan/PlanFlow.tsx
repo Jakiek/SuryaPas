@@ -9,14 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  Button,
-  Caveat,
-  Inner,
-  PosterHeading,
-  Progress,
-  TextLink,
-} from "@/components";
+import { Button, Caveat, Inner, PosterHeading, Progress, TextLink } from "@/components";
 import { LocationStep } from "@/features/location/LocationStep";
 import { RoofStep } from "@/features/roof/RoofStep";
 import { useRouter } from "@/i18n/navigation";
@@ -25,6 +18,7 @@ import { ElectricityStep } from "./ElectricityStep";
 import { LifestyleStep } from "./LifestyleStep";
 import { planStore } from "./planStore";
 import { submitAssessment } from "./submit";
+import { firstInvalidStep } from "./validate";
 
 const STEP_KEYS = ["location", "roof", "electricity", "lifestyle"] as const;
 
@@ -55,7 +49,7 @@ export function PlanFlow() {
 
   // What each step last reported about its own validity.
   const [validity, setValidity] = useState<Record<number, boolean>>({});
-  const [submitState, setSubmitState] = useState<"idle" | "sending" | "failed">("idle");
+  const [submitState, setSubmitState] = useState<"idle" | "sending" | "failed" | "invalid">("idle");
 
   const step = draft.step;
   const stepKey = STEP_KEYS[step - 1];
@@ -75,6 +69,7 @@ export function PlanFlow() {
   }
 
   function goToStep(next: number) {
+    setSubmitState("idle");
     update({ step: next as StepNumber });
   }
 
@@ -83,6 +78,15 @@ export function PlanFlow() {
     const result = await submitAssessment(draft, locale);
     if (result.ok) {
       router.push(`/r/${result.id}`);
+      return;
+    }
+    if (result.reason === "invalid") {
+      // Something before this step is missing (for example a restored
+      // draft with an empty location). Say so and go to that step; this
+      // is a problem with the answers, not with the connection.
+      const target = firstInvalidStep(draft) ?? 1;
+      update({ step: target });
+      setSubmitState("invalid");
       return;
     }
     // The draft is untouched, so the user's answers are all still here.
@@ -127,91 +131,99 @@ export function PlanFlow() {
   if (!inBrowser) return <Inner className="min-h-[60vh]">{null}</Inner>;
 
   return (
-    <Inner className="max-w-[calc(680px+2*var(--gutter))] pt-4">
-      <Progress current={step} total={STEP_COUNT} name={t(`steps.${stepKey}.name`)} />
+    <Inner className="pt-4">
+      {/* Text and form stop at the 680 px measure (DESIGN.md "Layout"). The
+          width is set on this inner box: cx does not merge classes, so a
+          max-w on Inner itself would lose to Inner's own max-w-page. */}
+      <div className="max-w-measure">
+        <Progress current={step} total={STEP_COUNT} name={t(`steps.${stepKey}.name`)} />
 
-      <div ref={stepRef}>
-        <div ref={headingRef} tabIndex={-1}>
-          <PosterHeading as="h1" size="page">
-            {t(`steps.${stepKey}.heading`)}
-          </PosterHeading>
-        </div>
-        <p className="mt-3 max-w-[30em] text-[17px] font-medium">
-          {t(`steps.${stepKey}.intro`)}
-        </p>
-
-        <form onSubmit={handleSubmit} noValidate className="mt-2">
-          {step === 1 && (
-            <LocationStep
-              value={draft.location}
-              onChange={(location) => update({ location })}
-              onValidChange={reportValidity}
-            />
-          )}
-          {step === 2 && (
-            <RoofStep
-              value={draft.roof}
-              onChange={(roof) => update({ roof })}
-              onValidChange={reportValidity}
-            />
-          )}
-          {step === 3 && (
-            <ElectricityStep
-              value={draft.electricity}
-              onChange={(electricity) => update({ electricity })}
-              onValidChange={reportValidity}
-            />
-          )}
-          {step === 4 && (
-            <LifestyleStep
-              value={draft.lifestyle}
-              onChange={(lifestyle) => update({ lifestyle })}
-              onValidChange={reportValidity}
-            />
-          )}
-
-          {/* SPEC 2.6: the privacy line stands above the final submit. */}
-          {isLastStep && (
-            <p className="mt-8 max-w-[30em] border-fg border-t-heavy pt-4 text-[15px] font-semibold">
-              {t("privacy")}
-            </p>
-          )}
-
-          {/* SPEC 2.5: when saving fails, say so and let the user retry.
-              Nothing they typed is lost. */}
-          {submitState === "failed" && (
-            <div role="alert" className="mt-6">
-              <Caveat title={t("submitFailed.title")}>
-                <p>{t("submitFailed.body")}</p>
-              </Caveat>
-            </div>
-          )}
-
-          {!currentStepIsValid && (
-            <p className="mt-6 text-sm text-soft">{t("nav.incomplete")}</p>
-          )}
-
-          {/* On phones the bar sticks to the bottom of the screen; from
-              880 px it sits in the page (DESIGN.md "Layout"). */}
-          <div className="sticky bottom-0 -mx-gutter mt-7 grid grid-cols-[auto_1fr] items-center gap-[18px] border-fg border-t-heavy bg-paper px-gutter py-3 lg:static lg:mx-0 lg:mb-10 lg:mt-8 lg:px-0 lg:pt-4">
-            {step === 1 ? (
-              <TextLink href="/">{t("nav.back")}</TextLink>
-            ) : (
-              <TextLink onClick={() => goToStep(step - 1)}>{t("nav.back")}</TextLink>
-            )}
-            <Button
-              type="submit"
-              disabled={!currentStepIsValid || submitState === "sending"}
-              className="sm:min-w-[220px] sm:justify-self-end"
-            >
-              {submitState === "sending"
-                ? t("nav.sending")
-                : submitState === "failed"
-                  ? t("nav.retry")
-                  : t(`steps.${stepKey}.next`)}
-            </Button>
+        <div ref={stepRef}>
+          <div ref={headingRef} tabIndex={-1}>
+            <PosterHeading as="h1" size="page">
+              {t(`steps.${stepKey}.heading`)}
+            </PosterHeading>
           </div>
-        </form>
+          <p className="mt-3 max-w-[30em] text-[17px] font-medium">{t(`steps.${stepKey}.intro`)}</p>
+
+          <form onSubmit={handleSubmit} noValidate className="mt-2">
+            {step === 1 && (
+              <LocationStep
+                value={draft.location}
+                onChange={(location) => update({ location })}
+                onValidChange={reportValidity}
+              />
+            )}
+            {step === 2 && (
+              <RoofStep
+                value={draft.roof}
+                onChange={(roof) => update({ roof })}
+                onValidChange={reportValidity}
+              />
+            )}
+            {step === 3 && (
+              <ElectricityStep
+                value={draft.electricity}
+                onChange={(electricity) => update({ electricity })}
+                onValidChange={reportValidity}
+              />
+            )}
+            {step === 4 && (
+              <LifestyleStep
+                value={draft.lifestyle}
+                onChange={(lifestyle) => update({ lifestyle })}
+                onValidChange={reportValidity}
+              />
+            )}
+
+            {/* SPEC 2.6: the privacy line stands above the final submit. */}
+            {isLastStep && (
+              <p className="mt-8 max-w-[30em] border-fg border-t-heavy pt-4 text-[15px] font-semibold">
+                {t("privacy")}
+              </p>
+            )}
+
+            {/* SPEC 2.5: when saving fails, say so and let the user retry.
+              Nothing they typed is lost. */}
+            {submitState === "invalid" && (
+              <div role="alert" className="mt-6">
+                <Caveat title={t("submitInvalid.title")}>
+                  <p>{t("submitInvalid.body")}</p>
+                </Caveat>
+              </div>
+            )}
+            {submitState === "failed" && (
+              <div role="alert" className="mt-6">
+                <Caveat title={t("submitFailed.title")}>
+                  <p>{t("submitFailed.body")}</p>
+                </Caveat>
+              </div>
+            )}
+
+            {!currentStepIsValid && <p className="mt-6 text-sm text-soft">{t("nav.incomplete")}</p>}
+
+            {/* On phones the bar sticks to the bottom of the screen; from
+              880 px it sits in the page (DESIGN.md "Layout"). */}
+            <div className="sticky bottom-0 -mx-gutter mt-7 grid grid-cols-[auto_1fr] items-center gap-[18px] border-fg border-t-heavy bg-paper px-gutter py-3 lg:static lg:mx-0 lg:mb-10 lg:mt-8 lg:px-0 lg:pt-4">
+              {step === 1 ? (
+                <TextLink href="/">{t("nav.back")}</TextLink>
+              ) : (
+                <TextLink onClick={() => goToStep(step - 1)}>{t("nav.back")}</TextLink>
+              )}
+              <Button
+                type="submit"
+                disabled={!currentStepIsValid || submitState === "sending"}
+                className="sm:min-w-[220px] sm:justify-self-end"
+              >
+                {submitState === "sending"
+                  ? t("nav.sending")
+                  : submitState === "failed" && isLastStep
+                    ? t("nav.retry")
+                    : t(`steps.${stepKey}.next`)}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </Inner>
   );

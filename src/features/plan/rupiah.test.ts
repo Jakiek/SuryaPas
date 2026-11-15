@@ -1,23 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { parseRupiah, showRupiah } from "./rupiah";
+import { readRupiah, showRupiah } from "./rupiah";
 
-describe("parseRupiah", () => {
-  it("reads the same amount with or without thousands separators", () => {
-    expect(parseRupiah("12500000")).toBe(12500000);
-    expect(parseRupiah("12.500.000")).toBe(12500000);
-    expect(parseRupiah("12,500,000")).toBe(12500000);
-    expect(parseRupiah("Rp 12.500.000")).toBe(12500000);
+const amount = (value: number) => ({ kind: "amount", value });
+
+describe("readRupiah", () => {
+  it("reads the three accepted forms as the same amount", () => {
+    expect(readRupiah("12500000")).toEqual(amount(12500000));
+    expect(readRupiah("12.500.000")).toEqual(amount(12500000));
+    expect(readRupiah("12,500,000")).toEqual(amount(12500000));
+    expect(readRupiah("Rp 12.500.000")).toEqual(amount(12500000));
   });
 
-  it("returns null for an empty field", () => {
-    expect(parseRupiah("")).toBeNull();
-    expect(parseRupiah("  ")).toBeNull();
-    expect(parseRupiah("abc")).toBeNull();
+  it("refuses a decimal instead of guessing: 12,5 is not Rp125", () => {
+    expect(readRupiah("12,5")).toEqual({ kind: "notWhole" });
   });
 
-  it("reads backspace on a formatted amount as the digits left", () => {
-    // "12.500" with the last zero deleted is "12.50", which means 1,250.
-    expect(parseRupiah("12.50")).toBe(1250);
+  it("refuses cents: 650.000,50 is not Rp65.000.050", () => {
+    expect(readRupiah("650.000,50")).toEqual({ kind: "notWhole" });
+  });
+
+  it("refuses wrong grouping and mixed separators", () => {
+    for (const bad of ["12.50.000", "1.2500", "12.500,000", "12abc", "-5"]) {
+      expect(readRupiah(bad), bad).toEqual({ kind: "notWhole" });
+    }
+  });
+
+  it("reads an empty field as empty and zero as zero", () => {
+    expect(readRupiah("")).toEqual({ kind: "empty" });
+    expect(readRupiah("  ")).toEqual({ kind: "empty" });
+    expect(readRupiah("0")).toEqual(amount(0));
   });
 });
 
@@ -33,7 +44,7 @@ describe("showRupiah", () => {
 
   it("round-trips: what is shown is read back as the same amount", () => {
     for (const locale of ["id", "en"]) {
-      expect(parseRupiah(showRupiah(650000, locale))).toBe(650000);
+      expect(readRupiah(showRupiah(650000, locale))).toEqual(amount(650000));
     }
   });
 });

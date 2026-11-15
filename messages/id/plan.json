@@ -95,11 +95,12 @@
         "single": "Tagihan per bulan"
       },
       "monthLabel": "Bulan ke-{number}",
-      "moreMonthsNote": "Satu bulan sudah cukup. Makin banyak bulan yang Anda isi, makin tajam perkiraannya. Dengan 12 bulan, urutkan dari Januari sampai Desember; kurang dari itu, kami memakai rata-ratanya.",
-      "fullYearNote": "Kedua belas bulan terisi. Kami membacanya berurutan dari Januari sampai Desember.",
+      "moreMonthsNote": "Satu bulan sudah cukup. Makin banyak bulan yang Anda isi, makin tajam perkiraannya. Kami memakai rata-ratanya, jadi urutan bulan tidak penting.",
+      "fullYearNote": "Kedua belas bulan terisi, jadi urutannya penting: kami membacanya dari Januari sampai Desember agar perbedaan musim ikut terhitung.",
       "addMonth": "Tambah bulan lain",
       "count": "{count} dari {max}",
-      "removeMonth": "Hapus bulan terakhir"
+      "removeMonth": "Hapus bulan terakhir",
+      "placeholder": "Contoh: {amount}"
     }
   },
   "lifestyle": {
@@ -139,6 +140,13 @@
     "usableInvalid": "Bagian atap yang bisa dipasangi harus lebih dari 0 dan paling banyak 100%.",
     "facingRequired": "Arah atap belum dipilih. Pilih salah satu.",
     "slopeRequired": "Kemiringan atap belum dipilih. Pilih salah satu.",
-    "shadeRequired": "Bayangan pada atap belum dipilih. Pilih salah satu."
+    "shadeRequired": "Bayangan pada atap belum dipilih. Pilih salah satu.",
+    "billNotWhole": "Ketik rupiah utuh, tanpa koma desimal: angka saja (650000) atau dengan titik tiap tiga angka (650.000).",
+    "billZero": "Jumlahnya tidak boleh nol. Ketik pengeluaran listrik sebulan, misalnya 650.000.",
+    "billTooHigh": "Jumlah ini terlalu besar untuk daya listrik Anda. Periksa jumlah angka nolnya."
+  },
+  "submitInvalid": {
+    "title": "Ada jawaban yang belum lengkap",
+    "body": "Kami membawa Anda ke langkah yang perlu dilengkapi. Isi yang kurang, lalu lanjut lagi."
   }
 }

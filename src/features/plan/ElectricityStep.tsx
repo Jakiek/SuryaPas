@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button, QuestionList, SegmentedChoice, TextLink } from "@/components";
 import { electricitySchema } from "@/lib/schema";
 import {
@@ -23,12 +23,23 @@ export function ElectricityStep({
   onValidChange,
 }: StepProps<ElectricityDraft>) {
   const t = useTranslations("plan.electricity");
+  const locale = useLocale();
   const errors = useStepValidity(electricitySchema, value, onValidChange);
 
   const { touch, messageFor } = useVisibleErrors(errors);
 
   const { billing, monthlySpendRp: months } = value;
   const monthCount = months.length;
+
+  // SPEC 2.2: fewer than twelve fields are numbered, since the engine
+  // averages them and their order does not matter. With twelve, the
+  // fields carry month names, because the engine reads them January to
+  // December. Only the label changes, so each field keeps its value.
+  const monthLabel = (index: number) => {
+    if (monthCount === MAX_MONTHS) return monthName(index, locale);
+    if (monthCount === 1) return t(`spend.${billing}.single`);
+    return t("spend.monthLabel", { number: index + 1 });
+  };
 
   // An empty month beyond the first gets no message of its own. A message
   // appears when focus leaves the field, which moves the "add another
@@ -88,7 +99,7 @@ export function ElectricityStep({
             <RupiahField
               key={index}
               name={`month-${index + 1}`}
-              label={monthCount === 1 ? t(`spend.${billing}.single`) : t("spend.monthLabel", { number: index + 1 })}
+              label={monthLabel(index)}
               value={amount}
               onChange={(next) =>
                 onChange({ ...value, monthlySpendRp: setMonth(months, index, next) })
@@ -131,4 +142,10 @@ export function ElectricityStep({
       </fieldset>
     </QuestionList>
   );
+}
+
+/** "Januari" or "January": month 0 is January, named by the locale. */
+function monthName(monthIndex: number, locale: string): string {
+  const aDayInThatMonth = Date.UTC(2000, monthIndex, 15);
+  return new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(aDayInThatMonth);
 }

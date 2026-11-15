@@ -6,6 +6,7 @@ import {
   electricitySchema,
   engineInputsSchema,
   lifestyleSchema,
+  maxMonthlySpendRp,
   messageKeysByField,
   roofSchema,
 } from "./inputs";
@@ -69,6 +70,47 @@ describe("engine input schemas", () => {
     }
   });
 
+  it("give zero its own message", () => {
+    const result = electricitySchema.safeParse({ ...validInputs.electricity, monthlySpendRp: [0] });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(messageKeysByField(result.error)["monthlySpendRp.0"]).toBe("errors.billZero");
+    }
+  });
+
+  it("accept only connected-power pairs the select offers", () => {
+    const withPair = (connectedVa: number, subsidised: boolean) =>
+      electricitySchema.safeParse({
+        ...validInputs.electricity,
+        connectedVa,
+        subsidised,
+        monthlySpendRp: [100000], // under every class's ceiling
+      }).success;
+    expect(withPair(900, true)).toBe(true);
+    expect(withPair(900, false)).toBe(true);
+    expect(withPair(450, true)).toBe(true);
+    expect(withPair(2200, true)).toBe(false); // no subsidised 2,200 VA exists
+    expect(withPair(450, false)).toBe(false); // 450 VA is only offered subsidised
+    expect(withPair(1234, false)).toBe(false);
+  });
+
+  it("reject a monthly spend above what the connection could use", () => {
+    // 2,200 VA ceiling is Rp2,489,142.06 (arithmetic in maxMonthlySpendRp).
+    const ceiling = maxMonthlySpendRp(2200, false);
+    expect(ceiling).toBeCloseTo(2489142.06, 1);
+    const spend = (amount: number) =>
+      electricitySchema.safeParse({ ...validInputs.electricity, monthlySpendRp: [amount] });
+
+    expect(spend(Math.floor(ceiling)).success).toBe(true);
+    const over = spend(Math.floor(ceiling) + 1);
+    expect(over.success).toBe(false);
+    if (!over.success) {
+      expect(messageKeysByField(over.error)["monthlySpendRp.0"]).toBe("errors.billTooHigh");
+    }
+    // The extra zero this rule exists for: 650,000 typed as 6,500,000.
+    expect(spend(6500000).success).toBe(false);
+  });
+
   it("refuse a lifestyle question nobody answered", () => {
     const result = lifestyleSchema.safeParse({ ...validInputs.lifestyle, daytimeAc: null });
     expect(result.success).toBe(false);
@@ -83,6 +125,9 @@ describe("error messages", () => {
   // Every message key a schema can produce must exist in both languages.
   const keysUsedBySchemas = [
     "errors.billRequired",
+    "errors.billNotWhole",
+    "errors.billZero",
+    "errors.billTooHigh",
     "errors.billingRequired",
     "errors.powerRequired",
     "errors.tooManyMonths",

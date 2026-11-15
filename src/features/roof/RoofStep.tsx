@@ -5,11 +5,8 @@ import { useTranslations } from "next-intl";
 import { NumberField, QuestionList, SegmentedChoice } from "@/components";
 import { parseDecimal } from "@/features/plan/decimal";
 import type { RoofDraft } from "@/features/plan/draft";
-import {
-  useStepValidity,
-  useVisibleErrors,
-  type StepProps,
-} from "@/features/plan/step";
+import { ChoiceQuestion } from "@/features/plan/FieldError";
+import { useStepValidity, useVisibleErrors, type StepProps } from "@/features/plan/step";
 import { roofSchema } from "@/lib/schema";
 import type { Facing, Shade, Slope } from "@/engine";
 
@@ -50,47 +47,59 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
         autoComplete="off"
       />
 
-      <SegmentedChoice<Slope>
-        legend={t("slope.legend")}
-        name="slope"
-        size="short"
-        value={value.slope}
-        onChange={chooseSlope}
-        options={[
-          { value: "flat", label: t("slope.flat") },
-          { value: "gentle", label: t("slope.gentle") },
-          { value: "steep", label: t("slope.steep") },
-        ]}
-      />
-
-      {value.slope !== "flat" && (
-        <SegmentedChoice<Facing>
-          legend={t("facing.legend")}
-          name="facing"
+      <ChoiceQuestion
+        onLeave={() => touch("slope")}
+        error={messageFor("slope", value.facing !== null || value.shade !== null)}
+      >
+        <SegmentedChoice<Slope>
+          legend={t("slope.legend")}
+          name="slope"
           size="short"
-          value={value.facing}
-          onChange={(facing) => onChange({ ...value, facing })}
+          value={value.slope}
+          onChange={chooseSlope}
           options={[
-            { value: "N", label: t("facing.north") },
-            { value: "E", label: t("facing.east") },
-            { value: "S", label: t("facing.south") },
-            { value: "W", label: t("facing.west") },
+            { value: "flat", label: t("slope.flat") },
+            { value: "gentle", label: t("slope.gentle") },
+            { value: "steep", label: t("slope.steep") },
           ]}
         />
+      </ChoiceQuestion>
+
+      {value.slope !== "flat" && (
+        <ChoiceQuestion
+          onLeave={() => touch("facing")}
+          error={messageFor("facing", value.shade !== null)}
+        >
+          <SegmentedChoice<Facing>
+            legend={t("facing.legend")}
+            name="facing"
+            size="short"
+            value={value.facing}
+            onChange={(facing) => onChange({ ...value, facing })}
+            options={[
+              { value: "N", label: t("facing.north") },
+              { value: "E", label: t("facing.east") },
+              { value: "S", label: t("facing.south") },
+              { value: "W", label: t("facing.west") },
+            ]}
+          />
+        </ChoiceQuestion>
       )}
 
-      <SegmentedChoice<Shade>
-        legend={t("shade.legend")}
-        name="shade"
-        size="short"
-        value={value.shade}
-        onChange={(shade) => onChange({ ...value, shade })}
-        options={[
-          { value: "none", label: t("shade.none") },
-          { value: "some", label: t("shade.some") },
-          { value: "heavy", label: t("shade.heavy") },
-        ]}
-      />
+      <ChoiceQuestion onLeave={() => touch("shade")} error={messageFor("shade")}>
+        <SegmentedChoice<Shade>
+          legend={t("shade.legend")}
+          name="shade"
+          size="short"
+          value={value.shade}
+          onChange={(shade) => onChange({ ...value, shade })}
+          options={[
+            { value: "none", label: t("shade.none") },
+            { value: "some", label: t("shade.some") },
+            { value: "heavy", label: t("shade.heavy") },
+          ]}
+        />
+      </ChoiceQuestion>
     </QuestionList>
   );
 }
