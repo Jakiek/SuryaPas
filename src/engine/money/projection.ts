@@ -54,9 +54,11 @@ export function paybackYearOf(cumulativeSavingsRp: number[], upfrontCostRp: numb
  *
  * In year y (counting from 1):
  *   savings   = first-year savings × (1 − degradation)^(y−1) × (1 + tariff rise)^(y−1)
- *   upkeep    = a yearly share of the solar cost
- *   inverter  = a share of the solar cost, once, in the inverter's replacement year
+ *   upkeep    = a yearly share of the solar cost (a battery adds none: upkeep is cleaning and inspecting panels)
+ *   inverter  = a share of the solar cost, once, in the inverter's replacement year;
+ *               with a battery the inverter is the hybrid one, so the battery's fixed cost is added
  *   battery   = the battery's per-kWh cost again, once, in the battery's replacement year
+ *               (its fixed part is the hybrid inverter, already counted above)
  *
  * Scaling savings by the panels' fading output is a simplification: a little of the lost output
  * would have been surplus anyway, so real savings fade slightly more slowly than this.
@@ -67,9 +69,12 @@ export function projectMoney(input: ProjectionInput, assumptions: AssumptionSet)
   const keepsOutput = 1 - valueOf(assumptions, "pv.degradationPerYear");
   const tariffGrowth = 1 + valueOf(assumptions, "finance.tariffEscalationPerYear");
   const yearlyUpkeep = input.solarCostRp * valueOf(assumptions, "opex.yearlyShareOfCapex");
-  const inverterCost = input.solarCostRp * valueOf(assumptions, "inverter.replacementShareOfCapex");
 
   const hasBattery = input.batteryKwh !== null;
+  // SPEC 3.2 step 7: in a battery system the replaced inverter is the hybrid one,
+  // so its replacement costs the ordinary inverter's share plus the battery's fixed cost.
+  const hybridExtra = hasBattery ? valueOf(assumptions, "battery.fixedCost") : 0;
+  const inverterCost = input.solarCostRp * valueOf(assumptions, "inverter.replacementShareOfCapex") + hybridExtra;
   const batteryUpfront = hasBattery ? batteryCostRp(input.batteryKwh as number, assumptions) : 0;
   const batteryReplacement = hasBattery ? (input.batteryKwh as number) * valueOf(assumptions, "battery.costPerKwh") : 0;
 

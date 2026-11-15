@@ -46,6 +46,11 @@ describe("paybackYearOf", () => {
     expect(paybackYearOf([0, 5, 10, 15], 10)).toBe(2); // reaching the cost exactly counts
   });
 
+  it("waits until the total stays at or above the cost: a dip back below it does not count", () => {
+    // Reaches 10 in year 2, falls to 8 in year 3, back above for good from year 4.
+    expect(paybackYearOf([0, 6, 12, 8, 13], 10)).toBe(4);
+  });
+
   it("is null when the total never reaches the cost", () => {
     expect(paybackYearOf([0, 3, 6, 9], 10)).toBeNull();
   });
@@ -100,15 +105,33 @@ describe("projectMoney", () => {
     expect(result.paybackYear).toBeNull();
   });
 
-  it("adds the battery to the upfront cost and buys its cells again in the replacement year", () => {
-    // Upfront: 10m solar + 14.35m fixed + 5 × 3.6m = 42.35m. Year 4 also pays 5 × 3.6m = 18m for new cells.
+  it("adds the battery to the upfront cost, replaces the hybrid inverter, and buys the cells again", () => {
+    // Upfront: 10m solar + 14.35m fixed + 5 × 3.6m = 42.35m.
+    // Year 3 replaces the hybrid inverter: 15% of 10m + the 14.35m fixed cost = 15.85m (SPEC 3.2 step 7).
+    // Year 4 buys new cells: 5 × 3.6m = 18m, the per-kWh part only.
     // Upkeep stays 1% of the solar cost, as in the case without a battery.
     const result = projectMoney({ firstYearSavingsRp: 1_000_000, solarCostRp: 10_000_000, batteryKwh: 5 }, SHORT);
     expect(result.upfrontCostRp).toBe(42_350_000);
-    expect(result.cumulativeSavingsRp[3]).toBeCloseTo(1_170_100, 4); // same as without, up to year 3
-    expect(result.cumulativeSavingsRp[4]).toBeCloseTo(-15_959_601, 4); // 1,170,100 + 970,299 − 100,000 − 18,000,000
-    expect(result.netSavingsRp).toBeCloseTo(-58_309_601, 4); // −15,959,601 − 42,350,000
+    expect(result.cumulativeSavingsRp[2]).toBeCloseTo(1_790_000, 4); // same as without, up to year 2
+    // Year 3: 1,790,000 + 980,100 − 100,000 − 15,850,000; also the no-battery 1,170,100 less the 14.35m fixed cost.
+    expect(result.cumulativeSavingsRp[3]).toBeCloseTo(-13_179_900, 4);
+    expect(result.cumulativeSavingsRp[4]).toBeCloseTo(-30_309_601, 4); // −13,179,900 + 970,299 − 100,000 − 18,000,000
+    expect(result.netSavingsRp).toBeCloseTo(-72_659_601, 4); // −30,309,601 − 42,350,000
     expect(result.paybackYear).toBeNull();
+  });
+
+  it("does not count a payback that the inverter replacement undoes", () => {
+    // Rp10m system saving a flat Rp950,000 a year; no fading, no upkeep; the inverter (15% = 1.5m) in year 12.
+    //   year 11: 11 × 950,000 = 10,450,000, at or above the 10m cost
+    //   year 12: 10,450,000 + 950,000 − 1,500,000 = 9,900,000, back below it
+    //   year 13: 9,900,000 + 950,000 = 10,850,000, above it for good
+    // Payback is the year it is repaid for good: 13, not 11 (SPEC 3.2 step 7).
+    const flatWithInverter = withValues({ "pv.degradationPerYear": 0, "opex.yearlyShareOfCapex": 0 });
+    const result = projectMoney({ firstYearSavingsRp: 950_000, solarCostRp: 10_000_000, batteryKwh: null }, flatWithInverter);
+    expect(result.cumulativeSavingsRp[11]).toBeCloseTo(10_450_000, 4);
+    expect(result.cumulativeSavingsRp[12]).toBeCloseTo(9_900_000, 4);
+    expect(result.cumulativeSavingsRp[13]).toBeCloseTo(10_850_000, 4);
+    expect(result.paybackYear).toBe(13);
   });
 
   it("with version 1's rates, the second year saves 0.5% less: panels fade, tariffs stay flat", () => {
