@@ -52,7 +52,11 @@ export interface EngineInputs {
 
 /** One year of sun data, supplied by the caller (SPEC 3.4). */
 export interface SunSeries {
-  /** 8,760 hourly values of global horizontal irradiance, W/m², local solar time, starting 1 January 00:00. */
+  /**
+   * 8,760 hourly values of global horizontal irradiance, W/m², starting 1 January 00:00.
+   * Hours are in NASA POWER's local time: the time zone of the nearest 15° of longitude,
+   * which is clock time across almost all of Indonesia. Each value is the average over the hour that starts then.
+   */
   ghiWm2: number[];
   source: "live" | "fallback";
 }

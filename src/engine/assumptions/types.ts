@@ -36,8 +36,8 @@ export type TariffClass =
 
 /** One PLN residential tariff class. */
 export interface PowerClass {
-  /** Largest connected power in this class, in VA. Infinity for the open-ended top class. */
-  maxVa: number;
+  /** Largest connected power in this class, in VA. Null for the open-ended top class. */
+  maxVa: number | null;
   subsidised: boolean;
   tariffRpPerKwh: number;
   /** True when PLN bills a minimum monthly charge in this class (postpaid). */

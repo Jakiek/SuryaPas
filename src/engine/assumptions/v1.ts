@@ -98,7 +98,7 @@ export const ASSUMPTIONS_V1: AssumptionSet = {
       R1_1300: { maxVa: 1300, subsidised: false, tariffRpPerKwh: 1444.7, hasMinimumCharge: true },
       R1_2200: { maxVa: 2200, subsidised: false, tariffRpPerKwh: 1444.7, hasMinimumCharge: true },
       R2_3500_5500: { maxVa: 5500, subsidised: false, tariffRpPerKwh: 1699.53, hasMinimumCharge: true },
-      R3_6600_up: { maxVa: Infinity, subsidised: false, tariffRpPerKwh: 1699.53, hasMinimumCharge: true },
+      R3_6600_up: { maxVa: null, subsidised: false, tariffRpPerKwh: 1699.53, hasMinimumCharge: true },
     },
   },
 

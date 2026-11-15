@@ -1,5 +1,5 @@
 // The engine's year: 365 days of 24 hours, with no leap day.
-// Hour 0 is 1 January, 00:00 to 01:00, local solar time.
+// Hour 0 is 1 January, 00:00 to 01:00, local time.
 
 export const HOURS_PER_DAY = 24;
 export const DAYS_PER_YEAR = 365;

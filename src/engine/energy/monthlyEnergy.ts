@@ -11,8 +11,9 @@ import type { ElectricityInput, Monthly } from "../types";
  */
 export function tariffClassOf(connectedVa: number, subsidised: boolean, assumptions: AssumptionSet): TariffClass {
   const classes = assumptions.powerClasses.classes;
+  const fits = (maxVa: number | null) => maxVa === null || connectedVa <= maxVa;
   const smallestFitting = (wantSubsidised: boolean) =>
-    TARIFF_CLASS_ORDER.find((name) => classes[name].subsidised === wantSubsidised && connectedVa <= classes[name].maxVa);
+    TARIFF_CLASS_ORDER.find((name) => classes[name].subsidised === wantSubsidised && fits(classes[name].maxVa));
 
   const match = (subsidised ? smallestFitting(true) : undefined) ?? smallestFitting(false);
   if (match === undefined) {
