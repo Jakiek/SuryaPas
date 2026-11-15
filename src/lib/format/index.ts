@@ -162,14 +162,20 @@ export function formatMoneyRange(
  * A plain number with the locale's separators: 1,65 (id), 1.65 (en).
  * The caller adds the unit symbol, which is the same in both languages
  * (kWp, kWh, m²), through its message: "{size} kWp".
+ *
+ * `minDecimals` keeps trailing zeros where a figure should always show the
+ * same number of decimals: the CO₂ figure is "2,0" (id) and "2.0" (en),
+ * never "2". It defaults to 0, so trailing zeros are dropped.
  */
 export function formatDecimal(
   value: number,
   locale: string,
   maxDecimals = 2,
+  minDecimals = 0,
 ): string {
   return new Intl.NumberFormat(locale, {
-    maximumFractionDigits: maxDecimals,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: Math.max(maxDecimals, minDecimals),
   }).format(value);
 }
 

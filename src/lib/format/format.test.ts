@@ -159,6 +159,13 @@ describe("formatDecimal", () => {
     expect(formatDecimal(6.37, "id", 1)).toBe("6,4");
     expect(formatDecimal(6.37, "en", 0)).toBe("6");
   });
+
+  it("keeps a fixed number of decimals when asked, as the CO₂ figure does", () => {
+    expect(formatDecimal(2, "id", 1, 1)).toBe("2,0");
+    expect(formatDecimal(2, "en", 1, 1)).toBe("2.0");
+    expect(formatDecimal(1.96, "id", 1, 1)).toBe("2,0");
+    expect(formatDecimal(0.43, "en", 1, 1)).toBe("0.4");
+  });
 });
 
 describe("formatYearsRange", () => {

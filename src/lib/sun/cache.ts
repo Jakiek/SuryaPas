@@ -29,3 +29,16 @@ export class MemorySunCache implements SunCache {
 export function cacheKey(cellId: string, year: number): string {
   return `${year}:${cellId}`;
 }
+
+/**
+ * The reverse of cacheKey: "2025:-7.75,110.25" → { year: 2025, cellId: "-7.75,110.25" }.
+ * A cell id never contains ":", so the first ":" is the separator.
+ */
+export function parseCacheKey(key: string): { cellId: string; year: number } {
+  const separator = key.indexOf(":");
+  const year = Number(key.slice(0, separator));
+  if (separator === -1 || !Number.isInteger(year)) {
+    throw new Error(`not a sun cache key: ${key}`);
+  }
+  return { cellId: key.slice(separator + 1), year };
+}
