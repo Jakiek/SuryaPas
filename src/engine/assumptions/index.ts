@@ -2,6 +2,14 @@ import type { AssumptionKey, AssumptionOverrides, AssumptionSet } from "./types"
 
 export * from "./types";
 export { ASSUMPTIONS_V1 } from "./v1";
+export { ASSUMPTIONS_V2 } from "./v2";
+import { ASSUMPTIONS_V2 } from "./v2";
+
+/**
+ * The version new assessments use. Older versions stay, so a saved result can be shown
+ * with the numbers it was made with (SPEC 4.2).
+ */
+export const CURRENT_ASSUMPTIONS: AssumptionSet = ASSUMPTIONS_V2;
 
 /** Reads one scalar assumption. */
 export function valueOf(assumptions: AssumptionSet, key: AssumptionKey): number {

@@ -2,7 +2,7 @@
 
 Every number the engine uses. `docs/SPEC.md` section 3 defines how each is used.
 
-**Source of truth.** `src/engine/assumptions/v1.ts` is authoritative for values. This file is the research record behind them: sources, confidence and open items, under the same keys. A changed value means a new version file (SPEC 4.2) and an update here.
+**Source of truth.** `src/engine/assumptions/v2.ts` (the current version, `CURRENT_ASSUMPTIONS`) is authoritative for values; `v1.ts` stays as released. This file is the research record behind them: sources, confidence and open items, under the same keys. A changed value means a new version file (SPEC 4.2) and an update here.
 
 **Confidence labels.** The assumptions screen shows these to users, so they must be honest.
 
@@ -14,7 +14,7 @@ Every number the engine uses. `docs/SPEC.md` section 3 defines how each is used.
 | `decision` | A product choice, agreed with the owner |
 | `open` | No acceptable value yet; the provisional value keeps the engine runnable |
 
-All values were collected on 2026-11-14. Rupiah amounts are written with comma thousands separators in this file.
+All values were collected on 2026-11-14, except the two that version 2 changed on 2026-11-15 after the PVGIS check (`pv.performanceRatio` and the orientation table; see `docs/VALIDATION.md`). Rupiah amounts are written with comma thousands separators in this file.
 
 ## Tariffs (Rp per kWh), October to December 2026
 
@@ -96,7 +96,7 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 �
 | `panel.areaM2` | 2.6 | sourced | Module 2,279 × 1,134 mm = 2.584 m², same datasheet; 2.6 is that rounded up. Density 213 W/m² |
 | `system.minKwp` | 1.0 | thin | 1 kWp is the smallest on-grid package listed by Zonit Solar, Powersurya, Sobatbangun, Lensolar and Suryaqua's 1.0 kW package (price table above). One outlier: Suryaqua also lists a 0.5 kWp starter at Rp9.8 million. No installer statement of a minimum was found. Unchanged |
 | `roof.usableFraction` | 0.65 | decision | Adjustable by the user; agreed range 0.60–0.70 |
-| `pv.performanceRatio` | 0.78 | judgment | Calibrated against PVGIS in T07 |
+| `pv.performanceRatio` | 0.75 | thin | Version 2. PVGIS 5.3's yield ÷ irradiation on a flat roof (PVGIS-ERA5, crystalline silicon, free-standing, its default 14% system loss) at Medan, Yogyakarta and Makassar: 0.747, 0.754, 0.743; mean 0.748, rounded. Within PVGIS's loss, heat costs about 11% in this climate, which version 1's 0.78 (a judgment) did not allow for. One model with a default system loss, so `thin`. Read 2026-11-15: [PVGIS API](https://re.jrc.ec.europa.eu/api/v5_3/PVcalc); method and numbers in `docs/VALIDATION.md` |
 | `pv.degradationPerYear` | 0.005 | decision | |
 | `shade.none` / `some` / `heavy` | 1.00 / 0.90 / 0.70 | judgment | |
 | `battery.roundTripEfficiency` | 0.90 | judgment | |
@@ -106,13 +106,15 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 �
 
 ### Orientation factor (multiplier on horizontal irradiance)
 
-Provisional. T07 replaces these with values derived from PVGIS runs.
+Version 2, `sourced`, 2026-11-15. Each value is PVGIS 5.3's yearly yield on the tilted roof ÷ its yield on a flat roof at the same place, averaged over Medan (3.6° N) and Yogyakarta (7.8° S), and over east and west. Gentle is taken as 25° and steep as 45°, the angles of the roof-step pictures in `mock/atap.html` rounded to 5°; no document gives the slopes an angle, which SPEC 3.2 step 3 now fixes. `scripts/validate-pvgis.mjs` reproduces the table, and `docs/VALIDATION.md` shows it for every 5° from 5° to 45°.
 
 | Slope | Facing the equator | East or west | Facing away |
 | --- | --- | --- | --- |
 | flat | 1.00 | 1.00 | 1.00 |
-| gentle | 1.01 | 0.99 | 0.97 |
-| steep | 0.97 | 0.94 | 0.88 |
+| gentle (25°) | 0.97 | 0.95 | 0.90 |
+| steep (45°) | 0.85 | 0.84 | 0.72 |
+
+Version 1 (provisional, `judgment`) had gentle 1.01 / 0.99 / 0.97 and steep 0.97 / 0.94 / 0.88. Every factor fell; the largest change is steep facing away from the equator, 0.88 to 0.72. Near the equator the sun is high and crosses to both sides of the sky in a year, so a tilted panel turns away from it for part of the year: a roof facing the equator yields less than a flat one beyond about 15°, and any other facing yields less at every tilt.
 
 ## Household use
 
@@ -144,9 +146,9 @@ The load shape is the engine's weakest input and its most important one. Any mea
 | `sun.source` | NASA POWER hourly API | decision | Endpoint `/api/temporal/hourly/point`; hourly data from 2001; default time standard is local solar time; 15 parameters per request at most: [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/) |
 | `sun.year` | most recent complete calendar year | decision | |
 | `sun.cacheCellDegrees` | 0.5 | decision | |
-| `sun.crossCheck` | PVGIS 5.3 | decision | `https://re.jrc.ec.europa.eu/api/v5_3/`, GET only, 30 calls per second per address: [JRC](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/api-non-interactive-service_en) |
+| `sun.crossCheck` | PVGIS 5.3, database PVGIS-ERA5 | decision | `https://re.jrc.ec.europa.eu/api/v5_3/`, GET only, 30 calls per second per address: [JRC](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/api-non-interactive-service_en). PVGIS-ERA5 is the only PVGIS 5.3 database that covers Indonesia (T07, 2026-11-15; evidence in `docs/VALIDATION.md`) |
 
-Unconfirmed, to settle in T06 and T07: the exact NASA POWER parameter name for global horizontal irradiance, and which PVGIS radiation database covers Indonesia.
+Settled: the NASA POWER parameter is `ALLSKY_SFC_SW_DWN` (T06), and the PVGIS database for Indonesia is PVGIS-ERA5, a reanalysis, since the satellite database PVGIS-SARAH3 stops short of it (T07).
 
 ## Open items: T03 record (2026-11-14)
 
