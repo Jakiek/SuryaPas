@@ -10,6 +10,7 @@ import {
   parseNasaHourly,
   SunDataError,
   whPerM2ToWattsPerM2,
+  withTimeLimit,
 } from "./nasa";
 
 // The fixture is a real NASA POWER response, recorded 2026-11-14, for the 0.5°
@@ -185,14 +186,51 @@ describe("the request", () => {
         init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
       })) as typeof fetch;
     await expect(
-      fetchNasaYear({ lat: -7.75, lon: 110.25, year: 2025, fetchFn: hangingFetch, timeoutMs: 20, maxGapHours: 3 }),
+      withTimeLimit(20, (signal) =>
+        fetchNasaYear({ lat: -7.75, lon: 110.25, year: 2025, fetchFn: hangingFetch, signal, maxGapHours: 3 }),
+      ),
     ).rejects.toThrow("aborted");
   });
 
   it("rejects a non-200 answer", async () => {
     const failingFetch = (async () => new Response("nope", { status: 503 })) as typeof fetch;
     await expect(
-      fetchNasaYear({ lat: -7.75, lon: 110.25, year: 2025, fetchFn: failingFetch, timeoutMs: 1000, maxGapHours: 3 }),
+      withTimeLimit(1000, (signal) =>
+        fetchNasaYear({ lat: -7.75, lon: 110.25, year: 2025, fetchFn: failingFetch, signal, maxGapHours: 3 }),
+      ),
     ).rejects.toThrow(SunDataError);
+  });
+
+  it("stops every request under one time limit together", async () => {
+    let aborted = 0;
+    const hanging = (signal: AbortSignal) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener("abort", () => {
+          aborted += 1;
+          reject(new Error("aborted"));
+        });
+      });
+    await expect(withTimeLimit(20, (signal) => Promise.all([hanging(signal), hanging(signal)]))).rejects.toThrow(
+      "aborted",
+    );
+    expect(aborted).toBe(2);
+  });
+
+  it("aborts a request still running once its partner has failed", async () => {
+    let partnerAborted = false;
+    const partner = (signal: AbortSignal) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener("abort", () => {
+          partnerAborted = true;
+          reject(new Error("aborted"));
+        });
+      });
+    const failsAtOnce = async () => {
+      throw new SunDataError("broken");
+    };
+    await expect(
+      withTimeLimit(60_000, (signal) => Promise.all([partner(signal), failsAtOnce()])),
+    ).rejects.toThrow("broken");
+    expect(partnerAborted).toBe(true);
   });
 });

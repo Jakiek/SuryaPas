@@ -1,9 +1,12 @@
 // The sun-data service: cache first, then NASA POWER with a time limit, then
-// the bundled series of the nearest city.
+// the bundled series of the nearest city. Whichever it returns, live or
+// fallback, is already scaled to the long-term mean (SPEC 3.4).
 import { cacheKey, type SunCache } from "./cache";
 import { loadNearestFallback, type FallbackSun } from "./fallback";
 import { gridCellFor } from "./grid";
-import { fetchNasaYear, latestCompleteYear } from "./nasa";
+import { longTermYears, scaleToLongTerm } from "./longTerm";
+import { fetchNasaYear, latestCompleteYear, withTimeLimit } from "./nasa";
+import { fetchNasaMonthly } from "./nasaMonthly";
 
 // Settings of this service. They are plumbing, not product numbers, so they are
 // not in docs/ASSUMPTIONS.md.
@@ -14,7 +17,8 @@ export const DEFAULT_TIMEOUT_MS = 8000;
 export const DEFAULT_MAX_GAP_HOURS = 3;
 
 export interface SunResult {
-  /** 8,760 hourly values of global horizontal irradiance, W/m², local solar time. */
+  /** 8,760 hourly values of global horizontal irradiance, W/m², local solar
+   *  time, scaled to the long-term mean. */
   series: number[];
   source: "live" | "fallback";
   cellId: string;
@@ -56,16 +60,21 @@ export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<S
     return { series: cached.series, source: "live", cellId: cell.cellId, year: cached.year };
   }
 
-  // 2. Ask NASA POWER about the cell centre, so everyone in the cell gets one answer.
+  // 2. Ask NASA POWER about the cell centre, so everyone in the cell gets one
+  //    answer: the hourly year, and the monthly record of the twenty years
+  //    ending with it. Both requests run at once, under one time limit.
   try {
-    const series = await fetchNasaYear({
-      lat: cell.centreLat,
-      lon: cell.centreLon,
-      year,
-      fetchFn: deps.fetchFn,
-      timeoutMs: deps.timeoutMs,
-      maxGapHours: deps.maxGapHours,
-    });
+    const { firstYear, lastYear } = longTermYears(year);
+    const point = { lat: cell.centreLat, lon: cell.centreLon, fetchFn: deps.fetchFn };
+    const [hourly, monthlyRecord] = await withTimeLimit(deps.timeoutMs, (signal) =>
+      Promise.all([
+        fetchNasaYear({ ...point, year, signal, maxGapHours: deps.maxGapHours }),
+        fetchNasaMonthly({ ...point, firstYear, lastYear, signal }),
+      ]),
+    );
+    // Scale to the long-term mean (SPEC 3.4) before caching, so the cache
+    // only ever holds the series the engine should see.
+    const { series } = scaleToLongTerm(hourly, monthlyRecord, year);
     await deps.cache.set(key, { series, year });
     return { series, source: "live", cellId: cell.cellId, year };
   } catch {

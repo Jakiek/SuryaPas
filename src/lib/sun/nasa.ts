@@ -161,31 +161,45 @@ export function parseNasaHourly(
 
 // ------------------------------------------------------------------- fetch
 
+/**
+ * Run `work` under one time limit. The signal it receives aborts when the
+ * limit is reached, so every request given that signal stops together: this
+ * is how the hourly and the monthly request share one limit (SPEC 3.4). The
+ * timer covers the whole of `work`, including reading the bodies. When `work`
+ * ends, the signal is aborted too, so a request still running after its
+ * partner failed is not left hanging.
+ */
+export async function withTimeLimit<T>(
+  timeoutMs: number,
+  work: (signal: AbortSignal) => Promise<T>,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await work(controller.signal);
+  } finally {
+    clearTimeout(timer);
+    controller.abort();
+  }
+}
+
 export interface FetchNasaOptions {
   lat: number;
   lon: number;
   year: number;
   fetchFn: typeof fetch;
-  timeoutMs: number;
+  /** Ends the request early; the caller owns the time limit (withTimeLimit). */
+  signal: AbortSignal;
   maxGapHours: number;
 }
 
-/** Fetch one year for one point. Throws if it is slow, fails or looks wrong. */
+/** Fetch one year for one point. Throws if it is aborted, fails or looks wrong. */
 export async function fetchNasaYear(options: FetchNasaOptions): Promise<number[]> {
-  const { lat, lon, year, fetchFn, timeoutMs, maxGapHours } = options;
-  const controller = new AbortController();
-  // The timer covers the whole exchange, including reading the body.
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetchFn(buildNasaUrl(lat, lon, year), {
-      signal: controller.signal,
-    });
-    if (!response.ok) {
-      throw new SunDataError(`NASA POWER answered ${response.status}`);
-    }
-    const json: unknown = await response.json();
-    return parseNasaHourly(json, year, maxGapHours);
-  } finally {
-    clearTimeout(timer);
+  const { lat, lon, year, fetchFn, signal, maxGapHours } = options;
+  const response = await fetchFn(buildNasaUrl(lat, lon, year), { signal });
+  if (!response.ok) {
+    throw new SunDataError(`NASA POWER answered ${response.status}`);
   }
+  const json: unknown = await response.json();
+  return parseNasaHourly(json, year, maxGapHours);
 }
