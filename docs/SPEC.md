@@ -55,7 +55,9 @@ Four steps, one topic per screen, with a progress indicator and back navigation.
 **Step 3: electricity.**
 - Prepaid tokens or monthly bill. The wording of the next fields adapts ("how much do you top up a month" or "your monthly bill").
 - PLN power class, including the two subsidised classes.
-- Monthly spend in rupiah: one month required, up to twelve accepted. With fewer than twelve, a note says more months sharpen the estimate.
+- Monthly spend in rupiah: one month required, up to twelve accepted. With fewer than twelve, a note says more months sharpen the estimate, and the fields are numbered, since the engine averages them and their order does not matter. With all twelve, the fields carry the month names January to December, because the engine reads twelve values in that order.
+- A monthly spend is rejected when it is more than the connection could use in a month: connected kVA × 24 hours × 31 days × the class tariff, with the bill-overhead share added back. The tariff and the share come from the assumption set. This catches an extra zero, which would otherwise size a system several times too large.
+- Power values offered above 7,700 VA: 10,600, 11,000, 13,200 and 16,500 VA.
 
 **Step 4: lifestyle.** Four yes/no questions: is someone home on weekdays; is air conditioning on during the day; does someone work from home; is there an electric vehicle charged at home.
 
