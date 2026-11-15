@@ -43,6 +43,22 @@ describe("the bundled files", () => {
     }
   });
 
+  it("holds, in every file, a year whose total is the recorded long-term mean", async () => {
+    for (const city of FALLBACK_CITIES) {
+      const { year, longTerm, series } = await loadFallbackFile(city.id);
+      // The twenty years ending with the hourly year, as SPEC 3.4 says.
+      expect(longTerm.firstYear).toBe(year - 19);
+      expect(longTerm.lastYear).toBe(year);
+      expect(longTerm.yearsUsed.length).toBeGreaterThanOrEqual(10);
+      // The factor is the mean ÷ the year's own total (both rounded to 0.01 kWh/m²).
+      expect(longTerm.factor).toBeCloseTo(longTerm.meanKwhPerM2 / longTerm.hourlyYearKwhPerM2, 4);
+      // The scaled series adds up to the mean. Rounding: each of about 4,400
+      // daylight hours is rounded to 0.01 W/m², and the mean to 0.01 kWh/m².
+      const yearlyKwhPerM2 = series.reduce((sum, watts) => sum + watts, 0) / 1000;
+      expect(Math.abs(yearlyKwhPerM2 - longTerm.meanKwhPerM2)).toBeLessThan(0.05);
+    }
+  });
+
   it("refuses an unknown city", async () => {
     await expect(loadFallbackFile("atlantis")).rejects.toThrow();
   });

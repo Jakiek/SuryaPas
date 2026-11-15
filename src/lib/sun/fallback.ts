@@ -1,5 +1,8 @@
 // Bundled sun series for major cities, used when NASA POWER is slow or down.
+// Each series is scaled to its city's long-term mean by the build script, the
+// same way the live service scales a fetched one, so it is used as it is.
 import { FALLBACK_CITIES, type FallbackCity } from "./cities";
+import type { LongTermScaling } from "./longTerm";
 import { HOURS_PER_YEAR } from "./nasa";
 
 export interface FallbackFile {
@@ -8,7 +11,14 @@ export interface FallbackFile {
   /** Centre of the 0.5° cell that was fetched for this city. */
   cellCentreLat: number;
   cellCentreLon: number;
+  /** The hourly year, before scaling. */
   year: number;
+  /** When NASA POWER was asked for both records. */
+  fetchedAt: string;
+  /** How the series was scaled to the long-term mean (SPEC 3.4). Factor to 6
+   *  decimals and kWh/m² to 2, as the build script writes them. */
+  longTerm: LongTermScaling;
+  /** 8,760 hourly values in W/m², already scaled. */
   series: number[];
 }
 
