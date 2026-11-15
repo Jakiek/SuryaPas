@@ -311,9 +311,12 @@ function ScalarRow({ entryKey, overrides, locale, onValidValue, onProblemChange,
     >
       {entry.adjustable && (
         <AdjustField
+          entryKey={entryKey}
           name={name}
           entry={entry}
           currentValue={currentValue}
+          valueInForce={(key) => overrides[key] ?? assumptions.entries[key].value}
+          nameOf={(key) => t(`entries.${key}.name`)}
           onValidValue={(value) => onValidValue(entryKey, value)}
           onProblemChange={(hasProblem) => onProblemChange(entryKey, hasProblem)}
         />

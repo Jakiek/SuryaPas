@@ -2,6 +2,7 @@
 // (docs/DESIGN.md "Number formats"). The digits come from Intl.
 
 import { formatDecimal } from "../../lib/format";
+import { fractionToPercent } from "./percent";
 import type { UnitKind } from "./units";
 
 // 0.005 is a real assumption (yearly panel wear), so decimals are kept well past two places.
@@ -25,12 +26,16 @@ export function rupiahSign(locale: string): string {
 /** The figure shown in the row: "Rp16.000.000", "0,9". Tariffs keep their decimals: "Rp1.444,7". */
 export function showValue(value: number, unit: UnitKind | null, locale: string): string {
   if (unit?.kind === "money") return rupiahFormatter(locale).format(value).replace(/\s/g, "");
+  if (unit?.kind === "share") {
+    return new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 4 }).format(value);
+  }
   return formatDecimal(value, locale, MAX_DECIMALS);
 }
 
-/** The text put into the input: the number alone, because the "Rp" is drawn beside the box. */
-export function showEditable(value: number, locale: string): string {
-  return formatDecimal(value, locale, MAX_DECIMALS);
+/** The text put into the input: the number alone (percent for a share), because the "Rp" or "%" is drawn beside the box. */
+export function showEditable(value: number, unit: UnitKind | null, locale: string): string {
+  const shown = unit?.kind === "share" ? fractionToPercent(value) : value;
+  return formatDecimal(shown, locale, MAX_DECIMALS);
 }
 
 /** An ISO date ("2026-11-15") written out in the language: "15 November 2026". */

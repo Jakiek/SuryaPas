@@ -82,6 +82,27 @@ for (const c of LOCALES) {
       await expect(page.getByRole("link", { name: c.m.actions.backToResult })).toBeVisible();
     });
 
+    test("a share is shown and typed as percent but stored as a fraction", async ({ page }) => {
+      await open(page, c.locale);
+      const field = page.getByLabel(c.m.edit.label.replace("{name}", c.m.entries.finance.tariffEscalationPerYear.name));
+      await field.fill(c.locale === "id" ? "0,5" : "0.5");
+      await field.blur();
+      await expect(page.getByText(c.locale === "id" ? "0,5%" : "0.5%", { exact: true }).first()).toBeVisible();
+      const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}").overrides, STORAGE_KEY);
+      expect(stored).toEqual({ "finance.tariffEscalationPerYear": 0.005 });
+    });
+
+    test("a low estimate above the typical one is rejected, naming the neighbour", async ({ page }) => {
+      await open(page, c.locale);
+      const low = page.getByLabel(c.m.edit.label.replace("{name}", c.m.entries.capex.perKwp.low.name));
+      await low.fill(c.typed);
+      await low.blur();
+      const neighbour = c.m.entries.capex.perKwp.typical.name;
+      await expect(page.getByText(`"${neighbour}"`)).toBeVisible();
+      const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}").overrides, STORAGE_KEY);
+      expect(stored).toEqual({});
+    });
+
     test("back to result after a change sends the override as a new assessment", async ({ page }) => {
       let body: { overrides?: Record<string, number> } | null = null;
       await page.route("**/api/assessments", async (route) => {

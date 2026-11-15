@@ -8,7 +8,7 @@
   },
   "confidence": {
     "heading": "How far to trust a number",
-    "intro": "Each entry carries one of five labels. They describe how well we know the number, not how much it matters.",
+    "intro": "Each entry carries one of four labels. They describe how well we know the number, not how much it matters.",
     "labels": {
       "sourced": {
         "name": "Sourced",
@@ -25,10 +25,6 @@
       "decision": {
         "name": "Decision",
         "meaning": "A product choice we made, not a fact that could be looked up."
-      },
-      "open": {
-        "name": "Open",
-        "meaning": "No good value found yet. A placeholder keeps the calculator running, so check it with an installer."
       }
     }
   },
@@ -97,9 +93,8 @@
     "hours": "hours",
     "year": "year",
     "years": "years",
-    "share": "as a fraction",
-    "shareYear": "as a fraction a year",
-    "multiplier": "multiplier"
+    "multiplier": "multiplier",
+    "perYear": "a year"
   },
   "row": {
     "changedByYou": "Changed by you",
@@ -116,7 +111,9 @@
   },
   "errors": {
     "notANumber": "That is not a number. Type digits only, for example 12.5.",
-    "outOfRange": "That is outside the allowed range. Use a value {range}."
+    "outOfRange": "That is outside the allowed range. Use a value {range}.",
+    "costAbove": "This estimate cannot be higher than \"{name}\", which is {value}. Change that one first, or choose a lower value.",
+    "costBelow": "This estimate cannot be lower than \"{name}\", which is {value}. Change that one first, or choose a higher value."
   },
   "actions": {
     "resetAll": "Reset all changes",

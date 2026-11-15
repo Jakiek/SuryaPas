@@ -40,7 +40,7 @@ for (const locale of ["id", "en"]) {
       }
     });
 
-    it("explain all five confidence labels", () => {
+    it("explain every confidence label an entry can carry", () => {
       for (const label of CONFIDENCE_LABELS) {
         expect(typeof lookup(messages, `confidence.labels.${label}.name`)).toBe("string");
         expect(typeof lookup(messages, `confidence.labels.${label}.meaning`)).toBe("string");
@@ -58,7 +58,7 @@ describe("units", () => {
   it("have a message for every word unit", () => {
     for (const locale of ["id", "en"]) {
       const messages = readNamespace(locale);
-      for (const unit of ["hours", "year", "years", "share", "shareYear", "multiplier", "per"]) {
+      for (const unit of ["hours", "year", "years", "perYear", "multiplier", "per"]) {
         expect(typeof lookup(messages, `units.${unit}`), `${locale} ${unit}`).toBe("string");
       }
     }

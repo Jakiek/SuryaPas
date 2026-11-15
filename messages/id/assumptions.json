@@ -8,7 +8,7 @@
   },
   "confidence": {
     "heading": "Seberapa jauh angka bisa dipercaya",
-    "intro": "Setiap angka diberi satu dari lima label. Label ini menunjukkan seberapa pasti kami tahu angkanya, bukan seberapa penting angka itu.",
+    "intro": "Setiap angka diberi satu dari empat label. Label ini menunjukkan seberapa pasti kami tahu angkanya, bukan seberapa penting angka itu.",
     "labels": {
       "sourced": {
         "name": "Bersumber",
@@ -25,10 +25,6 @@
       "decision": {
         "name": "Keputusan",
         "meaning": "Pilihan produk yang kami tetapkan, bukan fakta yang bisa dicari."
-      },
-      "open": {
-        "name": "Belum ada",
-        "meaning": "Belum ada nilai yang layak. Angka sementara dipakai agar kalkulator tetap jalan, jadi tanyakan ke pemasang."
       }
     }
   },
@@ -97,9 +93,8 @@
     "hours": "jam",
     "year": "tahun",
     "years": "tahun",
-    "share": "sebagai pecahan",
-    "shareYear": "sebagai pecahan per tahun",
-    "multiplier": "pengali"
+    "multiplier": "pengali",
+    "perYear": "per tahun"
   },
   "row": {
     "changedByYou": "Diubah oleh Anda",
@@ -116,7 +111,9 @@
   },
   "errors": {
     "notANumber": "Itu bukan angka. Ketik angka saja, misalnya 12,5.",
-    "outOfRange": "Angka itu di luar batas yang boleh. Pakai angka {range}."
+    "outOfRange": "Angka itu di luar batas yang boleh. Pakai angka {range}.",
+    "costAbove": "Perkiraan ini tidak boleh lebih tinggi dari \"{name}\", yaitu {value}. Ubah yang itu lebih dulu, atau pilih angka yang lebih rendah.",
+    "costBelow": "Perkiraan ini tidak boleh lebih rendah dari \"{name}\", yaitu {value}. Ubah yang itu lebih dulu, atau pilih angka yang lebih tinggi."
   },
   "actions": {
     "resetAll": "Kembalikan semua ke semula",
