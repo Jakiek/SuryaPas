@@ -1,0 +1,129 @@
+{
+  "title": "Hasil perhitungan Anda",
+  "home": {
+    "example": "Rumah contoh di {place}",
+    "power": "{power} VA",
+    "subsidised": "bersubsidi",
+    "postpaid": "pascabayar",
+    "prepaid": "prabayar",
+    "spendOne": "tagihan {amount} per bulan",
+    "spendAverage": "tagihan rata-rata {amount} per bulan",
+    "topUpOne": "isi token {amount} per bulan",
+    "topUpAverage": "isi token rata-rata {amount} per bulan"
+  },
+  "verdict": {
+    "ledeRecommended": "Yang pas untuk rumah ini",
+    "ledeChosen": "Pilihan Anda",
+    "answer": "{count} panel",
+    "sub": "{size} kWp · memakai sekitar {area} m² atap.",
+    "kwp": "kWp adalah daya puncak panel.",
+    "cost": "Biaya awal",
+    "payback": "Balik modal",
+    "paybackAtLeast": "{years}+",
+    "paybackNever": "Tidak balik modal"
+  },
+  "warnings": {
+    "doesNotPayBack": {
+      "title": "Dengan tarif Anda, panel surya kemungkinan tidak balik modal.",
+      "body": "Dengan harga pemasang yang biasa, hematnya tidak menutup biaya dalam {years} tahun. Ini wajar untuk golongan bersubsidi dan rumah dengan tagihan kecil."
+    },
+    "heavyShade": {
+      "title": "Atap Anda banyak terkena bayangan.",
+      "body": "Minta pemasang memeriksa atap dulu sebelum memercayai angka ini. Bayangan bisa memangkas hasil panel lebih banyak dari perkiraan kami."
+    },
+    "approximate": {
+      "title": "Perkiraan kasar.",
+      "body": "Data matahari untuk lokasi Anda belum bisa diambil, jadi kami memakai data kota besar terdekat. Angkanya bisa sedikit meleset."
+    }
+  },
+  "tooSmall": {
+    "lede": "Hasil untuk rumah ini",
+    "heading": "Atap terlalu kecil",
+    "body": "Sistem terkecil butuh sekitar {required} m² atap. Atap yang Anda tandai {area} m².",
+    "hint": "Coba tandai sisi atap yang lebih luas, atau gabungkan atap teras atau garasi bila menghadap arah yang sama."
+  },
+  "picker": {
+    "heading": "Coba jumlah panel lain",
+    "group": "Jumlah panel",
+    "panel": "{count} panel",
+    "panelRecommended": "{count} panel, yang pas",
+    "belowMinimum": "{count} panel, di bawah ukuran terkecil",
+    "pas": "pas",
+    "sayRecommended": "Ini yang pas: hemat bersih paling besar untuk pemakaian siang Anda.",
+    "sayFewer": "Kurang dari yang pas. Masih ada pemakaian siang yang belum tertutup panel.",
+    "sayMore": "Lebih dari yang pas. {wasted}% listrik panel terbuang ke jaringan tanpa dibayar."
+  },
+  "day": {
+    "heading": "Satu hari di rumah Anda",
+    "caption": "Panel menghasilkan {generated} kWh sehari. {used} kWh langsung dipakai di rumah, {exported} kWh mengalir ke jaringan tanpa dibayar.",
+    "used": "dipakai langsung",
+    "surplus": "terbuang ke jaringan",
+    "load": "pemakaian rumah",
+    "axis": "{value} kW"
+  },
+  "ledger": {
+    "monthly": "Hemat per bulan",
+    "share": "Listrik panel yang terpakai",
+    "net": "Hemat bersih dalam {years} tahun",
+    "co2": "CO₂ yang dihindari",
+    "co2Unit": "ton/tahun"
+  },
+  "payback": {
+    "heading": "Kapan balik modal",
+    "captionRange": "Penghematan menutup biaya awal pada tahun ke-{low} sampai ke-{high}, tergantung harga pemasang.",
+    "captionOne": "Penghematan menutup biaya awal pada tahun ke-{low}.",
+    "captionOpen": "Dengan harga pemasang termurah, penghematan menutup biaya awal pada tahun ke-{low}. Dengan harga tertinggi, belum tertutup dalam {years} tahun.",
+    "captionNever": "Dalam {years} tahun, penghematan tidak menutup biaya awal pada jumlah panel ini.",
+    "captionNet": "Setelah {years} tahun, hemat bersih sekitar {net}.",
+    "captionLoss": "Setelah {years} tahun, dengan harga biasa, Anda rugi sekitar {loss}.",
+    "cost": "biaya awal",
+    "savings": "total hemat",
+    "paysBack": "balik modal",
+    "yearZero": "tahun 0"
+  },
+  "battery": {
+    "headingNotWorth": "Baterai belum sepadan",
+    "headingWorth": "Baterai menambah hemat",
+    "headingNone": "Belum perlu baterai",
+    "note": "Baterai menyimpan kelebihan listrik siang untuk dipakai malam. Baterai juga berguna saat listrik padam, tetapi manfaat itu tidak kami hitung dalam rupiah.",
+    "none": "Pada jumlah panel ini, sisa listrik siang terlalu sedikit untuk mengisi baterai terkecil, jadi baterai tidak kami tawarkan.",
+    "caption": "Sistem yang sama tanpa baterai dan dengan baterai",
+    "without": "Tanpa baterai",
+    "with": "Dengan baterai {size} kWh",
+    "cost": "Biaya awal",
+    "monthly": "Hemat per bulan",
+    "payback": "Balik modal",
+    "net": "Hemat bersih, {years} th"
+  },
+  "next": {
+    "heading": "Langkah berikutnya",
+    "surveyTitle": "Minta survei pemasang",
+    "surveyBody": "Pemasang memeriksa atap Anda dan memberi harga pasti.",
+    "applyTitle": "Ajukan permohonan ke PLN",
+    "applyBody": "Permohonan PLTS atap dibuka dua kali setahun, pada Januari dan Juli.",
+    "installTitle": "Pasang setelah disetujui",
+    "installBody": "Pemasangan dilakukan oleh badan usaha berizin, dan baru boleh setelah PLN menyetujui.",
+    "prepaid": "Anda pelanggan prabayar. Saat panel disetujui, PLN memindahkan Anda ke tagihan bulanan (pascabayar).",
+    "quotaTitle": "Persetujuan bergantung pada kuota",
+    "quotaBody": "PLN menetapkan kuota PLTS atap per wilayah. SuryaPas tidak mengetahui sisa kuota di wilayah Anda."
+  },
+  "actions": {
+    "quote": "Minta penawaran pemasang",
+    "soon": "Segera hadir",
+    "quoteSending": "Mencatat…",
+    "quoteThanks": "Terima kasih. Minat Anda kami catat, tanpa menyimpan data pribadi.",
+    "quoteFailed": "Minat Anda belum tercatat. Coba ketuk sekali lagi.",
+    "copy": "Salin tautan hasil",
+    "copied": "Tautan disalin",
+    "copyFailed": "Tautan belum tersalin. Salin alamat halaman ini dari bilah alamat.",
+    "assumptions": "Lihat asumsi perhitungan",
+    "edit": "Ubah data",
+    "planOwn": "Hitung untuk rumah Anda",
+    "shared": "Hasil ini dibagikan lewat tautan. Anda bisa melihatnya, tetapi tidak mengubahnya.",
+    "exampleNote": "Ini rumah contoh. Angkanya dihitung dengan mesin hitung yang sama."
+  },
+  "method": {
+    "margin": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 10% dari PVGIS, alat hitung surya milik Komisi Eropa.",
+    "version": "Dihitung dengan asumsi versi {version}."
+  }
+}

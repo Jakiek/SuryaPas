@@ -1,0 +1,129 @@
+{
+  "title": "Your result",
+  "home": {
+    "example": "Example house in {place}",
+    "power": "{power} VA",
+    "subsidised": "subsidised",
+    "postpaid": "monthly bill",
+    "prepaid": "prepaid",
+    "spendOne": "{amount} a month",
+    "spendAverage": "{amount} a month on average",
+    "topUpOne": "{amount} of tokens a month",
+    "topUpAverage": "{amount} of tokens a month on average"
+  },
+  "verdict": {
+    "ledeRecommended": "The right fit for this home",
+    "ledeChosen": "Your choice",
+    "answer": "{count, plural, one {# panel} other {# panels}}",
+    "sub": "{size} kWp · takes about {area} m² of roof.",
+    "kwp": "kWp is the panels' peak power.",
+    "cost": "Upfront cost",
+    "payback": "Pays back in",
+    "paybackAtLeast": "{years}+",
+    "paybackNever": "Does not pay back"
+  },
+  "warnings": {
+    "doesNotPayBack": {
+      "title": "At your tariff, solar is unlikely to pay for itself.",
+      "body": "At a typical installer's price, the savings do not cover the cost within {years} years. That is normal for the subsidised classes and for homes with small bills."
+    },
+    "heavyShade": {
+      "title": "Your roof is heavily shaded.",
+      "body": "Have an installer look at the roof before you rely on these figures. Shade can cut the panels' output by more than we allow for."
+    },
+    "approximate": {
+      "title": "Approximate.",
+      "body": "We could not fetch sun data for your location, so we used the nearest major city's. The figures may be somewhat off."
+    }
+  },
+  "tooSmall": {
+    "lede": "The result for this home",
+    "heading": "Roof too small",
+    "body": "The smallest system needs about {required} m² of roof. The roof you marked is {area} m².",
+    "hint": "Try marking a larger side of the roof, or add a porch or garage roof that faces the same way."
+  },
+  "picker": {
+    "heading": "Try another number of panels",
+    "group": "Number of panels",
+    "panel": "{count, plural, one {# panel} other {# panels}}",
+    "panelRecommended": "{count, plural, one {# panel} other {# panels}}, the right fit",
+    "belowMinimum": "{count, plural, one {# panel} other {# panels}}, below the smallest system",
+    "pas": "pas",
+    "sayRecommended": "The right fit: the largest net saving for the power you use by day.",
+    "sayFewer": "Fewer than the right fit. Some of your daytime use is still not covered by the panels.",
+    "sayMore": "More than the right fit. {wasted}% of the panels' power goes to the grid unpaid."
+  },
+  "day": {
+    "heading": "A day in your home",
+    "caption": "The panels make {generated} kWh a day. {used} kWh is used straight away in the home, and {exported} kWh flows to the grid unpaid.",
+    "used": "used directly",
+    "surplus": "lost to the grid",
+    "load": "home use",
+    "axis": "{value} kW"
+  },
+  "ledger": {
+    "monthly": "Saved each month",
+    "share": "Panel power you use",
+    "net": "Net saving over {years} years",
+    "co2": "CO₂ avoided",
+    "co2Unit": "t/year"
+  },
+  "payback": {
+    "heading": "When it pays back",
+    "captionRange": "Savings cover the upfront cost in year {low} to year {high}, depending on the installer's price.",
+    "captionOne": "Savings cover the upfront cost in year {low}.",
+    "captionOpen": "At the lowest installer price, savings cover the upfront cost in year {low}. At the highest, they do not within {years} years.",
+    "captionNever": "Within {years} years, savings do not cover the upfront cost at this number of panels.",
+    "captionNet": "After {years} years, the net saving is about {net}.",
+    "captionLoss": "After {years} years, at a typical price, you lose about {loss}.",
+    "cost": "upfront cost",
+    "savings": "total saved",
+    "paysBack": "pays back",
+    "yearZero": "year 0"
+  },
+  "battery": {
+    "headingNotWorth": "A battery does not pay yet",
+    "headingWorth": "A battery adds savings",
+    "headingNone": "No battery needed",
+    "note": "A battery stores spare daytime power for the evening. It also helps during a blackout, but we do not count that in rupiah.",
+    "none": "At this number of panels, too little power is left over by day to fill the smallest battery, so we do not offer one.",
+    "caption": "The same system without and with a battery",
+    "without": "No battery",
+    "with": "With a {size} kWh battery",
+    "cost": "Upfront cost",
+    "monthly": "Saved each month",
+    "payback": "Pays back in",
+    "net": "Net saving, {years} yrs"
+  },
+  "next": {
+    "heading": "What happens next",
+    "surveyTitle": "Ask an installer to survey",
+    "surveyBody": "An installer checks your roof and gives you a firm price.",
+    "applyTitle": "Apply to PLN",
+    "applyBody": "PLN takes rooftop solar applications twice a year, in January and July.",
+    "installTitle": "Install once approved",
+    "installBody": "A licensed business does the installation, and only after PLN has approved it.",
+    "prepaid": "You are on prepaid tokens. When your panels are approved, PLN moves you to a monthly bill.",
+    "quotaTitle": "Approval depends on quota",
+    "quotaBody": "PLN sets a rooftop solar quota for each area. SuryaPas does not know how much is left in yours."
+  },
+  "actions": {
+    "quote": "Get installer quotes",
+    "soon": "Coming soon",
+    "quoteSending": "Recording…",
+    "quoteThanks": "Thank you. We have noted your interest, without keeping any personal data.",
+    "quoteFailed": "Your interest was not recorded. Try tapping once more.",
+    "copy": "Copy result link",
+    "copied": "Link copied",
+    "copyFailed": "The link was not copied. Copy this page's address from the address bar.",
+    "assumptions": "See the assumptions",
+    "edit": "Change your answers",
+    "planOwn": "Plan for your own home",
+    "shared": "This result was shared by link. You can view it, but not change it.",
+    "exampleNote": "This is an example house. Its figures come from the same calculation."
+  },
+  "method": {
+    "margin": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 10% of PVGIS, the European Commission's solar calculator.",
+    "version": "Calculated with assumption set version {version}."
+  }
+}
