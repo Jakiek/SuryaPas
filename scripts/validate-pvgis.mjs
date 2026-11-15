@@ -242,8 +242,12 @@ const standardDeviation = (values) => {
   const average = mean(values);
   return Math.sqrt(mean(values.map((v) => (v - average) ** 2)));
 };
-// PVGIS writes a loss it could not work out as "?(0)": it used zero.
-const lossText = (value) => (Number.isFinite(Number(value)) ? `${Number(value)}%` : `${value} (not modelled)`);
+// A loss as PVGIS gives it, in percent with a sign. PVGIS writes one it could not work out as "?(0)": it used zero.
+const lossText = (value) => {
+  const percent = Number(value);
+  if (!Number.isFinite(percent)) return `not modelled, "${value}"`;
+  return `${percent > 0 ? "+" : percent < 0 ? "−" : ""}${Math.abs(percent)}%`;
+};
 
 const yieldRows = [];
 const sunRows = [];
@@ -360,19 +364,22 @@ for (const [slope, tilt] of Object.entries(SLOPE_DEGREES)) {
   derived[slope] = { towardEquator: round2(f.towardEquator), eastWest: round2(f.eastWest), awayFromEquator: round2(f.awayFromEquator) };
 }
 
+const FACING_NAMES = { towardEquator: "toward the equator", eastWest: "east or west", awayFromEquator: "away from the equator" };
+const matches = Object.keys(SLOPE_DEGREES).every((slope) =>
+  Object.keys(FACING_NAMES).every((key) => CURRENT_ASSUMPTIONS.orientation.table[slope][key] === derived[slope][key]),
+);
+
 console.log(`\nTable 7. Orientation table derived (gentle ${SLOPE_DEGREES.gentle}°, steep ${SLOPE_DEGREES.steep}°), beside v${ASSUMPTIONS_V1.version}\n`);
 const orientationRows = [];
 for (const slope of Object.keys(SLOPE_DEGREES)) {
-  for (const key of ["towardEquator", "eastWest", "awayFromEquator"]) {
+  for (const [key, name] of Object.entries(FACING_NAMES)) {
     const old = ASSUMPTIONS_V1.orientation.table[slope][key];
-    const now = CURRENT_ASSUMPTIONS.orientation.table[slope][key];
-    orientationRows.push([slope, key, old.toFixed(2), derived[slope][key].toFixed(2), now.toFixed(2), (derived[slope][key] - old >= 0 ? "+" : "−") + Math.abs(derived[slope][key] - old).toFixed(2)]);
+    const change = derived[slope][key] - old;
+    orientationRows.push([slope, name, old.toFixed(2), derived[slope][key].toFixed(2), (change >= 0 ? "+" : "−") + Math.abs(change).toFixed(2)]);
   }
 }
-console.log(table(["Slope", "Facing", `v${ASSUMPTIONS_V1.version}`, "Derived", `v${CURRENT_ASSUMPTIONS.version}`, "Change from v1"], orientationRows));
+const derivedHeader = matches ? `Derived, held by v${CURRENT_ASSUMPTIONS.version}` : "Derived";
+console.log(table(["Slope", "Facing", `v${ASSUMPTIONS_V1.version}`, derivedHeader, "Change"], orientationRows));
 
-const matches = Object.keys(SLOPE_DEGREES).every((slope) =>
-  ["towardEquator", "eastWest", "awayFromEquator"].every((key) => CURRENT_ASSUMPTIONS.orientation.table[slope][key] === derived[slope][key]),
-);
 console.log(`\nAssumption set v${CURRENT_ASSUMPTIONS.version} holds the derived orientation table: ${matches ? "yes" : "NO"}`);
 if (!matches) process.exitCode = 1;

@@ -116,7 +116,7 @@ Each factor is PVGIS's yearly yield on a tilted roof ÷ its flat-roof yield at t
 
 **The table in version 2**, rounded to two decimals, beside version 1:
 
-| Slope | Facing | v1 | v2 | Change |
+| Slope | Facing | v1 | Derived, held by v2 | Change |
 | --- | --- | --- | --- | --- |
 | gentle | toward the equator | 1.01 | 0.97 | −0.04 |
 | gentle | east or west | 0.99 | 0.95 | −0.04 |
