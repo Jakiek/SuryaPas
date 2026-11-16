@@ -31,11 +31,6 @@ export function PanelPicker({ slots, selected, recommended, onSelect }: PanelPic
       {slots.map(({ panels, selectable }) => {
         const filled = panels <= selected || !selectable;
         const isRecommended = panels === recommended;
-        const label = !selectable
-          ? t("belowMinimum", { count: panels })
-          : isRecommended
-            ? t("panelRecommended", { count: panels })
-            : t("panel", { count: panels });
 
         return (
           <button
@@ -43,7 +38,6 @@ export function PanelPicker({ slots, selected, recommended, onSelect }: PanelPic
             type="button"
             disabled={!selectable}
             aria-pressed={selectable ? panels === selected : undefined}
-            aria-label={label}
             onClick={() => onSelect(panels)}
             className="group flex min-w-0 cursor-pointer flex-col items-stretch disabled:cursor-default"
           >
@@ -63,18 +57,25 @@ export function PanelPicker({ slots, selected, recommended, onSelect }: PanelPic
                 </>
               )}
             </span>
-            <span aria-hidden="true" className="mt-[7px] text-center text-[13px] font-extrabold leading-[1.2] tabular-nums">
+            {/* The button's name is its visible text plus a few words for
+                screen readers: "2 panel pas, yang pas", "1 panel, di bawah
+                ukuran terkecil". */}
+            <span className="mt-[7px] text-center text-[13px] font-extrabold leading-[1.2] tabular-nums">
               {panels}
+              <span className="sr-only"> {t("unit", { count: panels })}</span>
             </span>
-            <span
-              aria-hidden="true"
-              className={cx(
-                "text-center text-[10.5px] font-extrabold uppercase leading-[1.1] tracking-[0.12em]",
-                !isRecommended && "invisible",
-              )}
-            >
-              {t("pas")}
-            </span>
+            {isRecommended ? (
+              <span className="text-center text-[10.5px] font-extrabold uppercase leading-[1.1] tracking-[0.12em]">
+                {t("pas")}
+                <span className="sr-only">, {t("pasMeaning")}</span>
+              </span>
+            ) : (
+              // Keeps every column the same height as the recommended one.
+              <span aria-hidden="true" className="invisible text-[10.5px] leading-[1.1]">
+                {t("pas")}
+              </span>
+            )}
+            {!selectable && <span className="sr-only">, {t("belowMinimum")}</span>}
           </button>
         );
       })}

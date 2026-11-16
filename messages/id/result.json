@@ -49,13 +49,13 @@
   "picker": {
     "heading": "Coba jumlah panel lain",
     "group": "Jumlah panel",
-    "panel": "{count} panel",
-    "panelRecommended": "{count} panel, yang pas",
-    "belowMinimum": "{count} panel, di bawah ukuran terkecil",
+    "belowMinimum": "di bawah ukuran terkecil",
     "pas": "pas",
     "sayRecommended": "Ini yang pas: hemat bersih paling besar untuk pemakaian siang Anda.",
     "sayFewer": "Kurang dari yang pas. Masih ada pemakaian siang yang belum tertutup panel.",
-    "sayMore": "Lebih dari yang pas. {wasted}% listrik panel terbuang ke jaringan tanpa dibayar."
+    "sayMore": "Lebih dari yang pas. {wasted}% listrik panel terbuang ke jaringan tanpa dibayar.",
+    "unit": "panel",
+    "pasMeaning": "yang pas"
   },
   "day": {
     "heading": "Satu hari di rumah Anda",
@@ -127,7 +127,7 @@
     "exampleNote": "Ini rumah contoh. Angkanya dihitung dengan mesin hitung yang sama."
   },
   "method": {
-    "margin": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 10% dari PVGIS, alat hitung surya milik Komisi Eropa.",
+    "margin": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 11% dari PVGIS, alat hitung surya milik Komisi Eropa.",
     "version": "Dihitung dengan asumsi versi {version}."
   }
 }

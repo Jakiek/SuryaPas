@@ -49,13 +49,13 @@
   "picker": {
     "heading": "Try another number of panels",
     "group": "Number of panels",
-    "panel": "{count, plural, one {# panel} other {# panels}}",
-    "panelRecommended": "{count, plural, one {# panel} other {# panels}}, the right fit",
-    "belowMinimum": "{count, plural, one {# panel} other {# panels}}, below the smallest system",
+    "belowMinimum": "below the smallest system",
     "pas": "pas",
     "sayRecommended": "The right fit: the largest net saving for the power you use by day.",
     "sayFewer": "Fewer than the right fit. Some of your daytime use is still not covered by the panels.",
-    "sayMore": "More than the right fit. {wasted}% of the panels' power goes to the grid unpaid."
+    "sayMore": "More than the right fit. {wasted}% of the panels' power goes to the grid unpaid.",
+    "unit": "{count, plural, one {panel} other {panels}}",
+    "pasMeaning": "the right fit"
   },
   "day": {
     "heading": "A day in your home",
@@ -127,7 +127,7 @@
     "exampleNote": "This is an example house. Its figures come from the same calculation."
   },
   "method": {
-    "margin": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 10% of PVGIS, the European Commission's solar calculator.",
+    "margin": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 11% of PVGIS, the European Commission's solar calculator.",
     "version": "Calculated with assumption set version {version}."
   }
 }
