@@ -68,7 +68,7 @@ Submitting step 4 computes the result, saves it and redirects to the result page
 In reading order:
 
 1. **Three headline numbers**: recommended size (kWp and panel count), upfront cost as a range, payback as a range in years.
-2. **Panel picker**: a row of panels, from one up to the largest count that fits the roof (at most twelve shown). Tapping a panel selects that count; every number and both charts update. The recommended count is marked "pas". Counts below the smallest system cannot be selected. Exploration is local and is not saved.
+2. **Panel picker**: a row of panels, from one up to the largest count that fits the roof (at most twelve shown). When more than twelve fit, the twelve shown are consecutive counts placed so that the recommended count and at least one larger count are in view. Tapping a panel selects that count; every number and both charts update. The recommended count is marked "pas". Counts below the smallest system cannot be selected. Exploration is local and is not saved.
 3. **Typical-day chart**: the home's average hourly usage against average hourly solar output for the selected size, with the overlap (solar used on site) shaded and the surplus visibly distinct.
 4. **Supporting numbers**: monthly savings, share of solar used on site, net savings over the analysis horizon, CO₂ avoided.
 5. **Cost-versus-savings chart**: cumulative savings against upfront cost over the horizon, crossing at the payback year, with a band for the low-to-high cost range.
@@ -92,7 +92,7 @@ Lists every entry of the assumption set in use: value, unit, source, date and co
 | Pin outside Indonesia | Step 1 blocks with a message |
 | Roof too small for the smallest system | Result page explains, and states the roof area the smallest system needs |
 | Sun-data service slow or down | Use the bundled figures for the nearest major city; label the result "approximate" |
-| Saving fails | Show the result from local state with a note that the share link is unavailable; offer retry |
+| Saving fails | The route still computes the result and returns it in its response, marked as not saved. The browser keeps it for the session and shows it with a note that the share link is unavailable, and offers to retry the save. A store that cannot be read (for the sun cache or the assumption set) is treated the same way: compute, do not save. This matters in practice: a free database project pauses when idle |
 
 ### 2.6 Privacy
 
@@ -190,13 +190,13 @@ Placeholder routes `/[locale]/account`, `/[locale]/installers` and `/[locale]/ad
 | Validation | Zod schemas in `src/lib/schema/` mirroring the engine's input types, shared by forms and server. The engine itself has no dependencies |
 | Map | MapLibre GL; free OpenStreetMap-based street tiles; Esri satellite imagery through a free developer key; polygon tracing; area by Turf |
 | Address search | A free OpenStreetMap-based geocoder that permits search-as-you-type, called through a server route, limited to Indonesia |
-| Charts | SVG drawn with d3-scale and d3-shape; no chart framework |
+| Charts | Plain SVG with a small linear scale of our own; no chart library |
 | Database | Supabase Postgres; SQL migrations in `supabase/migrations/` |
 | Unit tests | Vitest |
 | Flow and accessibility tests | Playwright with axe |
 | Hosting | Vercel free tier; GitHub repository, private until stage 1 is live |
 
-The engine runs in both places: on the server when a result is first computed and saved, and in the browser when the user picks another panel count. The saved result includes the sun series reference needed for the browser to recompute.
+The engine runs on the server, once, when a result is computed and saved. The saved result holds every candidate size (SPEC 3.3), so when the user picks another panel count the page shows that stored candidate. Nothing is recomputed in the browser, which also means a link always shows the figures it showed on the day it was made (SPEC 4.2). The engine stays free of I/O so that it could run in a browser; the assumptions screen and the tests rely on that.
 
 ### 5.1 Server routes
 
