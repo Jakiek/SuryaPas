@@ -4,7 +4,7 @@
   "version": "Kumpulan asumsi, versi {version}",
   "margin": {
     "heading": "Seberapa dekat dengan kenyataan?",
-    "body": "Bagian sinar matahari dalam perhitungan kami sudah kami cocokkan dengan PVGIS, alat perkiraan hasil panel surya dari Komisi Eropa, di tiga kota Indonesia. Pada atap datar, angka listrik tahunan kami selisihnya sekitar 10% dari PVGIS. Jadi baca hasilnya sebagai perkiraan yang layak untuk merencanakan dan membandingkan, bukan penawaran harga: hasil atap Anda sendiri bergantung pada bayangan, kemiringan, dan cuaca tahun itu."
+    "body": "Bagian sinar matahari dalam perhitungan kami sudah kami cocokkan dengan PVGIS, alat perkiraan hasil panel surya dari Komisi Eropa, di tiga kota Indonesia. Pada atap datar, angka listrik tahunan kami selisihnya sekitar 11% dari PVGIS. Jadi baca hasilnya sebagai perkiraan yang layak untuk merencanakan dan membandingkan, bukan penawaran harga: hasil atap Anda sendiri bergantung pada bayangan, kemiringan, dan cuaca tahun itu."
   },
   "confidence": {
     "heading": "Seberapa jauh angka bisa dipercaya",

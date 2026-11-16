@@ -4,7 +4,7 @@
   "version": "Assumption set, version {version}",
   "margin": {
     "heading": "How close is it?",
-    "body": "We checked the sunlight side of the model against PVGIS, the European Commission's solar yield tool, at three Indonesian cities. On a flat roof our yearly electricity figure came out within about 10% of PVGIS. So read the result as a sound estimate for planning and comparing, not as a quote: what your own roof makes depends on its shade, its angle and the weather of the year."
+    "body": "We checked the sunlight side of the model against PVGIS, the European Commission's solar yield tool, at three Indonesian cities. On a flat roof our yearly electricity figure came out within about 11% of PVGIS. So read the result as a sound estimate for planning and comparing, not as a quote: what your own roof makes depends on its shade, its angle and the weather of the year."
   },
   "confidence": {
     "heading": "How far to trust a number",
