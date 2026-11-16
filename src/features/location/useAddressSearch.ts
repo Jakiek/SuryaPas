@@ -5,17 +5,18 @@ import type { Place } from "@/lib/geocoding/photon";
 
 // How long typing must pause before a search is sent. Photon asks for fair
 // use, so one request per pause, not one per key.
-export const DEBOUNCE_MS = 300;
+export const DEBOUNCE_MS = 500;
 // Matches the shortest text the route accepts.
 export const MIN_SEARCH_LENGTH = 3;
 
-type Outcome = { query: string; places: Place[]; failed: boolean };
+type Outcome = { query: string; places: Place[]; failed: "no" | "unavailable" | "limited" };
 
-export type SearchStatus = "idle" | "searching" | "found" | "none" | "unavailable";
+export type SearchStatus = "idle" | "searching" | "found" | "none" | "unavailable" | "limited";
 
 /**
  * Searches for addresses while the user types (SPEC 2.2 step 1). The text
- * goes only to GET /api/geocode, which forwards it to the geocoder; it is
+ * goes only to POST /api/geocode, in the request body and not the URL
+ * (request logs keep URLs), and the route forwards it to the geocoder; it is
  * not stored and not logged anywhere. The answer is stored with the text it
  * answers, so a slow reply to older text is never shown for newer text.
  */
@@ -30,15 +31,22 @@ export function useAddressSearch(query: string) {
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
-        const response = await fetch(`/api/geocode?q=${encodeURIComponent(text)}`, {
+        const response = await fetch("/api/geocode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ q: text }),
           signal: controller.signal,
         });
+        if (response.status === 429) {
+          setOutcome({ query: text, places: [], failed: "limited" });
+          return;
+        }
         if (!response.ok) throw new Error("geocoder unavailable");
         const places = (await response.json()) as Place[];
-        setOutcome({ query: text, places, failed: false });
+        setOutcome({ query: text, places, failed: "no" });
       } catch {
         // An abort means newer text replaced this one; say nothing for it.
-        if (!controller.signal.aborted) setOutcome({ query: text, places: [], failed: true });
+        if (!controller.signal.aborted) setOutcome({ query: text, places: [], failed: "unavailable" });
       }
     }, DEBOUNCE_MS);
 
@@ -54,8 +62,8 @@ export function useAddressSearch(query: string) {
     ? "idle"
     : !answered
       ? "searching"
-      : outcome.failed
-        ? "unavailable"
+      : outcome.failed !== "no"
+        ? outcome.failed
         : outcome.places.length === 0
           ? "none"
           : "found";

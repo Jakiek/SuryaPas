@@ -37,6 +37,7 @@ export function buildPhotonUrl(text: string): string {
 interface PhotonProperties {
   name?: string;
   street?: string;
+  locality?: string;
   district?: string;
   city?: string;
   county?: string;
@@ -49,10 +50,14 @@ interface PhotonFeature {
   geometry?: { type?: string; coordinates?: unknown };
 }
 
-/** "Grand Inna Malioboro, Jalan Malioboro, Yogyakarta, Special Region of Yogyakarta" */
+/**
+ * "Grand Inna Malioboro, Jalan Malioboro, Suryatmajan, Yogyakarta, Special
+ * Region of Yogyakarta". The district stays in: without it "Pulau Pramuka"
+ * (an island) and "Jalan Pulau Pramuka" (a street) would read the same.
+ */
 function labelOf(properties: PhotonProperties): string {
-  const town = properties.city ?? properties.county ?? properties.district;
-  const parts = [properties.name, properties.street, town, properties.state];
+  const town = properties.city ?? properties.county;
+  const parts = [properties.name, properties.street, properties.district, town, properties.state];
   const seen = new Set<string>();
   const unique = parts.filter((part): part is string => {
     if (!part || seen.has(part)) return false;

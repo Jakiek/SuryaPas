@@ -31,16 +31,6 @@
     "retry": "Coba lagi",
     "incomplete": "Jawab semua pertanyaan di atas untuk lanjut."
   },
-  "location": {
-    "latitude": {
-      "label": "Lintang",
-      "help": "Angka lintang titik rumah Anda, misalnya -7,78."
-    },
-    "longitude": {
-      "label": "Bujur",
-      "help": "Angka bujur titik rumah Anda, misalnya 110,37."
-    }
-  },
   "roof": {
     "area": {
       "label": "Luas atap",

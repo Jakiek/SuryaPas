@@ -8,7 +8,8 @@
     "none": "Tidak ada alamat yang cocok. Coba tulis lebih singkat, atau geser pin di peta.",
     "unavailable": "Pencarian alamat sedang tidak bisa dihubungi. Anda tetap bisa memakai lokasi perangkat atau menggeser pin di peta.",
     "results": "Hasil pencarian alamat",
-    "chosen": "Pin dipindahkan ke {label}."
+    "chosen": "Pin dipindahkan ke {label}.",
+    "limited": "Terlalu banyak pencarian dalam waktu singkat. Tunggu sebentar lalu coba lagi, atau geser pin di peta."
   },
   "device": {
     "button": "Pakai lokasi saya",
@@ -21,7 +22,9 @@
     "hint": "Geser pin, atau ketuk peta, untuk memindahkannya ke rumah Anda.",
     "pin": "Pin lokasi rumah",
     "unsupported": "Peta tidak bisa ditampilkan di perangkat ini. Cari alamat Anda di kolom atas, itu sudah cukup.",
-    "loading": "Memuat peta…"
+    "loading": "Memuat peta…",
+    "zoomIn": "Perbesar peta",
+    "zoomOut": "Perkecil peta"
   },
   "position": {
     "label": "Lokasi pin",

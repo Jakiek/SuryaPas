@@ -87,6 +87,11 @@ export default function LocationMap({
         zoom: pin ? HOUSE_ZOOM : INDONESIA_ZOOM,
         // Our own attribution line sits under the map, always visible.
         attributionControl: false,
+        // The zoom buttons' names, in the page's language and not MapLibre's.
+        locale: {
+          "NavigationControl.ZoomIn": t("zoomIn"),
+          "NavigationControl.ZoomOut": t("zoomOut"),
+        },
         // Two fingers rotate and tilt the map; a house locator needs neither.
         dragRotate: false,
         pitchWithRotate: false,

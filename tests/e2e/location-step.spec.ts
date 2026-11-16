@@ -49,17 +49,69 @@ for (const c of LOCALES) {
     });
 
     test("an address from the landing page fills the search and lists its results", async ({ page }) => {
-      await page.goto(`/${c.locale}/plan?q=Malioboro%20Yogyakarta`);
+      // The landing page hands the address over in session storage, never the URL.
+      await page.addInitScript(() => sessionStorage.setItem("suryapas.pendingAddress", "Malioboro Yogyakarta"));
+      await page.goto(`/${c.locale}/plan`);
       await expect(searchBox(page, c)).toHaveValue("Malioboro Yogyakarta");
       await expect(page.getByRole("option")).toHaveCount(2);
       // No pin yet: nothing was chosen for the user.
       await expect(nextButton(page, c)).toBeDisabled();
-      // The address is personal data: it leaves the address bar once read.
-      await expect(page).not.toHaveURL(/q=/);
+      // Read once: it is gone from storage, and the URL never held it.
+      expect(await page.evaluate(() => sessionStorage.getItem("suryapas.pendingAddress"))).toBeNull();
+      expect(page.url()).not.toContain("Malioboro");
+    });
+
+    test("the search text travels in a POST body, never in a URL", async ({ page }) => {
+      const requests: { method: string; url: string; body: string | null }[] = [];
+      page.on("request", (request) => {
+        if (request.url().includes("/api/geocode")) {
+          requests.push({ method: request.method(), url: request.url(), body: request.postData() });
+        }
+      });
+      await page.goto(`/${c.locale}/plan`);
+      await searchBox(page, c).fill("Rahasia Malioboro");
+      await expect(page.getByRole("option")).toHaveCount(2);
+      expect(requests.length).toBeGreaterThan(0);
+      for (const request of requests) {
+        expect(request.method).toBe("POST");
+        expect(request.url).not.toContain("Rahasia");
+        expect(request.body).toContain("Rahasia Malioboro");
+      }
+    });
+
+    test("Enter with no result highlighted sets no pin", async ({ page }) => {
+      await page.goto(`/${c.locale}/plan`);
+      await searchBox(page, c).fill("Malioboro");
+      await expect(page.getByRole("option")).toHaveCount(2);
+      await page.keyboard.press("Enter");
+      await expect(nextButton(page, c)).toBeDisabled();
+      const draft = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}").location, STORAGE_KEY);
+      expect(draft?.latitude ?? null).toBeNull();
+    });
+
+    test("too many searches show a calm message", async ({ page }) => {
+      await page.route("**/api/geocode*", (route) => route.fulfill({ status: 429, json: { error: "rate_limited" } }));
+      await page.goto(`/${c.locale}/plan`);
+      await searchBox(page, c).fill("Malioboro");
+      await expect(page.getByText(c.m.search.limited)).toBeVisible();
+    });
+
+    test("the zoom buttons are named in the page's language", async ({ page }) => {
+      await page.goto(`/${c.locale}/plan`);
+      await expect(page.getByRole("button", { name: c.m.map.zoomIn })).toBeVisible();
+      await expect(page.getByRole("button", { name: c.m.map.zoomOut })).toBeVisible();
+    });
+
+    test("a home on a small island counts as inside", async ({ page }) => {
+      // Pulau Pramuka, Kepulauan Seribu.
+      await startWithPin(page, c.locale, -5.7436, 106.6153);
+      await expect(nextButton(page, c)).toBeEnabled();
+      await expect(page.getByText(c.m.outside.title)).toHaveCount(0);
     });
 
     test("choosing the first result places the pin in Yogyakarta and enables next", async ({ page }) => {
-      await page.goto(`/${c.locale}/plan?q=Malioboro%20Yogyakarta`);
+      await page.goto(`/${c.locale}/plan`);
+      await searchBox(page, c).fill("Malioboro Yogyakarta");
       await page.getByRole("option").first().click();
       const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).location, STORAGE_KEY);
       expect(stored.latitude).toBeCloseTo(-7.790843, 5);
@@ -111,7 +163,7 @@ for (const c of LOCALES) {
       await expect(nextButton(page, c)).toBeEnabled();
 
       // Zoom out (to about 300 m a pixel) so the border is about 100 pixels away.
-      const zoomOut = page.getByRole("button", { name: /zoom out|perkecil/i });
+      const zoomOut = page.getByRole("button", { name: c.m.map.zoomOut });
       for (let i = 0; i < 8; i++) {
         await zoomOut.click();
         await page.waitForTimeout(350);

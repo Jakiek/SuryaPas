@@ -47,8 +47,10 @@ export function AddressSearch({
       // Enter must never submit the flow's form from here: that would move
       // on to the next step while the user is still choosing an address.
       event.preventDefault();
-      if (!listVisible) return;
-      choose(places[activeIndex >= 0 ? activeIndex : 0]);
+      // Only a result the user has highlighted is chosen. A pin is never set
+      // from a match the user has not seen (SPEC 2.1).
+      if (!listVisible || activeIndex < 0) return;
+      choose(places[activeIndex]);
     } else if (event.key === "ArrowDown" && places.length > 0) {
       event.preventDefault();
       setOpen(true);
@@ -75,7 +77,9 @@ export function AddressSearch({
             ? t("none")
             : status === "unavailable"
               ? t("unavailable")
-              : "";
+              : status === "limited"
+                ? t("limited")
+                : "";
 
   return (
     <div>

@@ -10,6 +10,7 @@ import type { Place } from "@/lib/geocoding/photon";
 import { locationSchema } from "@/lib/schema";
 import { AddressSearch } from "./AddressSearch";
 import { isInsideIndonesia } from "./indonesia";
+import { takePendingAddress } from "./pendingAddress";
 import type { PinPoint } from "./LocationMap";
 
 // The map is fetched only when this step is on screen (MapLibre is large;
@@ -18,22 +19,6 @@ const LocationMap = dynamic(() => import("./LocationMap"), {
   ssr: false,
   loading: () => <div className="h-[360px] border-t-heavy border-b-heavy border-fg lg:h-[440px] lg:border-heavy" aria-hidden="true" />,
 });
-
-// The landing page sends the typed address as ?q= (SPEC 2.1).
-const LANDING_ADDRESS_PARAM = "q";
-
-/** Reads the address the landing page sent, if any. Browser only. */
-function readLandingAddress(): string {
-  return new URLSearchParams(window.location.search).get(LANDING_ADDRESS_PARAM)?.trim() ?? "";
-}
-
-/** An address is personal data (SPEC 2.6): once read, take it out of the URL. */
-function removeLandingAddressFromUrl() {
-  const url = new URL(window.location.href);
-  if (!url.searchParams.has(LANDING_ADDRESS_PARAM)) return;
-  url.searchParams.delete(LANDING_ADDRESS_PARAM);
-  window.history.replaceState(window.history.state, "", url);
-}
 
 // Six decimals is about 10 cm; more would only store noise.
 const roundCoordinate = (degrees: number) => Math.round(degrees * 1e6) / 1e6;
@@ -47,10 +32,11 @@ export function LocationStep({ value, onChange, onValidChange }: StepProps<Locat
   const t = useTranslations("location");
   const locale = useLocale();
 
-  // Read once, on the first render in the browser (the flow shell renders
-  // its steps only there). The search box starts filled with it.
-  const [landingAddress] = useState(readLandingAddress);
-  useEffect(removeLandingAddressFromUrl, []);
+  // The address typed on the landing page, if any: read once, on the first
+  // render in the browser (the flow shell renders its steps only there), and
+  // forgotten from session storage at the same moment. The search box starts
+  // filled with it and lists its results; the user still picks one.
+  const [landingAddress] = useState(takePendingAddress);
 
   const [deviceLocation, setDeviceLocation] = useState<DeviceLocationState>("idle");
   const [mapUnsupported, setMapUnsupported] = useState(false);
@@ -121,7 +107,7 @@ export function LocationStep({ value, onChange, onValidChange }: StepProps<Locat
         ) : (
           <>
             {/* Edge to edge on phones: pull out of the page gutters. */}
-            <div className="-mx-gutter lg:mx-0">
+            <div className="-mx-gutter scroll-mb-24 lg:mx-0">
               <LocationMap pin={pin} onPinMoved={movePin} onUnsupported={markMapUnsupported} />
             </div>
             <p className="mt-3 text-sm text-soft">{t("map.hint")}</p>
@@ -150,7 +136,7 @@ export function LocationStep({ value, onChange, onValidChange }: StepProps<Locat
         )}
 
         {/* Credit for both OpenStreetMap-based services. Always on screen. */}
-        <div className="mt-5 space-y-1 text-xs text-soft">
+        <div className="mt-5 scroll-mb-24 space-y-1 text-xs text-soft">
           <p>
             {t.rich("attribution.map", {
               ofm: (chunks) => <ExternalLink href="https://openfreemap.org">{chunks}</ExternalLink>,

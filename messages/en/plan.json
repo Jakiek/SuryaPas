@@ -31,16 +31,6 @@
     "retry": "Try again",
     "incomplete": "Answer every question above to continue."
   },
-  "location": {
-    "latitude": {
-      "label": "Latitude",
-      "help": "The latitude of your home, for example -7.78."
-    },
-    "longitude": {
-      "label": "Longitude",
-      "help": "The longitude of your home, for example 110.37."
-    }
-  },
   "roof": {
     "area": {
       "label": "Roof area",
