@@ -51,6 +51,7 @@ Four steps, one topic per screen, with a progress indicator and back navigation.
 - Slope: flat, gentle or steep, chosen from pictures.
 - Shade: none, some in the morning or afternoon, or heavy, chosen from pictures.
 - Usable fraction: the share of the traced area that can hold panels, defaulted from the assumption set and adjustable.
+- Limits on the area: below 5 m² or above 500 m² the step asks the user to check, without blocking. Above 2,000 m² the area is refused, by the step and by the server: that is not a house roof, and the engine would be asked for hundreds of sizes.
 
 **Step 3: electricity.**
 - Prepaid tokens or monthly bill. The wording of the next fields adapts ("how much do you top up a month" or "your monthly bill").
@@ -71,7 +72,7 @@ In reading order:
 2. **Panel picker**: a row of panels, from one up to the largest count that fits the roof (at most twelve shown). When more than twelve fit, the twelve shown are consecutive counts placed so that the recommended count and at least one larger count are in view. Tapping a panel selects that count; every number and both charts update. The recommended count is marked "pas". Counts below the smallest system cannot be selected. Exploration is local and is not saved.
 3. **Typical-day chart**: the home's average hourly usage against average hourly solar output for the selected size, with the overlap (solar used on site) shaded and the surplus visibly distinct.
 4. **Supporting numbers**: monthly savings, share of solar used on site, net savings over the analysis horizon, CO₂ avoided.
-5. **Cost-versus-savings chart**: cumulative savings against upfront cost over the horizon, crossing at the payback year, with a band for the low-to-high cost range.
+5. **Cost-versus-savings chart**: cumulative savings against upfront cost over the horizon. Cost is a band from the low to the high installed cost. Savings are a narrow band too, because upkeep and the inverter replacement grow with the cost: its upper edge is the low-cost case and its lower edge the high-cost case. The two bands overlap from the low-cost payback year to the high-cost payback year, and the marked column covers exactly those years, so the picture and the headline range always agree.
 6. **Battery comparison**: the same headline numbers side by side, without and with a battery. Savings only; backup during blackouts is mentioned as a benefit and given no rupiah value.
 7. **What happens next**: the PLN application steps from the last section of `docs/ASSUMPTIONS.md`, shortened to what a homeowner acts on: applications open in January and July; approval depends on quota in the user's PLN area, whose status the app does not know; installation is done by a licensed business after approval. A prepaid user is also told they will be moved to a monthly bill.
 8. **Get installer quotes**: a "coming soon" button. A tap records one anonymous event and shows a short acknowledgement. No contact details are collected.
@@ -79,7 +80,12 @@ In reading order:
 
 Anyone with the link sees the same saved result, read-only, with a "plan your own" button.
 
-**Honest verdicts.** When the selected system does not pay back within the horizon, the page says so in words ("at your tariff, solar is unlikely to pay for itself") in place of a payback number. This is expected for subsidised classes. When shade is heavy, the page warns that an installer site visit is needed before trusting the estimate.
+**Honest verdicts.** A verdict comes before the figures it qualifies: the reader meets the warning first, then the number.
+
+- Payback is judged at the typical cost. When the selected system does not pay back at the typical cost within the horizon, the page says so in words ("at your tariff, solar is unlikely to pay for itself") in place of a payback number, and no payback year appears in the headline, even if the lowest cost would pay back. The text below may add that only at the lowest installer price would it pay back, and in which year. This is expected for subsidised classes.
+- When it pays back at the typical cost but not at the high cost, the headline gives the low-cost year "or more", and a sentence says that at the highest installer price it does not pay back within the horizon.
+- When the recommended size itself has negative net savings, every size loses money. The page says so, and describes the recommended size as the one that loses least, never as the largest saving.
+- A negative monthly saving is stated in words as a bill that goes up, with the amount, not as a negative figure under a "savings" label. When shade is heavy, the page warns that an installer site visit is needed before trusting the estimate.
 
 ### 2.4 Assumptions (`/[locale]/assumptions`)
 
@@ -135,7 +141,7 @@ The tariff class is derived from `connectedVa` and `subsidised`; the minimum cha
 
 ### 3.3 Outputs
 
-For every candidate size, with and without battery: size, panel count, yearly generation, self-consumed energy and share, monthly savings, cost range, payback range or "does not pay back", net savings, CO₂ avoided, the 24-hour average load and solar curves, and the cumulative savings series. Plus: the recommended candidate, the chosen battery size, the daytime share used, and flags (sun data fallback, heavy shade, roof too small with required area).
+For every candidate size, with and without battery: size, panel count, yearly generation, self-consumed energy and share, monthly savings, cost range, payback range or "does not pay back", net savings, CO₂ avoided, the 24-hour average load and solar curves, and the cumulative savings series at the low, typical and high cost (they differ because running costs follow the cost). Plus: the recommended candidate, the chosen battery size, the daytime share used, and flags (sun data fallback, heavy shade, roof too small with required area).
 
 ### 3.4 Sun data
 
