@@ -154,6 +154,7 @@ export function LocationStep({ value, onChange, onValidChange }: StepProps<Locat
               ),
             })}
           </p>
+          <p>{t("attribution.boundary")}</p>
         </div>
       </div>
     </QuestionList>

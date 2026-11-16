@@ -37,6 +37,7 @@
   },
   "attribution": {
     "map": "Peta © <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>. Data dari <osm>kontributor OpenStreetMap</osm>.",
-    "search": "Pencarian alamat oleh <photon>Photon</photon> (komoot), data © <osm>kontributor OpenStreetMap</osm>."
+    "search": "Pencarian alamat oleh <photon>Photon</photon> (komoot), data © <osm>kontributor OpenStreetMap</osm>.",
+    "boundary": "Batas wilayah Indonesia dari BPS, WFP dan OCHA ROAP melalui geoBoundaries, lisensi CC BY 3.0 IGO."
   }
 }

@@ -37,6 +37,7 @@
   },
   "attribution": {
     "map": "Map © <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>. Data from <osm>OpenStreetMap contributors</osm>.",
-    "search": "Address search by <photon>Photon</photon> (komoot), data © <osm>OpenStreetMap contributors</osm>."
+    "search": "Address search by <photon>Photon</photon> (komoot), data © <osm>OpenStreetMap contributors</osm>.",
+    "boundary": "Indonesia's boundary from BPS, WFP and OCHA ROAP through geoBoundaries, licensed CC BY 3.0 IGO."
   }
 }
