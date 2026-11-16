@@ -35,7 +35,7 @@ Routes carry the locale: `/id/...` and `/en/...`. `/` redirects to `/id`.
 
 ### 2.1 Landing (`/[locale]`)
 
-The hero is the first input of the tool: the headline and an address field with a "Hitung" button. Submitting carries the typed address into step 1, where it is searched and its results are listed for the user to pick. A pin is never set from a match the user has not seen. A link, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
+The hero is the first input of the tool: the headline and an address field with a "Hitung" button. Submitting carries the typed address into step 1 through the browser's session storage, never the URL (an address in a URL is kept in server logs and browser history), where it is searched and its results are listed for the user to pick. A pin is never set from a match the user has not seen. A link, "see an example", opens a prepared result for a house in Yogyakarta so a judge reaches the result in one tap.
 
 Below the hero, the page makes its argument with evidence: a short statement that exported power is no longer paid for, then the example house shown twice, once with the recommended panel count and once with far too many, each with its one-day chart, share of solar wasted, upfront cost and payback. These figures are computed by the engine from the example house, never typed in.
 
@@ -43,7 +43,7 @@ Below the hero, the page makes its argument with evidence: a short statement tha
 
 Four steps, one topic per screen, with a progress indicator and back navigation. Inputs persist in the browser, so a refresh or a return visit resumes where the user left off.
 
-**Step 1: location.** Three ways to set one pin: search an address, tap "use my location", or drag the pin on the map. The pin must fall inside Indonesia (checked against a bundled simplified country outline); outside it, the step blocks with a clear message.
+**Step 1: location.** Three ways to set one pin: search an address, tap "use my location", or drag the pin on the map. The pin must fall inside Indonesia; outside it, the step blocks with a clear message. The check is against a bundled country outline that includes the small inhabited islands, and a pin within 2 km of the outline counts as inside, because a simplified coastline cuts off harbours and houses built over the water. The server applies the same check.
 
 **Step 2: roof.**
 - Area: trace the roof outline on satellite imagery, or type the area in m². Typing is the full keyboard-accessible path. One roof face only; the user traces the best side.
@@ -203,7 +203,7 @@ The engine runs in both places: on the server when a result is first computed an
 | Route | Request | Response |
 | --- | --- | --- |
 | `GET /api/sun?lat&lon` | A point in Indonesia | `{ series: number[8760], source: "live" \| "fallback", cellId, year }` |
-| `GET /api/geocode?q` | Search text | Up to five places in Indonesia: `{ label, lat, lon }[]` |
+| `POST /api/geocode` | Search text in the request body, so it is not kept in request logs | Up to five places in Indonesia: `{ label, lat, lon }[]` |
 | `POST /api/assessments` | `{ inputs, overrides, locale }` | `{ id }` after validating, fetching sun data, running the engine and saving |
 | `POST /api/events` | `{ name, assessmentId? }` | `204` |
 
