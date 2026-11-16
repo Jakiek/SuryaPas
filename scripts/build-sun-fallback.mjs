@@ -7,8 +7,8 @@
 //
 //   1. Fetch (only with --fetch; needs network, no key). For each city, the same
 //      two requests the live service makes, under one time limit: the hourly
-//      series at the centre of the city's 0.5° cell for the year (the latest
-//      complete one unless given), and NASA POWER's monthly record for the
+//      series at the centre of the city's 0.5° cell for the year (unless given,
+//      the latest that ended at least six months ago, as the service uses), and NASA POWER's monthly record for the
 //      twenty years ending with it. Only the cell's coordinates are sent. What
 //      came back is saved in data/sun-fallback/source/<id>.json with the date:
 //      the hourly series as the service parses it (unscaled, W/m²) and the
@@ -38,7 +38,7 @@ registerHooks({
 
 const { FALLBACK_CITIES } = await import("../src/lib/sun/cities.ts");
 const { gridCellFor } = await import("../src/lib/sun/grid.ts");
-const { buildNasaUrl, fetchNasaYear, latestCompleteYear, withTimeLimit, SunDataError } = await import(
+const { buildNasaUrl, fetchNasaYear, latestAvailableYear, withTimeLimit, SunDataError } = await import(
   "../src/lib/sun/nasa.ts"
 );
 const { buildNasaMonthlyUrl, parseNasaMonthly } = await import("../src/lib/sun/nasaMonthly.ts");
@@ -159,7 +159,7 @@ async function buildCity(city) {
 
 if (process.argv.includes("--fetch")) {
   const yearArgument = process.argv.slice(2).find((arg) => /^\d{4}$/.test(arg));
-  await fetchAndSaveSources(Number(yearArgument) || latestCompleteYear(new Date()));
+  await fetchAndSaveSources(Number(yearArgument) || latestAvailableYear(new Date()));
 }
 await mkdir(OUTPUT_DIR, { recursive: true });
 for (const city of FALLBACK_CITIES) await buildCity(city);

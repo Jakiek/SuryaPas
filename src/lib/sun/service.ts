@@ -5,7 +5,7 @@ import { cacheKey, type SunCache } from "./cache";
 import { loadNearestFallback, type FallbackSun } from "./fallback";
 import { gridCellFor } from "./grid";
 import { longTermYears, scaleToLongTerm } from "./longTerm";
-import { fetchNasaYear, latestCompleteYear, withTimeLimit } from "./nasa";
+import { fetchNasaYear, latestAvailableYear, withTimeLimit } from "./nasa";
 import { fetchNasaMonthly } from "./nasaMonthly";
 
 // Settings of this service. They are plumbing, not product numbers, so they are
@@ -17,8 +17,9 @@ export const DEFAULT_TIMEOUT_MS = 8000;
 export const DEFAULT_MAX_GAP_HOURS = 3;
 
 export interface SunResult {
-  /** 8,760 hourly values of global horizontal irradiance, W/m², local solar
-   *  time, scaled to the long-term mean. */
+  /** 8,760 hourly values of global horizontal irradiance, W/m², in NASA
+   *  POWER's zone time (the time zone of the nearest 15° of longitude, SPEC
+   *  3.4), scaled to the long-term mean. */
   series: number[];
   source: "live" | "fallback";
   cellId: string;
@@ -51,7 +52,9 @@ export function defaultDeps(cache: SunCache): SunDeps {
 
 export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<SunResult> {
   const cell = gridCellFor(lat, lon);
-  const year = latestCompleteYear(deps.now());
+  // One year for everything below: the cache key, the hourly request, and the
+  // end of the monthly record's twenty-year window.
+  const year = latestAvailableYear(deps.now());
   const key = cacheKey(cell.cellId, year);
 
   // 1. Same cell, same year: reuse the earlier fetch.

@@ -6,7 +6,8 @@
 //     Irradiance", which is global horizontal irradiance.
 //   - Hourly unit is Wh/m² (energy over one hour); see whPerM2ToWattsPerM2.
 //   - A missing value is -999 (header.fill_value).
-//   - `time-standard=LST` returns local solar time; the response header
+//   - `time-standard=LST` returns NASA's "local solar time", which is in fact
+//     the time zone of the nearest 15° of longitude (SPEC 3.4); the response header
 //     repeats it as time_standard: "LST".
 //   - Values are keyed "YYYYMMDDHH", hours 00 to 23, one key per hour.
 //
@@ -38,9 +39,26 @@ export function buildNasaUrl(lat: number, lon: number, year: number): string {
   return `${NASA_HOURLY_URL}?${query.toString()}`;
 }
 
-/** The most recent complete calendar year, as seen at the given moment. */
-export function latestCompleteYear(now: Date): number {
-  return now.getUTCFullYear() - 1;
+/**
+ * SPEC 3.4: a year is used only once it ended at least this many months ago.
+ * NASA's solar data runs about four months behind the calendar (asked on
+ * 2026-11-15, the monthly record had 2026 only to July), so a year is not
+ * available in full until well into the next one.
+ */
+export const MONTHS_AFTER_YEAR_END = 6;
+
+/**
+ * The most recent calendar year that ended at least MONTHS_AFTER_YEAR_END
+ * months before `now` (read in UTC). A year ends on 1 January of the next, so
+ * 2025 qualifies from 1 July 2026 and 2026 from 1 July 2027.
+ */
+export function latestAvailableYear(now: Date): number {
+  // Whole months since 1 January of the current year: January is 0, July is 6.
+  const monthsIntoYear = now.getUTCMonth();
+  // The previous year ended on 1 January of this one, monthsIntoYear months ago.
+  // Before July, it ended under six months ago, so go back one year more.
+  const yearsBack = monthsIntoYear >= MONTHS_AFTER_YEAR_END ? 1 : 2;
+  return now.getUTCFullYear() - yearsBack;
 }
 
 // ------------------------------------------------------------- hour keys
@@ -144,7 +162,7 @@ export function parseNasaHourly(
   if (!hourly || typeof hourly !== "object") {
     throw new SunDataError(`response has no ${PARAMETER} values`);
   }
-  // The engine assumes local solar time; refuse anything else.
+  // The engine assumes NASA's "LST" zone time; refuse anything else.
   const timeStandard = body.header?.time_standard;
   if (timeStandard !== undefined && timeStandard !== LOCAL_SOLAR_TIME) {
     throw new SunDataError(`time standard is ${timeStandard}, expected LST`);

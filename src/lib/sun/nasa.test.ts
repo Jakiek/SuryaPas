@@ -6,7 +6,7 @@ import {
   fillMissingHours,
   HOURS_PER_YEAR,
   hourKeysOfYear,
-  latestCompleteYear,
+  latestAvailableYear,
   parseNasaHourly,
   SunDataError,
   whPerM2ToWattsPerM2,
@@ -174,9 +174,20 @@ describe("the request", () => {
     expect(url.searchParams.get("time-standard")).toBe("LST");
   });
 
-  it("uses the year before the current one", () => {
-    expect(latestCompleteYear(new Date("2026-11-14T10:00:00Z"))).toBe(2025);
-    expect(latestCompleteYear(new Date("2027-01-01T00:00:00Z"))).toBe(2026);
+  describe("the year used: the latest that ended at least six months ago (SPEC 3.4)", () => {
+    it("is last year from 1 July on", () => {
+      // 2025 ended on 1 January 2026; six months later is 1 July 2026, well before this date.
+      expect(latestAvailableYear(new Date("2026-11-15T10:00:00Z"))).toBe(2025);
+      // 2026 ended on 1 January 2027; it qualifies from 1 July 2027, the first instant included.
+      expect(latestAvailableYear(new Date("2027-07-01T00:00:00Z"))).toBe(2026);
+    });
+
+    it("is the year before last until 30 June", () => {
+      // On 1 January 2027, 2026 ended a moment ago: NASA does not have it yet, so 2025.
+      expect(latestAvailableYear(new Date("2027-01-01T00:00:00Z"))).toBe(2025);
+      // The last instant before the boundary: 2026 ended under six months ago, still 2025.
+      expect(latestAvailableYear(new Date("2027-06-30T23:59:59Z"))).toBe(2025);
+    });
   });
 
   it("gives up when NASA does not answer within the time limit", async () => {

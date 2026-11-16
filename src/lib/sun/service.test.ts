@@ -6,7 +6,7 @@ import { loadFallbackFile } from "./fallback";
 import { scaleToLongTerm, seriesIrradiation } from "./longTerm";
 import { parseNasaHourly } from "./nasa";
 import { parseNasaMonthly } from "./nasaMonthly";
-import { defaultDeps, getSun, type SunDeps } from "./service";
+import { DEFAULT_TIMEOUT_MS, defaultDeps, getSun, type SunDeps } from "./service";
 
 const FIXED_NOW = new Date("2026-11-14T10:00:00Z"); // so the target year is 2025
 
@@ -35,6 +35,40 @@ const nasaAnswers = (monthly: Answer = async () => Response.json(yogyakartaMonth
 const expectedScaled = () =>
   scaleToLongTerm(parseNasaHourly(yogyakartaResponse, 2025, 3), parseNasaMonthly(yogyakartaMonthlyResponse, 2006, 2025), 2025);
 
+/**
+ * A request that never answers but obeys the abort signal, like the real fetch.
+ * `asked` resolves once it has been called, which is after the time limit's
+ * timer is set.
+ */
+function hangingUntilAborted() {
+  let markAsked = () => {};
+  const asked = new Promise<void>((resolve) => (markAsked = resolve));
+  const answer = (init?: RequestInit) => {
+    markAsked();
+    return new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+    });
+  };
+  return { answer, asked };
+}
+
+/**
+ * Run `start` with timers faked, and once NASA has been asked, move the clock
+ * past the service's real time limit. No test waits on a real timer, so the
+ * result cannot depend on how busy the machine is.
+ */
+async function pastTheTimeLimit<T>(start: () => Promise<T>, asked: Promise<void>): Promise<T> {
+  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+  try {
+    const pending = start();
+    await asked;
+    await vi.advanceTimersByTimeAsync(DEFAULT_TIMEOUT_MS);
+    return await pending;
+  } finally {
+    vi.useRealTimers();
+  }
+}
+
 const askedUrls = (fetchFn: { mock: { calls: unknown[][] } }) => fetchFn.mock.calls.map((call) => new URL(String(call[0])));
 
 describe("live data", () => {
@@ -58,8 +92,24 @@ describe("live data", () => {
     const fetchFn = nasaAnswers();
     await getSun(-7.7956, 110.3695, makeDeps(fetchFn));
     const monthly = askedUrls(fetchFn).find((url) => isMonthly(url));
+    const hourly = askedUrls(fetchFn).find((url) => !isMonthly(url));
+    expect(hourly?.searchParams.get("start")).toBe("20250101");
     expect(monthly?.searchParams.get("start")).toBe("2006");
     expect(monthly?.searchParams.get("end")).toBe("2025");
+  });
+
+  it("gives both requests the same year, whichever year the date selects", async () => {
+    // On 30 June 2027 the year used is still 2025; from 1 July 2027 it is 2026 (SPEC 3.4).
+    for (const [now, year] of [["2027-06-30T23:59:59Z", 2025], ["2027-07-01T00:00:00Z", 2026]] as const) {
+      const fetchFn = nasaAnswers();
+      await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { now: () => new Date(now) }));
+      const hourly = askedUrls(fetchFn).find((url) => !isMonthly(url));
+      const monthly = askedUrls(fetchFn).find((url) => isMonthly(url));
+      expect(hourly?.searchParams.get("start")).toBe(`${year}0101`);
+      expect(hourly?.searchParams.get("end")).toBe(`${year}1231`);
+      expect(monthly?.searchParams.get("start")).toBe(String(year - 19));
+      expect(monthly?.searchParams.get("end")).toBe(String(year));
+    }
   });
 
   it("returns the hourly year scaled to the long-term mean, and caches that scaled series", async () => {
@@ -100,7 +150,8 @@ describe("live data", () => {
     const fetchFn = nasaAnswers();
     const cache = new MemorySunCache();
     await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { cache }));
-    await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { cache, now: () => new Date("2027-03-01T00:00:00Z") }));
+    // From 1 July 2027 the year used is 2026 (SPEC 3.4), so the cached 2025 must not be reused.
+    await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { cache, now: () => new Date("2027-07-01T00:00:00Z") }));
     expect(fetchFn.mock.calls).toHaveLength(4);
   });
 });
@@ -119,11 +170,9 @@ describe("fallback", () => {
   });
 
   it("uses the fallback when NASA is slower than the time limit", async () => {
-    const hanging = ((_url: unknown, init?: RequestInit) =>
-      new Promise((_resolve, reject) => {
-        init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
-      })) as typeof fetch;
-    const result = await getSun(-8.65, 115.2, makeDeps(hanging, { timeoutMs: 20 }));
+    const { answer, asked } = hangingUntilAborted();
+    const hanging = ((_url: unknown, init?: RequestInit) => answer(init)) as typeof fetch;
+    const result = await pastTheTimeLimit(() => getSun(-8.65, 115.2, makeDeps(hanging)), asked);
     expect(result.source).toBe("fallback");
     expect(result.fallbackCityId).toBe("denpasar");
   });
@@ -136,9 +185,10 @@ describe("fallback", () => {
   });
 
   describe("when only the monthly request fails", () => {
-    async function expectFallback(monthly: Answer, extra: Partial<SunDeps> = {}) {
+    async function expectFallback(monthly: Answer, asked?: Promise<void>) {
       const cache = new MemorySunCache();
-      const result = await getSun(-7.7956, 110.3695, makeDeps(nasaAnswers(monthly), { cache, ...extra }));
+      const ask = () => getSun(-7.7956, 110.3695, makeDeps(nasaAnswers(monthly), { cache }));
+      const result = asked ? await pastTheTimeLimit(ask, asked) : await ask();
       const yogyakarta = await loadFallbackFile("yogyakarta");
       expect(result.source).toBe("fallback");
       expect(result.fallbackCityId).toBe("yogyakarta");
@@ -158,13 +208,9 @@ describe("fallback", () => {
     });
 
     it("uses the fallback when the monthly request outlasts the shared time limit", async () => {
-      // The hourly request answers at once; the monthly one never does, but
-      // obeys the abort signal like the real fetch.
-      const hanging: Answer = (init) =>
-        new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
-        });
-      await expectFallback(hanging, { timeoutMs: 20 });
+      // The hourly request answers at once; the monthly one never does.
+      const { answer, asked } = hangingUntilAborted();
+      await expectFallback(answer, asked);
     });
 
     it("uses the fallback when the record has fewer than ten complete years", async () => {
