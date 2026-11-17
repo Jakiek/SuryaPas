@@ -241,11 +241,11 @@
         "explanation": "Bagian dari luas atap yang Anda isi yang benar-benar bisa dipasangi panel, setelah menyisakan tepi, jalur injak, dan lubang udara. Anda mengaturnya sendiri di langkah atap; ini angka awalnya.",
         "min": {
           "name": "Bagian terkecil yang bisa dipilih",
-          "explanation": "Batas bawah bagian atap yang bisa dipakai. Di langkah atap, Anda tidak bisa mengisi angka yang lebih kecil dari ini."
+          "explanation": "Batas bawah bagian atap yang bisa dipakai. Di langkah atap, Anda tidak bisa menggeser pengaturnya ke bawah angka ini."
         },
         "max": {
           "name": "Bagian terbesar yang bisa dipilih",
-          "explanation": "Batas atas bagian atap yang bisa dipakai. Di langkah atap, Anda tidak bisa mengisi angka yang lebih besar dari ini."
+          "explanation": "Batas atas bagian atap yang bisa dipakai. Di langkah atap, Anda tidak bisa menggeser pengaturnya ke atas angka ini."
         }
       }
     },

@@ -241,11 +241,11 @@
         "explanation": "The share of the roof area you give us that can really hold panels, after gaps for edges, walkways and vents. You set your own on the roof step; this is where it starts.",
         "min": {
           "name": "Lowest share you can pick",
-          "explanation": "The lower limit for the usable share. On the roof step, you cannot set it below this."
+          "explanation": "The lower limit for the usable share. On the roof step, you cannot slide it below this."
         },
         "max": {
           "name": "Highest share you can pick",
-          "explanation": "The upper limit for the usable share. On the roof step, you cannot set it above this."
+          "explanation": "The upper limit for the usable share. On the roof step, you cannot slide it above this."
         }
       }
     },
