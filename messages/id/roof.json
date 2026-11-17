@@ -75,6 +75,7 @@
     "label": "Bagian atap yang bisa dipasangi panel",
     "help": "Tidak semua atap bisa dipakai: ada bubungan, talang, dan jarak aman di tepi.",
     "about": "sekitar {area} m²",
-    "unknown": "isi luas atap dulu"
+    "unknown": "isi luas atap dulu",
+    "refused": "–"
   }
 }

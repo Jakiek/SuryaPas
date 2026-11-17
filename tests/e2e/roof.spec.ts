@@ -153,6 +153,9 @@ for (const c of LOCALES) {
       await expect(page.getByRole("button", { name: c.plan.steps.roof.next })).toBeEnabled();
       await page.getByLabel(c.r.area.label).fill("2001");
       await expect(page.getByText(c.r.refused.title)).toBeVisible();
+      // The usable-area line shows a dash, not a request for an area already entered.
+      await expect(page.getByText(c.r.usable.unknown)).toHaveCount(0);
+      await expect(page.getByText(c.r.usable.refused, { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: c.plan.steps.roof.next })).toBeDisabled();
     });
   });

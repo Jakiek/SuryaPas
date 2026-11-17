@@ -10,7 +10,6 @@ export type Corner = [longitude: number, latitude: number];
 /** A roof needs three corners to enclose anything. */
 export const MIN_CORNERS = 3;
 
-
 /**
  * Area in square metres of the shape the corners enclose, as seen from
  * above (the footprint). It is NOT corrected for the slope of the roof:

@@ -75,6 +75,7 @@
     "label": "Share of the roof that can take panels",
     "help": "Not all of a roof can be used: the ridge, gutters and safety gaps at the edges are kept clear.",
     "about": "about {area} m²",
-    "unknown": "enter the roof area first"
+    "unknown": "enter the roof area first",
+    "refused": "–"
   }
 }

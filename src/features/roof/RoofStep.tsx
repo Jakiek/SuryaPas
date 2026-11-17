@@ -220,7 +220,8 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
 
       <UsableFraction
         fraction={value.usableFraction}
-        areaM2={refused ? null : value.areaM2}
+        areaM2={value.areaM2}
+        refused={refused}
         onChange={(usableFraction) => onChange({ ...value, usableFraction })}
       />
     </QuestionList>
@@ -243,10 +244,13 @@ function formatArea(areaM2: number, locale: string): string {
 function UsableFraction({
   fraction,
   areaM2,
+  refused,
   onChange,
 }: {
   fraction: number;
   areaM2: number | null;
+  /** The area is above the limit: show a dash, not a request for an area. */
+  refused: boolean;
   onChange: (fraction: number) => void;
 }) {
   const t = useTranslations("roof.usable");
@@ -265,9 +269,11 @@ function UsableFraction({
           {percent.format(fraction)}
         </output>
         <span className="text-[17px] font-bold">
-          {areaM2 === null
-            ? t("unknown")
-            : t("about", { area: area.format(usableAreaM2(areaM2, fraction)) })}
+          {refused
+            ? t("refused")
+            : areaM2 === null
+              ? t("unknown")
+              : t("about", { area: area.format(usableAreaM2(areaM2, fraction)) })}
         </span>
       </div>
       <input
