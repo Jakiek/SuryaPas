@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "SuryaPas: rooftop solar that fits your home",
+    "description": "Find out how many solar panels your roof should carry, what they cost and when they pay for themselves. Free, with no sign-up, for homes in Indonesia.",
+    "imageAlt": "SuryaPas: rooftop solar that fits your home"
+  },
+  "hero": {
+    "heading": "Solar that <box>fits</box> your home",
+    "label": "Start with your home address",
+    "placeholder": "E.g. Jl. Kaliurang Km 5, Sleman",
+    "button": "Calculate",
+    "free": "Free",
+    "time": "About 3 minutes",
+    "noSignup": "No sign-up",
+    "example": "See an example result",
+    "lede": "How many panels, what they cost, and when they pay you back. Worked out from your roof and the power you use by day.",
+    "dayLabel": "Day · panels at work"
+  },
+  "continue": {
+    "button": "Pick up where you stopped",
+    "note": "Your answers are saved in this browser. {progress}.",
+    "startOver": "Start fresh with another address"
+  },
+  "argument": {
+    "heading": "More panels do not always save more",
+    "lead": "Since 2024, solar power sent back to the PLN grid <mark>earns you nothing</mark>. Only the power you use yourself while the sun is up lowers your bill.",
+    "sourceLabel": "Source:",
+    "sourceLink": "Energy Ministry Regulation 2/2024, Article 13 (PDF, in Indonesian)",
+    "comparisonLabel": "The same home with two numbers of panels",
+    "fitsTag": "The right fit",
+    "tooManyTag": "Far too many",
+    "panelsUnit": "{count, plural, one {panel} other {panels}}",
+    "caption": "With {count, plural, one {# panel} other {# panels}} this home makes {generated} kWh a day: {used} kWh is used as it is made and {exported} kWh goes to the grid unpaid.",
+    "rows": {
+      "wasted": "Solar power that goes unused",
+      "cost": "Upfront cost",
+      "payback": "Payback"
+    },
+    "paybackNever": "Does not pay back"
+  },
+  "footer": {
+    "example": "Example home: {place}, {power} VA, a {bill} bill each month."
+  },
+  "share": {
+    "before": "Solar that",
+    "boxed": "fits",
+    "after": "your home",
+    "line": "How many panels, what they cost, when they pay back."
+  }
+}

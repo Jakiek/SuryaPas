@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "SuryaPas: panel surya yang pas untuk rumah Anda",
+    "description": "Hitung berapa panel surya yang pas untuk atap rumah Anda, berapa biayanya, dan kapan balik modal. Gratis, tanpa daftar.",
+    "imageAlt": "SuryaPas: panel surya yang pas untuk rumah Anda"
+  },
+  "hero": {
+    "heading": "Panel surya yang <box>pas</box> untuk rumah Anda",
+    "label": "Mulai dari alamat rumah Anda",
+    "placeholder": "Contoh: Jl. Kaliurang Km 5, Sleman",
+    "button": "Hitung",
+    "free": "Gratis",
+    "time": "± 3 menit",
+    "noSignup": "Tanpa daftar",
+    "example": "Lihat contoh hasil",
+    "lede": "Berapa panel, berapa biayanya, kapan balik modal. Dihitung dari atap dan pemakaian listrik siang Anda.",
+    "dayLabel": "Siang · panel bekerja"
+  },
+  "continue": {
+    "button": "Lanjutkan yang tadi",
+    "note": "Jawaban Anda tersimpan di peramban ini. {progress}.",
+    "startOver": "Mulai baru dengan alamat lain"
+  },
+  "argument": {
+    "heading": "Lebih banyak panel belum tentu lebih hemat",
+    "lead": "Sejak 2024, listrik surya yang mengalir ke jaringan PLN <mark>tidak lagi dibayar</mark>. Yang menghemat tagihan hanyalah listrik yang langsung Anda pakai pada siang hari.",
+    "sourceLabel": "Dasar:",
+    "sourceLink": "Peraturan Menteri ESDM No. 2/2024, Pasal 13",
+    "comparisonLabel": "Rumah yang sama dengan dua jumlah panel",
+    "fitsTag": "Yang pas",
+    "tooManyTag": "Terlalu banyak",
+    "panelsUnit": "panel",
+    "caption": "Dengan {count} panel, rumah ini menghasilkan {generated} kWh sehari: {used} kWh langsung terpakai dan {exported} kWh terbuang ke jaringan tanpa dibayar.",
+    "rows": {
+      "wasted": "Listrik panel yang terbuang",
+      "cost": "Biaya awal",
+      "payback": "Balik modal"
+    },
+    "paybackNever": "Tidak balik modal"
+  },
+  "footer": {
+    "example": "Rumah contoh: {place}, {power} VA, tagihan {bill} per bulan."
+  },
+  "share": {
+    "before": "Panel surya yang",
+    "boxed": "pas",
+    "after": "untuk rumah Anda",
+    "line": "Berapa panel, berapa biaya, kapan balik modal."
+  }
+}
