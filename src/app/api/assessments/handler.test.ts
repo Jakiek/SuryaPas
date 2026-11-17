@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import exampleHouse from "../../../../data/example-house.json";
 import { assess, CURRENT_ASSUMPTIONS, ENGINE_VERSION, type EngineInputs, type SunSeries } from "../../../engine";
 import { MemoryStore } from "../../../lib/store/memory";
@@ -91,10 +91,11 @@ describe("POST /api/assessments", () => {
     };
 
     const plain = await save({});
-    const dearer = await save({ "capex.perKwp.typical": 25_000_000 });
+    // Still between the low (11 million) and high (20 million) cost, which the route requires.
+    const dearer = await save({ "capex.perKwp.typical": 19_000_000 });
 
     const firstSize = (result: ReturnType<typeof assess>) => result.candidates[0];
-    expect(firstSize(dearer).withoutBattery.money.upfrontCostRp.typical).toBeCloseTo(firstSize(dearer).kwp * 25_000_000, 0);
+    expect(firstSize(dearer).withoutBattery.money.upfrontCostRp.typical).toBeCloseTo(firstSize(dearer).kwp * 19_000_000, 0);
     expect(firstSize(dearer).withoutBattery.money.upfrontCostRp.typical).not.toBe(
       firstSize(plain).withoutBattery.money.upfrontCostRp.typical,
     );
@@ -128,6 +129,62 @@ describe("POST /api/assessments", () => {
     );
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "invalid_overrides" });
+  });
+
+  describe("the three installed costs per kWp stay ordered low ≤ typical ≤ high", () => {
+    it("refuses a low cost above the typical cost, without saving", async () => {
+      const store = new MemoryStore();
+      const save = vi.spyOn(store, "createAssessment");
+      const response = await handleCreateAssessment(
+        post({ inputs: INPUTS, overrides: { "capex.perKwp.low": 18_000_000 }, locale: "id" }),
+        deps(store),
+      );
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: "invalid_overrides" });
+      expect(save).not.toHaveBeenCalled();
+    });
+
+    it("refuses a typical cost above the high cost", async () => {
+      const response = await handleCreateAssessment(
+        post({ inputs: INPUTS, overrides: { "capex.perKwp.typical": 25_000_000 }, locale: "id" }),
+        deps(new MemoryStore()),
+      );
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: "invalid_overrides" });
+    });
+
+    it("refuses a high cost below the low cost, even when each value is in its own range", async () => {
+      const response = await handleCreateAssessment(
+        post({
+          inputs: INPUTS,
+          overrides: { "capex.perKwp.low": 30_000_000, "capex.perKwp.typical": 31_000_000, "capex.perKwp.high": 8_000_000 },
+          locale: "id",
+        }),
+        deps(new MemoryStore()),
+      );
+      expect(response.status).toBe(400);
+    });
+
+    it("accepts a new ordered set, and equal costs", async () => {
+      const ordered = await handleCreateAssessment(
+        post({
+          inputs: INPUTS,
+          overrides: { "capex.perKwp.low": 14_000_000, "capex.perKwp.typical": 19_000_000, "capex.perKwp.high": 26_000_000 },
+          locale: "id",
+        }),
+        deps(new MemoryStore()),
+      );
+      expect(ordered.status).toBe(201);
+      const equal = await handleCreateAssessment(
+        post({
+          inputs: INPUTS,
+          overrides: { "capex.perKwp.low": 16_000_000, "capex.perKwp.typical": 16_000_000, "capex.perKwp.high": 16_000_000 },
+          locale: "id",
+        }),
+        deps(new MemoryStore()),
+      );
+      expect(equal.status).toBe(201);
+    });
   });
 
   it("refuses broken JSON", async () => {

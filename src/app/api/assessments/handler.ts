@@ -7,6 +7,7 @@ import {
   applyOverrides,
   assess,
   ENGINE_VERSION,
+  valueOf,
   type AssumptionSet,
   type SunSeries,
 } from "../../../engine";
@@ -14,6 +15,20 @@ import { isInsideIndonesia } from "../../../features/location/indonesia";
 import { assessmentRequestSchema } from "../../../lib/schema";
 import { jsonCopy } from "../../../lib/store/json";
 import type { JsonObject, Store } from "../../../lib/store/types";
+
+/**
+ * The installed cost per kWp must be ordered low ≤ typical ≤ high (decided
+ * 2026-11-15). The payback chart draws savings as a band whose upper edge is
+ * the low-cost case and whose lower edge the high-cost case (SPEC 2.3 item 5),
+ * and the payback range runs from the low-cost year to the high-cost year;
+ * both read wrongly if the three costs are out of order.
+ */
+export function costsAreOrdered(assumptions: AssumptionSet): boolean {
+  const low = valueOf(assumptions, "capex.perKwp.low");
+  const typical = valueOf(assumptions, "capex.perKwp.typical");
+  const high = valueOf(assumptions, "capex.perKwp.high");
+  return low <= typical && typical <= high;
+}
 
 export interface CreateAssessmentDeps {
   store: Pick<Store, "createAssessment" | "upsertAssumptionSet">;
@@ -121,6 +136,8 @@ export async function handleCreateAssessment(
   } catch {
     return errorResponse("invalid_overrides", 400);
   }
+  // Each override is within its own range, but together they may break the order of the three costs.
+  if (!costsAreOrdered(assumptionsInUse)) return errorResponse("invalid_overrides", 400);
 
   // 3. A year of sun. The service never fails: it falls back to bundled data.
   const sun = await deps.sunFor(inputs.location.latitude, inputs.location.longitude);
