@@ -47,6 +47,8 @@ const SECTION_OF: Record<AssumptionKey, Exclude<SectionId, "tariffs">> = {
   "panel.areaM2": "panels",
   "system.minKwp": "panels",
   "roof.usableFraction": "panels",
+  "roof.usableFraction.min": "panels",
+  "roof.usableFraction.max": "panels",
 
   "pv.performanceRatio": "sunlight",
   "pv.degradationPerYear": "sunlight",
