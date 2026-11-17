@@ -52,7 +52,7 @@ Rules the engine keeps, so that the same input always gives the same answer in t
 
 ### 2.0 Conventions to know before the steps
 
-**One year, 8,760 hours.** The engine's year has 365 days (no leap day), so 365 × 24 = 8,760 hours. Hour 0 is 1 January from 00:00 to 01:00. Hours are clock time across almost all of Indonesia, because the sun data is requested in the time zone of the nearest 15° of longitude (which is the zone Indonesia's three time zones follow) and the household's day is described in clock time too. The engine's year always starts on a Monday, which only decides which days count as weekends (code: `src/engine/calendar.ts`).
+**One year, 8,760 hours.** The engine's year has 365 days (no leap day), so 365 × 24 = 8,760 hours. Hour 0 is 1 January from 00:00 to 01:00. The household's day is described in clock time, and the sun data is requested in the time zone of the nearest 15° of longitude. That zone matches the legal time zone across most of Indonesia but runs an hour off in some places: eastern East Java (Surabaya, Malang) and eastern Central Kalimantan, where the sun data is an hour ahead of the clock, and Banda Aceh with Aceh's west coast and Ternate and Tidore, where it is an hour behind (see 4.2). The engine's year always starts on a Monday, which only decides which days count as weekends (code: `src/engine/calendar.ts`).
 
 **Daytime means 06:00 to 18:00.** Close to the equator that is roughly sunrise to sunset all year.
 
@@ -545,6 +545,7 @@ node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/validate-pvgis.mjs
 
 - **The load shape is estimated.** The hour-by-hour use of the home comes from four yes/no questions, a base share and two fixed daily shapes, all of them `judgment`. No measured Indonesian household profile was found. This drives how much solar the home can use directly, and so how many panels are worth buying, more than any other input.
 - **One roof face.** The user traces on the map or types the area (one value) of the best side; roofs with several faces are a later stage.
+- **Sun hours can run an hour off the clock in some regions.** The sun data uses the nearest-15° time zone, not the legal one. They agree across most of Indonesia, but in eastern East Java, eastern Central Kalimantan, Banda Aceh and Aceh's west coast, and Ternate and Tidore, solar output and the home's use overlap one hour off. Stage 1 does not align the hours to the legal zone.
 - **The roof area is the footprint.** The traced or typed area is the roof as seen from above, with no correction for slope. A sloped face is larger than its footprint (about 10% at 25°, 41% at 45°), so a sloped roof's area is under-counted, which can only cap the largest size too low and never inflates a saving (SPEC 2.2, step 2).
 - **Three slope choices stand for ranges of angle.** Flat is under about 10°, gentle about 10° to 35° (calculated at 25°), steep above about 35° (calculated at 45°). A steep roof calculated at 35° instead of 45° would have factors 0.06 to 0.10 higher. The 25° and 45° come from the design mock-up `mock/atap.html` (as `docs/VALIDATION.md` says), not from a regulation or a standard.
 - **East and west share one factor**, the mean of the two. In PVGIS's runs an east roof yields 4% to 9% more than a west one, so the engine overstates a west roof and understates an east one by 2% to 5%.
