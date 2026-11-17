@@ -78,6 +78,23 @@ describe("assess", () => {
     }
   });
 
+  it("gives every option, with and without battery, its running total at all three costs", () => {
+    const options = result.candidates.flatMap((candidate) =>
+      candidate.withBattery === null ? [candidate.withoutBattery] : [candidate.withoutBattery, candidate.withBattery],
+    );
+    expect(options.length).toBeGreaterThan(result.candidates.length); // some sizes have a battery variant
+    for (const { money } of options) {
+      const { low, typical, high } = money.cumulativeSavingsByCostRp;
+      [low, typical, high].forEach((series) => expect(series).toHaveLength(26));
+      expect(typical).toEqual(money.cumulativeSavingsRp);
+      // Upkeep and the inverter cost more on a dearer system, so its running total is lower from year 1.
+      for (let year = 1; year <= 25; year++) {
+        expect(low[year]).toBeGreaterThan(typical[year]);
+        expect(typical[year]).toBeGreaterThan(high[year]);
+      }
+    }
+  });
+
   it("net savings rise and then fall as size grows for a home with low daytime use, and the recommendation sits at the peak", () => {
     // Each added panel costs the same, but once the panels already cover the little daytime use,
     // more of each extra panel's output is surplus worth nothing (SPEC 3.2 step 5), so its savings fall

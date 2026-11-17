@@ -42,6 +42,12 @@ export function assessMoney(
     paybackYears: { low: low.paybackYear, typical: typical.paybackYear, high: high.paybackYear },
     netSavingsRp: typical.netSavingsRp,
     cumulativeSavingsRp: typical.cumulativeSavingsRp,
+    // SPEC 3.3: all three series, so the chart can draw savings as a band (SPEC 2.3 item 5).
+    cumulativeSavingsByCostRp: {
+      low: low.cumulativeSavingsRp,
+      typical: typical.cumulativeSavingsRp,
+      high: high.cumulativeSavingsRp,
+    },
     selfConsumedShare: energy.generationKwh === 0 ? 0 : energy.selfConsumedKwh / energy.generationKwh,
     // Step 9. Exported surplus is left out, which keeps the claim conservative.
     co2AvoidedKgPerYear: energy.selfConsumedKwh * valueOf(assumptions, "grid.emissionKgCo2PerKwh"),

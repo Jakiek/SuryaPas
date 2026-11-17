@@ -6,7 +6,7 @@ import { assessMoney, minimumChargeRp } from "./money";
 import type { Assessment, Candidate, EngineInputs, SunSeries } from "./types";
 
 /** Stored with every saved result, so an old result can be traced to the code that made it. */
-export const ENGINE_VERSION = "1.0.0";
+export const ENGINE_VERSION = "1.1.0";
 
 /**
  * Step 8 (SPEC 3.2): recommend the size with the highest net savings at the typical cost, without a battery.

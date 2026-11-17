@@ -153,6 +153,14 @@ export interface MoneyResult {
    * Payback is where this line crosses the upfront cost.
    */
   cumulativeSavingsRp: number[];
+  /**
+   * The same running total at the low, typical and high installed cost (SPEC 3.3), year 0 to the horizon.
+   * They differ because upkeep and the inverter replacement are shares of the cost.
+   * `typical` is the same series as `cumulativeSavingsRp`. While the cost per kWp is ordered
+   * low ≤ typical ≤ high, every year has low ≥ typical ≥ high here, so the payback chart draws them
+   * as a band: low is its upper edge, high its lower edge (SPEC 2.3 item 5).
+   */
+  cumulativeSavingsByCostRp: { low: number[]; typical: number[]; high: number[] };
   /** Share of the panels' output used in the home, 0 to 1. */
   selfConsumedShare: number;
   co2AvoidedKgPerYear: number;
