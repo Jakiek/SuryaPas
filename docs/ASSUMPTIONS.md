@@ -20,13 +20,13 @@ All values were collected on 2026-11-14, except the two that version 2 changed o
 
 | Key | Value | Label | Source |
 | --- | --- | --- | --- |
-| `tariff.R1_450_subsidised` | 415 | sourced | [Metro TV](https://www.metrotvnews.com/read/NA0CzpEz-daftar-lengkap-tarif-listrik-pln-akhir-oktober-2026-per-kwh) |
-| `tariff.R1_900_subsidised` | 605 | sourced | same |
-| `tariff.R1_900_nonsubsidised` | 1,352 | sourced | same; [Kompas](https://money.kompas.com/read/2026/11/02/083952426/tarif-listrik-pln-november-2026-cek-daftar-lengkap-semua-golongan) |
-| `tariff.R1_1300` | 1,444.70 | sourced | same |
-| `tariff.R1_2200` | 1,444.70 | sourced | same |
-| `tariff.R2_3500_5500` | 1,699.53 | sourced | same |
-| `tariff.R3_6600_up` | 1,699.53 | sourced | same |
+| `powerClasses.classes.R1_450_subsidised` | 415 | sourced | [Metro TV](https://www.metrotvnews.com/read/NA0CzpEz-daftar-lengkap-tarif-listrik-pln-akhir-oktober-2026-per-kwh) |
+| `powerClasses.classes.R1_900_subsidised` | 605 | sourced | same |
+| `powerClasses.classes.R1_900_nonsubsidised` | 1,352 | sourced | same; [Kompas](https://money.kompas.com/read/2026/11/02/083952426/tarif-listrik-pln-november-2026-cek-daftar-lengkap-semua-golongan) |
+| `powerClasses.classes.R1_1300` | 1,444.70 | sourced | same |
+| `powerClasses.classes.R1_2200` | 1,444.70 | sourced | same |
+| `powerClasses.classes.R2_3500_5500` | 1,699.53 | sourced | same |
+| `powerClasses.classes.R3_6600_up` | 1,699.53 | sourced | same |
 
 These are press reports of the tariff, consistent across outlets, and not PLN's own document. Tariffs were unchanged through 2026. T03 check: Annex II of [Energy Ministry Regulation 7/2024](https://jdih.esdm.go.id/storage/document/Permen%20ESDM%20Nomor%207%20Tahun%202024.pdf) gives the same Rupiah figures for each class; for R-1 450 VA and 900 VA they are the prepaid column.
 
@@ -34,16 +34,23 @@ These are press reports of the tariff, consistent across outlets, and not PLN's 
 
 | Key | Value | Label | Source |
 | --- | --- | --- | --- |
-| `export.valueRpPerKwh` | 0 | sourced | Net metering abolished by Energy Ministry Regulation 2/2024: [ABNR](https://www.abnrlaw.com/news/indonesia-issues-new-rules-on-operation-of-rooftop-solar-abolishes-net-metering) |
-| `size.regulatoryCap` | none | sourced | The limit of 100% of connected power was removed; size follows PLN quota: [ESDM](https://www.esdm.go.id/id/media-center/arsip-berita/aturan-terbaru-plts-atap-terbit-kini-kapasitas-pemasangan-tidak-dibatasi) |
-| `minCharge.postpaidHours` | 40 | sourced | Minimum monthly bill RM1 = 40 jam nyala × connected kVA × energy tariff. Energy Ministry Regulation 7/2024, Annex II, footnote *): [Permen ESDM 7/2024](https://jdih.esdm.go.id/storage/document/Permen%20ESDM%20Nomor%207%20Tahun%202024.pdf). Read in the PDF on 2026-11-14 (T03) |
-| `minCharge.afterSolarAppliesToAll` | true | sourced | Regulation 2/2024 Article 16: a prepaid customer's rooftop solar application counts as a request to move to postpaid, and PLN must agree. Checked against the regulation's text on 2026-11-14. So after installation the minimum charge applies in every class listed under `minCharge.classes`, whatever the customer pays by today |
-| `minCharge.prepaidBeforeSolar` | false | sourced | In Annex II the footnote *) sits in the postpaid ("reguler") fixed-charge column; the prepaid ("prabayar") column lists only the energy rate. Same source. This is a reading of the table layout; no sentence of the regulation says it in words. It matters only before solar: a prepaid home that applies for rooftop solar moves to postpaid (Regulation 2/2024 Article 16), so SPEC 3.2 step 7 applies the minimum charge after solar. |
-| `minCharge.classes` | R-1 900 VA-RTM, R-1 1,300 VA, R-1 2,200 VA, R-2, R-3 | sourced | Same Annex II. The subsidised R-1 450 VA and 900 VA postpaid classes have a fixed charge (biaya beban) of Rp11,000 and Rp20,000 per kVA per month instead, and no minimum charge. New key added by T03 |
+| `minCharge.hours` | 40 | sourced | Minimum monthly bill RM1 = 40 jam nyala × connected kVA × energy tariff. Energy Ministry Regulation 7/2024, Annex II, footnote *): [Permen ESDM 7/2024](https://jdih.esdm.go.id/storage/document/Permen%20ESDM%20Nomor%207%20Tahun%202024.pdf). Read in the PDF on 2026-11-14 (T03) |
 
 Worked values of the minimum bill, from the formula above and the tariff table (our arithmetic): 900 VA-RTM, 40 × 0.9 × 1,352 = Rp48,672; 1,300 VA, 40 × 1.3 × 1,444.70 = Rp75,124; 2,200 VA, 40 × 2.2 × 1,444.70 = Rp127,134; 3,500 VA, 40 × 3.5 × 1,699.53 = Rp237,934.
 
 The R-1 450 VA and 900 VA tariffs above (415 and 605) are the prepaid column of Annex II. The postpaid column for those two classes is a three-block tariff plus the fixed charge. Stage 1 converts spend with the single prepaid rate for both, a known limit stated in SPEC 3.2 step 1.
+
+## Rules built into the engine
+
+These are not entries of the assumption set. They are rules the engine code applies, so they have no key in `CURRENT_ASSUMPTIONS` and no editable value; the names below are this document's own. Each stays here with its source. The assumptions screen shows the first three (exports earn nothing, the minimum charge after solar, no size cap).
+
+| Rule | Value | Label | Source |
+| --- | --- | --- | --- |
+| `export.valueRpPerKwh` | 0 | sourced | Net metering abolished by Energy Ministry Regulation 2/2024: [ABNR](https://www.abnrlaw.com/news/indonesia-issues-new-rules-on-operation-of-rooftop-solar-abolishes-net-metering) |
+| `size.regulatoryCap` | none | sourced | The limit of 100% of connected power was removed; size follows PLN quota: [ESDM](https://www.esdm.go.id/id/media-center/arsip-berita/aturan-terbaru-plts-atap-terbit-kini-kapasitas-pemasangan-tidak-dibatasi) |
+| `minCharge.afterSolarAppliesToAll` | true | sourced | Regulation 2/2024 Article 16: a prepaid customer's rooftop solar application counts as a request to move to postpaid, and PLN must agree. Checked against the regulation's text on 2026-11-14. So after installation the minimum charge applies in every class listed under `minCharge.classes`, whatever the customer pays by today |
+| `minCharge.prepaidBeforeSolar` | false | sourced | In Annex II the footnote *) sits in the postpaid ("reguler") fixed-charge column; the prepaid ("prabayar") column lists only the energy rate. Same source. This is a reading of the table layout; no sentence of the regulation says it in words. It matters only before solar: a prepaid home that applies for rooftop solar moves to postpaid (Regulation 2/2024 Article 16), so SPEC 3.2 step 7 applies the minimum charge after solar. |
+| `minCharge.classes` | R-1 900 VA-RTM, R-1 1,300 VA, R-1 2,200 VA, R-2, R-3 | sourced | Same Annex II. The subsidised R-1 450 VA and 900 VA postpaid classes have a fixed charge (biaya beban) of Rp11,000 and Rp20,000 per kVA per month instead, and no minimum charge. New key added by T03 |
 
 ## Cost
 
@@ -98,13 +105,19 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 �
 | `roof.usableFraction` | 0.65 | decision | Adjustable by the user; agreed range 0.60–0.70 |
 | `pv.performanceRatio` | 0.75 | thin | Version 2. PVGIS 5.3's yield ÷ irradiation on a flat roof (PVGIS-ERA5, crystalline silicon, free-standing, its default 14% system loss) at Medan, Yogyakarta and Makassar: 0.747, 0.754, 0.743; mean 0.748, rounded. Within PVGIS's loss, heat costs about 11% in this climate, which version 1's 0.78 (a judgment) did not allow for. One model with a default system loss, so `thin`. Read 2026-11-15: [PVGIS API](https://re.jrc.ec.europa.eu/api/v5_3/PVcalc); method and numbers in `docs/VALIDATION.md` |
 | `pv.degradationPerYear` | 0.005 | decision | |
-| `shade.none` / `some` / `heavy` | 1.00 / 0.90 / 0.70 | judgment | |
+| `shade.none` | 1.00 | judgment | |
+| `shade.some` | 0.90 | judgment | |
+| `shade.heavy` | 0.70 | judgment | |
 | `battery.roundTripEfficiency` | 0.90 | judgment | |
 | `battery.usableFraction` | 0.90 | judgment | |
-| `battery.sizesKwh` | 5, 10 | decision | |
+| `batterySizesKwh.sizes` | 5, 10 | decision | |
 | `battery.minFillShare` | 0.5 | decision | A battery is offered only when a typical day's useful surplus fills at least this share of the smallest battery's usable capacity. Added with the engine (T04) |
 
 ### Orientation factor (multiplier on horizontal irradiance)
+
+| Key | Label |
+| --- | --- |
+| `orientation.table` | sourced |
 
 Version 2, `sourced`, 2026-11-15. Each value is PVGIS 5.3's yearly yield on the tilted roof ÷ its yield on a flat roof at the same place, averaged over Medan (3.6° N) and Yogyakarta (7.8° S), and over east and west. Gentle is taken as 25° and steep as 45°, the angles of the roof-step pictures in `mock/atap.html` rounded to 5°; no document gives the slopes an angle, which SPEC 3.2 step 3 now fixes. `scripts/validate-pvgis.mjs` reproduces the table, and `docs/VALIDATION.md` shows it for every 5° from 5° to 45°.
 
@@ -140,6 +153,8 @@ The load shape is the engine's weakest input and its most important one. Any mea
 | `grid.emissionKgCo2PerKwh` | 0.87 | thin | 0.87 tCO2 per MWh is the Jawa-Madura-Bali grid combined-margin factor (50% operating, 50% build) from Energy Ministry Decree 163.K/HK.02/MEM.S/2021, which uses 2019 data. We read the value in a government-hosted mitigation document that quotes the decree ([SRN mitigation action document](https://asset.srnmenlh.id/srn-menlhk/files/3ff4297a-0300-4efd-9572-9eca8eb4ba30.pdf), "0,87 ton CO2/MWh"), and the decree's existence, number and date (30 August 2021) in [RuangEnergi](https://www.ruangenergi.com/pemerintah-terbitkan-aturan-emisi-grk-sistem-ketenagalistrikan/). The decree's annex was not found online, so the value is second-hand. It covers the Java-Bali grid only; other grids may differ, and no newer official factor was found. Was 0.85 (open) |
 
 ## Sun data
+
+These rows are settings of the sun-data code in `src/lib/sun/`, not entries of the assumption set, so the keys here are this document's own.
 
 | Key | Value | Label | Note |
 | --- | --- | --- | --- |
