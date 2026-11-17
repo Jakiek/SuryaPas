@@ -4,7 +4,14 @@ import { assess, CURRENT_ASSUMPTIONS, ENGINE_VERSION, type EngineInputs, type Su
 import { MemoryStore } from "../../../lib/store/memory";
 import { StoreError } from "../../../lib/store/types";
 import { loadFallbackFile } from "../../../lib/sun/fallback";
-import { forgetStoredVersions, handleCreateAssessment, type CreateAssessmentDeps } from "./handler";
+import { getSun, defaultDeps, type SunDeps } from "../../../lib/sun/service";
+import { StoreSunCache } from "../../../lib/sun/storeCache";
+import {
+  forgetStoredVersions,
+  handleCreateAssessment,
+  MAX_REQUEST_BODY_BYTES,
+  type CreateAssessmentDeps,
+} from "./handler";
 
 const INPUTS = exampleHouse.inputs as EngineInputs;
 
@@ -127,12 +134,107 @@ describe("POST /api/assessments", () => {
     expect((await handleCreateAssessment(post("{"), deps(new MemoryStore()))).status).toBe(400);
   });
 
-  it("answers 503 when saving fails, so the flow can offer a retry", async () => {
+  it("returns the result marked as not saved when the store cannot be written", async () => {
     const store = new MemoryStore();
     store.createAssessment = async () => {
       throw new StoreError("database down");
     };
     const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides: {}, locale: "id" }), deps(store));
-    expect(response.status).toBe(503);
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { saved: boolean; assessment: unknown; id?: string };
+    expect(body.saved).toBe(false);
+    expect(body.id).toBeUndefined();
+    const expected = assess(INPUTS, await yogyakartaSun(), CURRENT_ASSUMPTIONS);
+    expect(body.assessment).toEqual(JSON.parse(JSON.stringify(expected)));
+  });
+
+  it("returns the result marked as not saved when the assumption set cannot be stored", async () => {
+    const store = new MemoryStore();
+    store.upsertAssumptionSet = async () => {
+      throw new StoreError("database paused");
+    };
+    const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides: {}, locale: "en" }), deps(store));
+
+    expect(response.status).toBe(200);
+    expect(((await response.json()) as { saved: boolean }).saved).toBe(false);
+  });
+
+  it("returns the result marked as not saved when the store cannot be read for sun data", async () => {
+    // The real sun service over a store that throws on every call, with NASA
+    // POWER unreachable: the cache misses, the bundled city file is used.
+    const store = new MemoryStore();
+    const broken = async () => {
+      throw new StoreError("database paused");
+    };
+    store.getSunCache = broken;
+    store.putSunCache = broken;
+    store.createAssessment = broken;
+    const sunDeps: SunDeps = {
+      ...defaultDeps(new StoreSunCache(store)),
+      fetchFn: async () => {
+        throw new TypeError("offline");
+      },
+    };
+
+    const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides: {}, locale: "id" }), {
+      store,
+      assumptions: CURRENT_ASSUMPTIONS,
+      sunFor: async (latitude, longitude) => {
+        const sun = await getSun(latitude, longitude, sunDeps);
+        return { ghiWm2: sun.series, source: sun.source };
+      },
+    });
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { saved: boolean; assessment: { candidates: unknown[] } };
+    expect(body.saved).toBe(false);
+    expect(body.assessment.candidates.length).toBeGreaterThan(0);
+  });
+
+  describe("request size limit", () => {
+    /** The largest valid request: twelve months, every adjustable assumption changed to its own value, the longest numbers. */
+    function largestValidRequest() {
+      const overrides: Record<string, number> = {};
+      for (const [key, entry] of Object.entries(CURRENT_ASSUMPTIONS.entries)) {
+        if (entry.adjustable) overrides[key] = entry.value;
+      }
+      const bill = 1_234_567;
+      const inputs = {
+        ...INPUTS,
+        location: { latitude: -7.123456789012345, longitude: 110.123456789012345 },
+        roof: { ...INPUTS.roof, areaM2: 1999.123456789012, usableFraction: 0.123456789012345 },
+        electricity: { ...INPUTS.electricity, monthlySpendRp: Array.from({ length: 12 }, () => bill) },
+      };
+      return { inputs, overrides, locale: "id" };
+    }
+
+    it("accepts the largest valid request, which is well under the limit", async () => {
+      const body = JSON.stringify(largestValidRequest());
+      expect(body.length).toBeLessThan(MAX_REQUEST_BODY_BYTES / 2);
+
+      const response = await handleCreateAssessment(post(body), deps(new MemoryStore()));
+      expect(response.status).toBe(201);
+    });
+
+    it("accepts a body exactly at the limit and refuses one a byte over, before parsing", async () => {
+      const padded = (size: number) => "{".padEnd(size, " ");
+      // At the limit: read in full, then refused as broken JSON (400), not as too large.
+      const atLimit = await handleCreateAssessment(post(padded(MAX_REQUEST_BODY_BYTES)), deps(new MemoryStore()));
+      expect(atLimit.status).toBe(400);
+
+      const over = await handleCreateAssessment(post(padded(MAX_REQUEST_BODY_BYTES + 1)), deps(new MemoryStore()));
+      expect(over.status).toBe(413);
+      expect(await over.json()).toEqual({ error: "request_too_large" });
+    });
+
+    it("refuses on the declared Content-Length without reading the body", async () => {
+      const request = new Request("http://localhost/api/assessments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Content-Length": String(MAX_REQUEST_BODY_BYTES + 1) },
+        body: "{}",
+      });
+      expect((await handleCreateAssessment(request, deps(new MemoryStore()))).status).toBe(413);
+    });
   });
 });

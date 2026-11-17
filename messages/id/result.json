@@ -129,5 +129,16 @@
   "method": {
     "margin": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 11% dari PVGIS, alat hitung surya milik Komisi Eropa.",
     "version": "Dihitung dengan asumsi versi {version}."
+  },
+  "unsaved": {
+    "title": "Hasil ini belum tersimpan",
+    "body": "Kami gagal menyimpannya, jadi belum ada tautan untuk dibagikan. Hasil hanya ada di tab ini sampai Anda menutupnya. Simpan lagi untuk mendapat tautan.",
+    "retry": "Coba simpan lagi",
+    "retrying": "Menyimpan…",
+    "retryFailed": "Masih belum tersimpan. Periksa sambungan internet, lalu coba lagi.",
+    "stillUnsaved": "Hitungannya sudah jadi, hanya penyimpanannya yang belum berhasil. Coba lagi satu menit lagi.",
+    "emptyTitle": "Tidak ada hasil yang belum tersimpan",
+    "emptyBody": "Hasil yang belum tersimpan hanya ada di tab yang membuatnya, dan tab ini tidak punya. Hitung lagi untuk mendapat hasil baru.",
+    "emptyAction": "Hitung rumah Anda"
   }
 }

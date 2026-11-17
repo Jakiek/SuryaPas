@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { assessmentRequestSchema } from "../../lib/schema";
 import { emptyDraft, type PlanDraft } from "./draft";
+import { UNSAVED_KEY } from "../result/unsavedStore";
 import { buildRequest, submitAssessment } from "./submit";
 
 /** A draft with all four steps filled in validly. */
@@ -38,7 +39,7 @@ describe("submitting the flow", () => {
 
     const result = await submitAssessment(completeDraft(), "id", send);
 
-    expect(result).toEqual({ ok: true, id: "abc123" });
+    expect(result).toEqual({ ok: true, saved: true, id: "abc123" });
     expect(assessmentRequestSchema.safeParse(sentBody).success).toBe(true);
   });
 
@@ -70,5 +71,31 @@ describe("submitting the flow", () => {
       ok: false,
       reason: "server",
     });
+  });
+
+  it("returns a result the server could not save, with the request for a retry", async () => {
+    const assessment = { assumptionSetVersion: "v2" };
+    const send: typeof fetch = async () => jsonResponse(200, { saved: false, assessment });
+    const kept = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => kept.get(key) ?? null,
+      setItem: (key: string, value: string) => void kept.set(key, value),
+      removeItem: (key: string) => void kept.delete(key),
+    };
+    const result = await submitAssessment(completeDraft(), "en", send, storage);
+    expect(result).toEqual({
+      ok: true,
+      saved: false,
+      id: "unsaved",
+      assessment,
+      request: buildRequest(completeDraft(), "en"),
+    });
+    // Kept under its own key only, for the not-saved page to read.
+    expect([...kept.keys()]).toEqual([UNSAVED_KEY]);
+  });
+
+  it("treats an answer with neither an id nor a result as a server error", async () => {
+    const send: typeof fetch = async () => jsonResponse(200, { saved: false });
+    expect(await submitAssessment(completeDraft(), "id", send)).toEqual({ ok: false, reason: "server" });
   });
 });

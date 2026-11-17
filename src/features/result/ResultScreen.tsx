@@ -22,6 +22,7 @@ import { PanelPicker } from "./PanelPicker";
 import { PaybackChart } from "./PaybackChart";
 import { ResultActions } from "./ResultActions";
 import { useIsOwner } from "./useIsOwner";
+import { useUnsavedNotice } from "./UnsavedContext";
 import {
   candidateFor,
   compareWithRecommended,
@@ -42,6 +43,8 @@ const CONTENT_ID = "result";
 export function ResultScreen(result: LoadedResult) {
   const tCommon = useTranslations("common");
   const isOwner = useIsOwner(result.inputsFingerprint, result.isExample);
+  // Null for every saved result; the "not saved" note for one that was not.
+  const unsavedNotice = useUnsavedNotice();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -51,6 +54,7 @@ export function ResultScreen(result: LoadedResult) {
       >
         {tCommon("skipToContent")}
       </a>
+      {unsavedNotice}
       {result.view.recommendedPanels === null ? (
         <RoofTooSmall result={result} isOwner={isOwner} />
       ) : (

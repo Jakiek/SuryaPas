@@ -129,5 +129,16 @@
   "method": {
     "margin": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 11% of PVGIS, the European Commission's solar calculator.",
     "version": "Calculated with assumption set version {version}."
+  },
+  "unsaved": {
+    "title": "This result is not saved",
+    "body": "We could not store it, so there is no link to share. It stays in this browser tab until you close it. Try saving again to get a link.",
+    "retry": "Try saving again",
+    "retrying": "Saving…",
+    "retryFailed": "Still not saved. Check your connection and try again.",
+    "stillUnsaved": "The calculation is fine, but the saving did not work yet. Try again in a minute.",
+    "emptyTitle": "No unsaved result here",
+    "emptyBody": "An unsaved result lives only in the tab that made it, and this tab has none. Plan again and you will get a new one.",
+    "emptyAction": "Plan your home"
   }
 }

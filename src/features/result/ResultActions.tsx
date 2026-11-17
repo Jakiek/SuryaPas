@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button, TextLink } from "@/components";
 import { sendEvent } from "@/lib/events";
+import { useUnsavedNotice } from "./UnsavedContext";
 
 type ResultActionsProps = {
   id: string;
@@ -22,6 +23,8 @@ export function ResultActions({ id, isOwner, isExample }: ResultActionsProps) {
   const t = useTranslations("result.actions");
   const [quote, setQuote] = useState<QuoteState>("idle");
   const [copy, setCopy] = useState<CopyState>("idle");
+  // A result that was never saved has no link to copy and no id to point at.
+  const hasNoLink = useUnsavedNotice() !== null;
 
   // One tap records one anonymous event: the button is disabled from the
   // moment it is tapped, and stays so once the event is recorded. The event
@@ -29,7 +32,7 @@ export function ResultActions({ id, isOwner, isExample }: ResultActionsProps) {
   async function askForQuotes() {
     if (quote === "sending" || quote === "sent") return;
     setQuote("sending");
-    const recorded = await sendEvent("quote_interest", isExample ? undefined : id);
+    const recorded = await sendEvent("quote_interest", isExample || hasNoLink ? undefined : id);
     setQuote(recorded ? "sent" : "failed");
   }
 
@@ -51,9 +54,11 @@ export function ResultActions({ id, isOwner, isExample }: ResultActionsProps) {
         <Button note={t("soon")} disabled={quote === "sending" || quote === "sent"} onClick={askForQuotes}>
           {quote === "sending" ? t("quoteSending") : t("quote")}
         </Button>
-        <Button variant="outline" arrow={false} onClick={copyLink}>
-          {copy === "copied" ? t("copied") : t("copy")}
-        </Button>
+        {!hasNoLink && (
+          <Button variant="outline" arrow={false} onClick={copyLink}>
+            {copy === "copied" ? t("copied") : t("copy")}
+          </Button>
+        )}
       </div>
       <p role="status" className="mt-2.5 min-h-[1.5em] font-bold">
         {[quoteMessage, copyMessage].filter(Boolean).join(" ")}
@@ -69,7 +74,9 @@ export function ResultActions({ id, isOwner, isExample }: ResultActionsProps) {
       )}
 
       <div className="mt-2.5 flex flex-wrap gap-x-[26px]">
-        <TextLink href={`/assumptions?from=${encodeURIComponent(id)}`}>{t("assumptions")}</TextLink>
+        {!hasNoLink && (
+          <TextLink href={`/assumptions?from=${encodeURIComponent(id)}`}>{t("assumptions")}</TextLink>
+        )}
         {isOwner && <TextLink href="/plan">{t("edit")}</TextLink>}
       </div>
     </>
