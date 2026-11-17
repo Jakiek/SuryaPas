@@ -215,3 +215,23 @@ export function compareWithRecommended(view: ResultView, panels: number): Compar
   if (view.recommendedPanels === null || panels === view.recommendedPanels) return "recommended";
   return panels < view.recommendedPanels ? "fewer" : "more";
 }
+
+// ---------- Payback years are never eased ----------
+
+/**
+ * `shown` is eased while the picker changes the size, so its numbers can be
+ * part of the way between two systems. Payback years must never be: a
+ * half-way "9,4 years" is not a year the engine produced. This returns `shown`
+ * with the payback years of `final` (the engine's own values for the selected
+ * size), so they appear at once; every other figure stays eased.
+ */
+export function withFinalPayback(shown: CandidateView, final: CandidateView): CandidateView {
+  return {
+    ...shown,
+    withoutBattery: { ...shown.withoutBattery, paybackYears: final.withoutBattery.paybackYears },
+    withBattery:
+      shown.withBattery !== null && final.withBattery !== null
+        ? { ...shown.withBattery, paybackYears: final.withBattery.paybackYears }
+        : final.withBattery,
+  };
+}

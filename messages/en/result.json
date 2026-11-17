@@ -24,7 +24,7 @@
   },
   "warnings": {
     "doesNotPayBack": {
-      "title": "At your tariff, solar is unlikely to pay for itself.",
+      "title": "At your tariff and these installation prices, solar is unlikely to pay for itself.",
       "body": "At a typical installer's price, the savings do not cover the cost within {years} years. That is normal for the subsidised classes and for homes with small bills."
     },
     "sizeDoesNotPayBack": {
@@ -60,12 +60,13 @@
     "sayRecommendedLoses": "The right fit, with a catch: at your tariff every size loses money, and this one loses the least.",
     "sayFewer": "Fewer than the right fit. Some of your daytime use is still not covered by the panels.",
     "sayMore": "More than the right fit. {wasted}% of the panels' power goes to the grid unpaid.",
+    "sayMoreNoWaste": "More than the right fit. None of the power is wasted yet, but the extra panels cost more than they save.",
     "unit": "{count, plural, one {panel} other {panels}}",
     "pasMeaning": "the right fit"
   },
   "day": {
     "heading": "A day in your home",
-    "caption": "The panels make {generated} kWh a day. {used} kWh is used straight away in the home, and {exported} kWh flows to the grid unpaid.",
+    "caption": "The panels make {generated} kWh a day. {used} kWh is used straight away in the home, and the other {exported} kWh flows to the grid unpaid.",
     "used": "used directly",
     "surplus": "lost to the grid",
     "load": "home use",
@@ -95,7 +96,7 @@
     "yearZero": "year 0"
   },
   "battery": {
-    "headingNotWorth": "A battery does not pay yet",
+    "headingNotWorth": "A battery is not worth it yet",
     "headingWorth": "A battery adds savings",
     "headingLosesLess": "With a battery you lose less",
     "headingNone": "No battery offered",

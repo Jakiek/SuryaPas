@@ -12,6 +12,7 @@ import {
   recommendedLosesMoney,
   toResultView,
   verdictsFor,
+  withFinalPayback,
   type ResultView,
 } from "./view";
 
@@ -184,5 +185,17 @@ describe("compareWithRecommended", () => {
     expect(compareWithRecommended(view, pas)).toBe("recommended");
     expect(compareWithRecommended(view, pas + 1)).toBe("more");
     expect(compareWithRecommended(view, pas - 1)).toBe("fewer");
+  });
+});
+
+describe("withFinalPayback", () => {
+  it("keeps the eased figures but takes the payback years from the final size", async () => {
+    const view = await viewFor(HOUSE);
+    const final = recommended(view);
+    const other = view.candidates[0];
+    const result = withFinalPayback(other, final);
+    expect(result.withoutBattery.paybackYears).toBe(final.withoutBattery.paybackYears);
+    expect(result.withoutBattery.netSavingsRp).toBe(other.withoutBattery.netSavingsRp);
+    expect(result.kwp).toBe(other.kwp);
   });
 });

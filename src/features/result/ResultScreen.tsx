@@ -13,6 +13,7 @@ import {
   dayCaptionFigures,
   percentFigure,
   roundedMoneyFigure,
+  sayMoreKey,
   wastedPercentText,
 } from "./figures";
 import { Headline, HomeLine, Warnings } from "./Headline";
@@ -22,6 +23,7 @@ import { judgePayback } from "./payback";
 import { PanelPicker } from "./PanelPicker";
 import { PaybackChart } from "./PaybackChart";
 import { ResultActions } from "./ResultActions";
+import { useFitsInWindow } from "./useFitsInWindow";
 import { useIsOwner } from "./useIsOwner";
 import { useUnsavedNotice } from "./UnsavedContext";
 import {
@@ -32,6 +34,7 @@ import {
   pickerSlots,
   recommendedLosesMoney,
   verdictsFor,
+  withFinalPayback,
   type OptionView,
 } from "./view";
 
@@ -76,10 +79,12 @@ function Report({ result, recommended, isOwner }: ReportProps) {
   const locale = useLocale();
   const { view, home } = result;
   const [panels, setPanels] = useState(recommended);
+  const [leftColumnRef, leftColumnFits] = useFitsInWindow<HTMLDivElement>();
 
   // The candidate on show, and the same eased over 200 ms after a change.
   const selected = useMemo(() => candidateFor(view, panels), [view, panels]);
-  const shown = useEased(selected);
+  // Payback years are the exception: they are shown at their final values, never part-way.
+  const shown = withFinalPayback(useEased(selected), selected);
   const horizon = horizonYears(view);
   const verdicts = verdictsFor(view, selected);
   const comparison = compareWithRecommended(view, panels);
@@ -100,13 +105,13 @@ function Report({ result, recommended, isOwner }: ReportProps) {
       ? t(recommendedLosesMoney(view) ? "picker.sayRecommendedLoses" : "picker.sayRecommended")
       : comparison === "fewer"
         ? t("picker.sayFewer")
-        : t("picker.sayMore", { wasted: wastedPercentText(selected.withoutBattery, locale) });
+        : t(sayMoreKey(selected.withoutBattery), { wasted: wastedPercentText(selected.withoutBattery, locale) });
 
   return (
-    // The left column is about 900 px tall, so it is pinned only in a window at least 960 px
-    // high; in a shorter one it scrolls with the page rather than hiding its lower half.
+    // The left column is pinned only while its measured height fits the window (it grows with
+    // warnings); otherwise it scrolls with the page rather than hiding its lower part.
     <main className="flex-1 lg:grid lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
-      <div className="lg:bg-sun lg:[@media(min-height:960px)]:sticky lg:[@media(min-height:960px)]:top-0 lg:min-h-dvh">
+      <div ref={leftColumnRef} className={`lg:bg-sun lg:min-h-dvh ${leftColumnFits ? "lg:sticky lg:top-0" : ""}`}>
         <Band tone="night" className="pb-[26px]">
           <Inner className="lg:max-w-none">
             <SiteHeader />

@@ -8,7 +8,9 @@ import {
   paybackFigure,
   percentFigure,
   roundedMoneyFigure,
+  sayMoreKey,
 } from "./figures";
+import type { OptionView } from "./view";
 
 describe("result figures", () => {
   it("writes the cost range in whole millions", () => {
@@ -63,5 +65,12 @@ describe("result figures", () => {
     const figures = dayCaptionFigures(perYear(4.06), perYear(1.74), "en");
     expect(figures).toEqual({ generated: "4.1", used: "1.7", exported: "2.4" });
     expect(dayCaptionFigures(perYear(4.06), perYear(1.74), "id").exported).toBe("2,4");
+  });
+
+  it("cites waste for a larger size only when some power really goes to the grid", () => {
+    const option = (selfConsumedShare: number) => ({ selfConsumedShare }) as OptionView;
+    expect(sayMoreKey(option(0.75))).toBe("picker.sayMore");
+    expect(sayMoreKey(option(0.996))).toBe("picker.sayMoreNoWaste"); // 0.4% rounds to 0%
+    expect(sayMoreKey(option(1))).toBe("picker.sayMoreNoWaste");
   });
 });

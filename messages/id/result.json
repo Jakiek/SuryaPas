@@ -24,7 +24,7 @@
   },
   "warnings": {
     "doesNotPayBack": {
-      "title": "Dengan tarif Anda, panel surya kemungkinan tidak balik modal.",
+      "title": "Dengan tarif Anda dan harga pasang saat ini, panel surya kemungkinan tidak balik modal.",
       "body": "Dengan harga pemasang yang biasa, hematnya tidak menutup biaya dalam {years} tahun. Ini wajar untuk golongan bersubsidi dan rumah dengan tagihan kecil."
     },
     "sizeDoesNotPayBack": {
@@ -35,7 +35,7 @@
       "title": "Balik modal bergantung pada harga pemasang.",
       "body": "Dengan harga pemasang tertinggi, hematnya tidak menutup biaya dalam {years} tahun. Tahun yang tertera di bawah adalah yang paling awal, dengan harga termurah."
     },
-    "lowCostNote": "Hanya dengan harga pemasang termurah biayanya tertutup, pada tahun ke-{year}.",
+    "lowCostNote": "Hanya dengan harga pemasang termurah biayanya tertutup, pada tahun ke‑{year}.",
     "heavyShade": {
       "title": "Atap Anda banyak terkena bayangan.",
       "body": "Minta pemasang memeriksa atap dulu sebelum memercayai angka ini. Bayangan bisa memangkas hasil panel lebih banyak dari perkiraan kami."
@@ -60,12 +60,13 @@
     "sayRecommendedLoses": "Ini yang pas, dengan catatan: pada tarif Anda semua ukuran merugi, dan ini yang ruginya paling kecil.",
     "sayFewer": "Kurang dari yang pas. Masih ada pemakaian siang yang belum tertutup panel.",
     "sayMore": "Lebih dari yang pas. {wasted}% listrik panel terbuang ke jaringan tanpa dibayar.",
+    "sayMoreNoWaste": "Lebih dari yang pas. Listriknya masih terpakai semua, tetapi biaya panel tambahan lebih besar daripada hematnya.",
     "unit": "panel",
     "pasMeaning": "yang pas"
   },
   "day": {
     "heading": "Satu hari di rumah Anda",
-    "caption": "Panel menghasilkan {generated} kWh sehari. {used} kWh langsung dipakai di rumah, {exported} kWh mengalir ke jaringan tanpa dibayar.",
+    "caption": "Panel menghasilkan {generated} kWh sehari. {used} kWh langsung dipakai di rumah, Sisanya {exported} kWh mengalir ke jaringan tanpa dibayar.",
     "used": "dipakai langsung",
     "surplus": "terbuang ke jaringan",
     "load": "pemakaian rumah",
@@ -82,10 +83,10 @@
   },
   "payback": {
     "heading": "Kapan balik modal",
-    "captionRange": "Penghematan menutup biaya awal pada tahun ke-{low} sampai ke-{high}, tergantung harga pemasang.",
-    "captionOne": "Penghematan menutup biaya awal pada tahun ke-{low}.",
-    "captionOpen": "Dengan harga pemasang termurah, penghematan menutup biaya awal pada tahun ke-{low}. Dengan harga tertinggi, belum tertutup dalam {years} tahun.",
-    "captionLowOnly": "Dengan harga pemasang yang biasa, penghematan tidak menutup biaya awal dalam {years} tahun. Hanya dengan harga termurah biayanya tertutup, pada tahun ke-{low}.",
+    "captionRange": "Penghematan menutup biaya awal pada tahun ke‑{low} sampai ke‑{high}, tergantung harga pemasang.",
+    "captionOne": "Penghematan menutup biaya awal pada tahun ke‑{low}.",
+    "captionOpen": "Dengan harga pemasang termurah, penghematan menutup biaya awal pada tahun ke‑{low}. Dengan harga tertinggi, belum tertutup dalam {years} tahun.",
+    "captionLowOnly": "Dengan harga pemasang yang biasa, penghematan tidak menutup biaya awal dalam {years} tahun. Hanya dengan harga termurah biayanya tertutup, pada tahun ke‑{low}.",
     "captionNever": "Dalam {years} tahun, penghematan tidak menutup biaya awal, bahkan dengan harga pemasang termurah.",
     "captionNet": "Setelah {years} tahun, hemat bersih sekitar {net}.",
     "captionLoss": "Setelah {years} tahun, dengan harga biasa, Anda rugi sekitar {loss}.",

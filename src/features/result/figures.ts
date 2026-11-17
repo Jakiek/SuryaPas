@@ -76,6 +76,16 @@ export function wastedPercentText(option: OptionView, locale: string): string {
   return formatDecimal((1 - option.selfConsumedShare) * PERCENT, locale, 0);
 }
 
+/**
+ * Which picker sentence to say for a size larger than the right fit. When the
+ * share sent to the grid rounds to 0%, "0% goes to the grid unpaid" would cite
+ * a waste that is not there, so that case gets a sentence with a different reason.
+ */
+export function sayMoreKey(option: OptionView): "picker.sayMore" | "picker.sayMoreNoWaste" {
+  const wastedPercent = Math.round((1 - option.selfConsumedShare) * PERCENT);
+  return wastedPercent === 0 ? "picker.sayMoreNoWaste" : "picker.sayMore";
+}
+
 /** CO₂ avoided, in tonnes a year, always with one decimal: "1,1" / "1.1" (docs/DESIGN.md, T08 review). */
 export function co2TonnesText(kgPerYear: number, locale: string): string {
   return formatDecimal(kgPerYear / KG_PER_TONNE, locale, 1, 1);

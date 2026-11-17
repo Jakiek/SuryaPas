@@ -44,6 +44,7 @@ export function Ledger({ rows, dense = false, className }: LedgerProps) {
   );
 }
 
+// Headings sit on one top line, so a heading with a detail line under it does not push the others down.
 // A column heading is its words, or its words with a plain-case line under
 // them (the battery size), which the capitals of the heading would spoil.
 export type ComparisonColumn = string | { heading: string; detail: string };
@@ -90,7 +91,7 @@ export function ComparisonLedger({
             <th
               key={heading}
               scope="col"
-              className="type-label py-3 pl-2 text-right align-bottom tracking-[0.1em] sm:pl-3"
+              className="type-label py-3 pl-2 text-right align-top tracking-[0.1em] sm:pl-3"
             >
               {heading}
               {detail !== null && (
