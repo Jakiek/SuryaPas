@@ -10,6 +10,7 @@ import {
   formatYearsRange,
   type Formatted,
 } from "../../lib/format";
+import { judgePayback } from "./payback";
 import type { OptionView } from "./view";
 
 // Unit conversions only.
@@ -34,10 +35,12 @@ export function roundedMoneyFigure(amount: number, locale: string): Formatted {
 }
 
 /**
- * Payback, as the engine reports it at the low and high cost.
- * - "range": both ends pay back: "9–20 tahun" (one value when equal).
- * - "atLeast": only the low cost pays back within the horizon: "13" + "+".
- * - "never": not even the low cost does. The page writes words, not a number.
+ * Payback as the headline and the battery column write it. It is the reading
+ * of `judgePayback` (payback.ts), which judges at the typical cost.
+ * - "range": pays back at the typical and the high cost: "9–20 tahun".
+ * - "atLeast": pays back at the typical cost, not at the high cost: "13" + "+".
+ * - "never": does not pay back at the typical cost, whatever the lowest price
+ *   would do. The page writes words, not a year (SPEC 2.3 "Honest verdicts").
  */
 export type PaybackFigure =
   | { kind: "range"; value: Formatted }
@@ -45,9 +48,16 @@ export type PaybackFigure =
   | { kind: "never" };
 
 export function paybackFigure(payback: OptionView["paybackYears"], locale: string): PaybackFigure {
-  if (payback.low === null) return { kind: "never" };
-  if (payback.high === null) return { kind: "atLeast", value: formatYearsRange(payback.low, payback.low, locale) };
-  return { kind: "range", value: formatYearsRange(payback.low, payback.high, locale) };
+  const judgment = judgePayback(payback);
+  switch (judgment.kind) {
+    case "range":
+      return { kind: "range", value: formatYearsRange(judgment.lowYear, judgment.highYear, locale) };
+    case "notAtHighCost":
+      return { kind: "atLeast", value: formatYearsRange(judgment.lowYear, judgment.lowYear, locale) };
+    case "onlyAtLowCost":
+    case "never":
+      return { kind: "never" };
+  }
 }
 
 /** A share, 0 to 1, as a whole percent: 0.749 → "75" + "%". */

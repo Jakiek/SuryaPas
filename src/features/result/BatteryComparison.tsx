@@ -17,18 +17,38 @@ export function BatteryComparison({ shown, horizon }: { shown: CandidateView; ho
   const withBattery = shown.withBattery;
 
   // The heading states the finding: which of the two net savings is larger.
+  // When both lose money, a battery that loses less is not "adding savings".
   const heading =
     withBattery === null
       ? t("headingNone")
       : withBattery.netSavingsRp > without.netSavingsRp
-        ? t("headingWorth")
+        ? t(withBattery.netSavingsRp > 0 ? "headingWorth" : "headingLosesLess")
         : t("headingNotWorth");
+
+  // The monthly row says "saved" only while every column saves. If a column's
+  // bill would go up, the row speaks of the bill instead, in words for each
+  // column, never a negative saving (SPEC 2.3 "Honest verdicts"). The same
+  // goes for the net row when a column loses money over the horizon.
+  const options = withBattery === null ? [without] : [without, withBattery];
+  const anyBillGoesUp = options.some((option) => option.monthlySavingsRp < 0);
+  const anyLoss = options.some((option) => option.netSavingsRp < 0);
+
+  const monthlyText = (option: OptionView) => {
+    const amount = roundedMoneyFigure(Math.abs(option.monthlySavingsRp), locale).text;
+    if (!anyBillGoesUp) return amount;
+    return t(option.monthlySavingsRp < 0 ? "billHigher" : "billLower", { amount });
+  };
+  const netText = (option: OptionView) => {
+    const amount = roundedMoneyFigure(Math.abs(option.netSavingsRp), locale).text;
+    if (!anyLoss) return amount;
+    return t(option.netSavingsRp < 0 ? "netLossAmount" : "netGainAmount", { amount });
+  };
 
   const column = (option: OptionView) => [
     costRangeFigure(option.upfrontCostRp, locale).text,
-    roundedMoneyFigure(option.monthlySavingsRp, locale).text,
+    monthlyText(option),
     paybackText(paybackFigure(option.paybackYears, locale), tVerdict),
-    roundedMoneyFigure(option.netSavingsRp, locale).text,
+    netText(option),
   ];
 
   return (
@@ -40,7 +60,12 @@ export function BatteryComparison({ shown, horizon }: { shown: CandidateView; ho
         <ComparisonTable
           caption={t("caption")}
           columns={[t("without"), t("with", { size: withBattery.batteryKwh })]}
-          labels={[t("cost"), t("monthly"), t("payback"), t("net", { years: horizon })]}
+          labels={[
+            t("cost"),
+            t(anyBillGoesUp ? "monthlyBill" : "monthly"),
+            t("payback"),
+            t(anyLoss ? "netResult" : "net", { years: horizon }),
+          ]}
           values={[column(without), column(withBattery)]}
         />
       )}

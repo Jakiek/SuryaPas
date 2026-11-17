@@ -31,6 +31,11 @@
       "title": "Pada jumlah panel ini, panel surya tidak balik modal.",
       "body": "Dengan harga pemasang yang biasa, hematnya tidak menutup biaya dalam {years} tahun. Jumlah yang pas untuk rumah ini, {recommended} panel, balik modal."
     },
+    "highCostDoesNotPayBack": {
+      "title": "Balik modal bergantung pada harga pemasang.",
+      "body": "Dengan harga pemasang tertinggi, hematnya tidak menutup biaya dalam {years} tahun. Tahun yang tertera di bawah adalah yang paling awal, dengan harga termurah."
+    },
+    "lowCostNote": "Hanya dengan harga pemasang termurah biayanya tertutup, pada tahun ke-{year}.",
     "heavyShade": {
       "title": "Atap Anda banyak terkena bayangan.",
       "body": "Minta pemasang memeriksa atap dulu sebelum memercayai angka ini. Bayangan bisa memangkas hasil panel lebih banyak dari perkiraan kami."
@@ -52,6 +57,7 @@
     "belowMinimum": "di bawah ukuran terkecil",
     "pas": "pas",
     "sayRecommended": "Ini yang pas: hemat bersih paling besar untuk pemakaian siang Anda.",
+    "sayRecommendedLoses": "Ini yang pas, dengan catatan: pada tarif Anda semua ukuran merugi, dan ini yang ruginya paling kecil.",
     "sayFewer": "Kurang dari yang pas. Masih ada pemakaian siang yang belum tertutup panel.",
     "sayMore": "Lebih dari yang pas. {wasted}% listrik panel terbuang ke jaringan tanpa dibayar.",
     "unit": "panel",
@@ -67,8 +73,10 @@
   },
   "ledger": {
     "monthly": "Hemat per bulan",
+    "monthlyUp": "Tagihan naik per bulan",
     "share": "Listrik panel yang terpakai",
     "net": "Hemat bersih dalam {years} tahun",
+    "netLoss": "Rugi bersih dalam {years} tahun",
     "co2": "CO₂ yang dihindari",
     "co2Unit": "ton/tahun"
   },
@@ -77,7 +85,8 @@
     "captionRange": "Penghematan menutup biaya awal pada tahun ke-{low} sampai ke-{high}, tergantung harga pemasang.",
     "captionOne": "Penghematan menutup biaya awal pada tahun ke-{low}.",
     "captionOpen": "Dengan harga pemasang termurah, penghematan menutup biaya awal pada tahun ke-{low}. Dengan harga tertinggi, belum tertutup dalam {years} tahun.",
-    "captionNever": "Dalam {years} tahun, penghematan tidak menutup biaya awal pada jumlah panel ini.",
+    "captionLowOnly": "Dengan harga pemasang yang biasa, penghematan tidak menutup biaya awal dalam {years} tahun. Hanya dengan harga termurah biayanya tertutup, pada tahun ke-{low}.",
+    "captionNever": "Dalam {years} tahun, penghematan tidak menutup biaya awal, bahkan dengan harga pemasang termurah.",
     "captionNet": "Setelah {years} tahun, hemat bersih sekitar {net}.",
     "captionLoss": "Setelah {years} tahun, dengan harga biasa, Anda rugi sekitar {loss}.",
     "cost": "biaya awal",
@@ -88,16 +97,23 @@
   "battery": {
     "headingNotWorth": "Baterai belum sepadan",
     "headingWorth": "Baterai menambah hemat",
-    "headingNone": "Belum perlu baterai",
+    "headingLosesLess": "Dengan baterai, ruginya lebih kecil",
+    "headingNone": "Baterai belum ditawarkan",
     "note": "Baterai menyimpan kelebihan listrik siang untuk dipakai malam. Baterai juga berguna saat listrik padam, tetapi manfaat itu tidak kami hitung dalam rupiah.",
-    "none": "Pada jumlah panel ini, sisa listrik siang terlalu sedikit untuk mengisi baterai terkecil, jadi baterai tidak kami tawarkan.",
+    "none": "Pada jumlah panel ini, baterai tidak kami tawarkan. Sisa listrik siang terlalu sedikit, atau pemakaian malam terlalu kecil, untuk mengisi baterai terkecil.",
     "caption": "Sistem yang sama tanpa baterai dan dengan baterai",
     "without": "Tanpa baterai",
     "with": "Dengan baterai {size} kWh",
     "cost": "Biaya awal",
     "monthly": "Hemat per bulan",
+    "monthlyBill": "Tagihan per bulan",
+    "billHigher": "naik {amount}",
+    "billLower": "turun {amount}",
     "payback": "Balik modal",
-    "net": "Hemat bersih, {years} th"
+    "net": "Hemat bersih, {years} th",
+    "netResult": "Hasil bersih, {years} th",
+    "netLossAmount": "rugi {amount}",
+    "netGainAmount": "hemat {amount}"
   },
   "next": {
     "heading": "Langkah berikutnya",
@@ -127,7 +143,8 @@
     "exampleNote": "Ini rumah contoh. Angkanya dihitung dengan mesin hitung yang sama."
   },
   "method": {
-    "margin": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 11% dari PVGIS, alat hitung surya milik Komisi Eropa.",
+    "marginLive": "Produksi panel dihitung per jam dari data matahari NASA untuk lokasi Anda. Untuk atap datar, hasilnya selisih sekitar 11% dari PVGIS, alat hitung surya milik Komisi Eropa.",
+    "marginFallback": "Data matahari NASA untuk lokasi Anda belum bisa diambil, jadi data kota besar terdekat dipakai sebagai gantinya dan hasil panel lebih kasar dari biasanya. Selisih sekitar 11% dari PVGIS, alat hitung surya milik Komisi Eropa, diukur dengan data lokasi itu sendiri dan tidak berlaku untuk hasil ini.",
     "version": "Dihitung dengan asumsi versi {version}."
   },
   "unsaved": {

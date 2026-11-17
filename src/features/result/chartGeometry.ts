@@ -134,40 +134,53 @@ export function dayChartMaxKw(loadKwh: number[], solarPerKwp: number[], largestK
 
 export const PAYBACK_CHART = { height: 150, top: 10 } as const;
 
+/** What the payback chart is drawn from. All series run from year 0 to the horizon. */
+export interface PaybackChartInput {
+  /** Cumulative savings at the typical cost: the line. */
+  typicalRp: number[];
+  /**
+   * Cumulative savings at the low cost (the band's upper edge) and at the high
+   * cost (its lower edge), or null when the result has only the typical line
+   * (saved by engine 1.0.0). Valid while capex.perKwp is ordered low ≤ typical ≤ high.
+   */
+  band: { lowCostRp: number[]; highCostRp: number[] } | null;
+  /** The upfront cost at the low and the high cost: the hatched band. */
+  cost: { low: number; high: number };
+  /** The years to mark with the solid column; null when the page says the system does not pay back. */
+  markedYears: { fromYear: number; toYear: number } | null;
+}
+
 export interface PaybackChartShapes {
+  /** The typical-cost line. */
   savingsLine: string;
+  /** The low-to-high-cost band as a closed shape; null when there is only the line. */
+  savingsBand: string | null;
   /** The upfront cost from low to high, as a band. */
   costBand: { y: number; height: number };
-  /** The payback years, low to high cost; null when it does not pay back. */
+  /** The years marked as paying back; null when none are. */
   paybackColumn: { x: number; width: number } | null;
   gridlines: { rupiah: number; y: number }[];
   yearTicks: { year: number; x: number }[];
-  /** Where "total savings" is written: near the end of the line. */
+  /** Where "total savings" is written: above the end of the savings, band included. */
   savingsLabel: { x: number; y: number };
 }
 
-/**
- * @param cumulativeRp year 0 to the horizon, at the typical cost
- * @param cost         upfront cost at the low and high cost
- * @param payback      years at the low and high cost; null means not within the horizon
- */
-export function paybackChartShapes(
-  cumulativeRp: number[],
-  cost: { low: number; high: number },
-  payback: { low: number | null; high: number | null },
-): PaybackChartShapes {
-  const horizon = cumulativeRp.length - 1;
+export function paybackChartShapes({ typicalRp, band, cost, markedYears }: PaybackChartInput): PaybackChartShapes {
+  const horizon = typicalRp.length - 1;
   const HEADROOM = 1.1;
-  const top = Math.max(...cumulativeRp, cost.high) * HEADROOM;
+  // A band whose series do not match the line's length cannot be drawn against it.
+  const usableBand = band !== null && band.lowCostRp.length === typicalRp.length && band.highCostRp.length === typicalRp.length ? band : null;
+  const upperEdgeRp = usableBand ? usableBand.lowCostRp : typicalRp;
+  const top = Math.max(...upperEdgeRp, cost.high) * HEADROOM;
   const x = linearScale(0, horizon, 0, CHART_WIDTH);
   // A running total below zero is drawn on the baseline; the caption says what it means.
   const y = (rupiah: number) => linearScale(0, top, PAYBACK_CHART.height, PAYBACK_CHART.top)(Math.max(rupiah, 0));
 
   const MIN_COLUMN_PX = 3;
   const paybackColumn =
-    payback.low === null
+    markedYears === null
       ? null
-      : { x: x(payback.low), width: Math.max(x(payback.high ?? horizon) - x(payback.low), MIN_COLUMN_PX) };
+      : { x: x(markedYears.fromYear), width: Math.max(x(markedYears.toYear) - x(markedYears.fromYear), MIN_COLUMN_PX) };
 
   const step = niceStep(top, 4);
   const gridlines: { rupiah: number; y: number }[] = [];
@@ -177,13 +190,20 @@ export function paybackChartShapes(
   const yearTicks: { year: number; x: number }[] = [];
   for (let year = 0; year <= horizon; year += YEAR_TICK) yearTicks.push({ year, x: x(year) });
 
+  const pointsOf = (series: number[]) => series.map((rupiah, year): [number, number] => [x(year), y(rupiah)]);
+  // The band: along its upper edge from year 0 to the horizon, back along its lower edge, closed.
+  const savingsBand = usableBand
+    ? pathThrough([...pointsOf(usableBand.lowCostRp), ...pointsOf(usableBand.highCostRp).reverse()]) + "Z"
+    : null;
+
   const labelYear = horizon - 1;
   return {
-    savingsLine: pathThrough(cumulativeRp.map((rupiah, year): [number, number] => [x(year), y(rupiah)])),
+    savingsLine: pathThrough(pointsOf(typicalRp)),
+    savingsBand,
     costBand: { y: y(cost.high), height: y(cost.low) - y(cost.high) },
     paybackColumn,
     gridlines,
     yearTicks,
-    savingsLabel: { x: x(labelYear), y: y(cumulativeRp[labelYear]) - 12 },
+    savingsLabel: { x: x(labelYear), y: y(upperEdgeRp[labelYear]) - 12 },
   };
 }

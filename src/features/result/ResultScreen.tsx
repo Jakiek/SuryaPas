@@ -18,6 +18,7 @@ import {
 import { Headline, HomeLine, Warnings } from "./Headline";
 import type { LoadedResult } from "./loadResult";
 import { NextSteps } from "./NextSteps";
+import { judgePayback } from "./payback";
 import { PanelPicker } from "./PanelPicker";
 import { PaybackChart } from "./PaybackChart";
 import { ResultActions } from "./ResultActions";
@@ -27,7 +28,9 @@ import {
   candidateFor,
   compareWithRecommended,
   horizonYears,
+  lowCostOnlyYear,
   pickerSlots,
+  recommendedLosesMoney,
   verdictsFor,
   type OptionView,
 } from "./view";
@@ -89,9 +92,10 @@ function Report({ result, recommended, isOwner }: ReportProps) {
   const solarKwh = view.averageSolarByHourPerKwp.map((perKwp) => perKwp * shown.kwp);
   const option = shown.withoutBattery;
 
+  // When even the recommended size loses money, "the right fit" is the one that loses least, never the largest saving.
   const say =
     comparison === "recommended"
-      ? t("picker.sayRecommended")
+      ? t(recommendedLosesMoney(view) ? "picker.sayRecommendedLoses" : "picker.sayRecommended")
       : comparison === "fewer"
         ? t("picker.sayFewer")
         : t("picker.sayMore", { wasted: wastedPercentText(selected.withoutBattery, locale) });
@@ -104,8 +108,9 @@ function Report({ result, recommended, isOwner }: ReportProps) {
             <SiteHeader />
             <div id={CONTENT_ID} tabIndex={-1}>
               <HomeLine home={home} />
+              {/* The warnings come before the figures they qualify (SPEC 2.3 "Honest verdicts"). */}
+              <Warnings verdicts={verdicts} horizon={horizon} recommended={recommended} lowCostYear={lowCostOnlyYear(selected)} />
               <Headline shown={shown} panels={panels} isRecommended={comparison === "recommended"} />
-              <Warnings verdicts={verdicts} horizon={horizon} recommended={recommended} />
             </div>
           </Inner>
         </Band>
@@ -150,27 +155,34 @@ function Report({ result, recommended, isOwner }: ReportProps) {
             <ResultActions id={result.id} isOwner={isOwner} isExample={result.isExample} />
           </Section>
         </Inner>
-        <MethodFooter version={result.assumptionSetVersion} />
+        <MethodFooter version={result.assumptionSetVersion} fallbackSun={result.view.flags.fallbackSunData} />
       </div>
     </main>
   );
 }
 
-/** SPEC 2.3 item 4: monthly savings, share used on site, net savings over the horizon, CO₂ avoided. */
+/**
+ * SPEC 2.3 item 4: monthly savings, share used on site, net savings over the
+ * horizon, CO₂ avoided. A negative monthly saving is a bill that goes up, said
+ * as that, with the amount; a negative net saving is a loss, said as a loss.
+ * Neither is ever a negative figure under a "savings" label (SPEC 2.3 "Honest verdicts").
+ */
 function SupportingNumbers({ option, horizon }: { option: OptionView; horizon: number }) {
   const t = useTranslations("result.ledger");
   const locale = useLocale();
-  const monthly = roundedMoneyFigure(option.monthlySavingsRp, locale);
+  const billGoesUp = option.monthlySavingsRp < 0;
+  const loses = option.netSavingsRp < 0;
+  const monthly = roundedMoneyFigure(Math.abs(option.monthlySavingsRp), locale);
   const share = percentFigure(option.selfConsumedShare, locale);
-  const net = roundedMoneyFigure(option.netSavingsRp, locale);
+  const net = roundedMoneyFigure(Math.abs(option.netSavingsRp), locale);
 
   return (
     <Ledger
       className="mt-[22px]"
       rows={[
-        { label: t("monthly"), value: <Figure value={monthly.figure} unit={monthly.unit} /> },
+        { label: t(billGoesUp ? "monthlyUp" : "monthly"), value: <Figure value={monthly.figure} unit={monthly.unit} /> },
         { label: t("share"), value: <PercentFigure figure={share.figure} sign={share.unit} /> },
-        { label: t("net", { years: horizon }), value: <Figure value={net.figure} unit={net.unit} /> },
+        { label: t(loses ? "netLoss" : "net", { years: horizon }), value: <Figure value={net.figure} unit={net.unit} /> },
         { label: t("co2"), value: <Figure value={co2TonnesText(option.co2AvoidedKgPerYear, locale)} unit={t("co2Unit")} /> },
       ]}
     />
@@ -189,15 +201,30 @@ function PercentFigure({ figure, sign }: { figure: string; sign: string }) {
 
 type Translate = ReturnType<typeof useTranslations<"result">>;
 
-/** The payback chart's one-sentence finding, with the engine's numbers (docs/DESIGN.md "Charts"). */
+/**
+ * The payback chart's one-sentence finding, with the engine's numbers
+ * (docs/DESIGN.md "Charts"). It reads the same judgment as the headline.
+ */
 function paybackCaption(t: Translate, option: OptionView, horizon: number, locale: string): string {
-  const years = Math.round;
-  const { low, high } = option.paybackYears;
+  const judgment = judgePayback(option.paybackYears);
   let finding: string;
-  if (low === null) finding = t("payback.captionNever", { years: horizon });
-  else if (high === null) finding = t("payback.captionOpen", { low: years(low), years: horizon });
-  else if (years(low) === years(high)) finding = t("payback.captionOne", { low: years(low) });
-  else finding = t("payback.captionRange", { low: years(low), high: years(high) });
+  switch (judgment.kind) {
+    case "range":
+      finding =
+        judgment.lowYear === judgment.highYear
+          ? t("payback.captionOne", { low: judgment.lowYear })
+          : t("payback.captionRange", { low: judgment.lowYear, high: judgment.highYear });
+      break;
+    case "notAtHighCost":
+      finding = t("payback.captionOpen", { low: judgment.lowYear, years: horizon });
+      break;
+    case "onlyAtLowCost":
+      finding = t("payback.captionLowOnly", { low: judgment.lowYear, years: horizon });
+      break;
+    case "never":
+      finding = t("payback.captionNever", { years: horizon });
+      break;
+  }
 
   const net = option.netSavingsRp;
   const outcome =
@@ -207,12 +234,17 @@ function paybackCaption(t: Translate, option: OptionView, horizon: number, local
   return `${finding} ${outcome}`;
 }
 
-/** The method note: where the output comes from, its margin against PVGIS, and the assumption version. */
-function MethodFooter({ version }: { version: string }) {
+/**
+ * The method note: where the output comes from, its margin against PVGIS, and
+ * the assumption version. The margin was measured with NASA data for the place
+ * itself, so it is worded by sun source: with the nearest city's data standing
+ * in (fallback), it does not carry over, and the note says so.
+ */
+function MethodFooter({ version, fallbackSun }: { version: string; fallbackSun: boolean }) {
   const t = useTranslations("result.method");
   return (
     <SiteFooter>
-      {t("margin")} {t("version", { version })}
+      {t(fallbackSun ? "marginFallback" : "marginLive")} {t("version", { version })}
     </SiteFooter>
   );
 }
@@ -251,7 +283,7 @@ function RoofTooSmall({ result, isOwner }: { result: LoadedResult; isOwner: bool
           <ResultActions id={result.id} isOwner={isOwner} isExample={result.isExample} />
         </div>
       </Inner>
-      <MethodFooter version={result.assumptionSetVersion} />
+      <MethodFooter version={result.assumptionSetVersion} fallbackSun={result.view.flags.fallbackSunData} />
     </main>
   );
 }

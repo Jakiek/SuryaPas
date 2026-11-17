@@ -110,17 +110,30 @@ function PaybackValue({ figure }: { figure: PaybackFigure }) {
   return <Figure size="fluid" value={value} unit={figure.value.unit} />;
 }
 
-/** The honest verdicts for the size on show, each a caveat with a red bar. */
-type WarningsProps = { verdicts: Verdict[]; horizon: number; recommended: number };
+/**
+ * The honest verdicts for the size on show, each a caveat with a red bar. They
+ * sit above the figures they qualify: the reader meets the warning first.
+ */
+type WarningsProps = {
+  verdicts: Verdict[];
+  horizon: number;
+  recommended: number;
+  /** The year the lowest installer price would pay back, when the typical price does not (lowCostOnlyYear). */
+  lowCostYear: number | null;
+};
 
-export function Warnings({ verdicts, horizon, recommended }: WarningsProps) {
+export function Warnings({ verdicts, horizon, recommended, lowCostYear }: WarningsProps) {
   const t = useTranslations("result.warnings");
   if (verdicts.length === 0) return null;
+  const isPaybackVerdict = (verdict: Verdict) => verdict === "doesNotPayBack" || verdict === "sizeDoesNotPayBack";
   return (
     <div className="mt-6 grid gap-4">
       {verdicts.map((verdict) => (
         <Caveat key={verdict} title={t(`${verdict}.title`)}>
           <p className="text-[15px] text-soft">{t(`${verdict}.body`, { years: horizon, recommended })}</p>
+          {isPaybackVerdict(verdict) && lowCostYear !== null && (
+            <p className="mt-1.5 text-[15px] text-soft">{t("lowCostNote", { year: lowCostYear })}</p>
+          )}
         </Caveat>
       ))}
     </div>

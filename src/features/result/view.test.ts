@@ -6,8 +6,10 @@ import {
   candidateFor,
   compareWithRecommended,
   horizonYears,
+  lowCostOnlyYear,
   MAX_PICKER_PANELS,
   pickerSlots,
+  recommendedLosesMoney,
   toResultView,
   verdictsFor,
   type ResultView,
@@ -84,6 +86,72 @@ describe("honest verdicts, each for an input that triggers it", () => {
     const largest = view.candidates[view.candidates.length - 1];
     expect(largest.withoutBattery.paybackYears.typical).toBeNull();
     expect(verdictsFor(view, largest)).toEqual(["sizeDoesNotPayBack"]);
+  });
+});
+
+describe("payback verdicts follow the typical cost, size by size (example house)", () => {
+  // Engine paybacks for the example house (low / typical / high cost):
+  // 2 panels 7 / 10 / 15, 4 panels 13 / 20 / none, 6 panels 19 / none / none, 8 panels none.
+  it("pays back at every cost: no payback verdict", async () => {
+    const view = await viewFor(HOUSE);
+    expect(verdictsFor(view, candidateFor(view, 2))).toEqual([]);
+    expect(lowCostOnlyYear(candidateFor(view, 2))).toBeNull();
+  });
+
+  it("pays back at the typical cost but not the highest: a note, and the headline keeps its year", async () => {
+    const view = await viewFor(HOUSE);
+    expect(verdictsFor(view, candidateFor(view, 4))).toEqual(["highCostDoesNotPayBack"]);
+    expect(lowCostOnlyYear(candidateFor(view, 4))).toBeNull();
+  });
+
+  it("does not pay back at the typical cost though the lowest price would: the size verdict, with that year for the note", async () => {
+    const view = await viewFor(HOUSE);
+    const six = candidateFor(view, 6);
+    expect(six.withoutBattery.paybackYears).toEqual({ low: 19, typical: null, high: null });
+    expect(verdictsFor(view, six)).toEqual(["sizeDoesNotPayBack"]);
+    expect(lowCostOnlyYear(six)).toBe(19);
+  });
+
+  it("does not pay back at any cost: no low-cost year to add", async () => {
+    const view = await viewFor(HOUSE);
+    expect(lowCostOnlyYear(candidateFor(view, 8))).toBeNull();
+  });
+});
+
+describe("a recommended size that loses money", () => {
+  it("is detected from the recommended size's net savings, and not for the example house", async () => {
+    expect(recommendedLosesMoney(await viewFor(HOUSE))).toBe(false);
+    const subsidised = await viewFor({
+      ...HOUSE,
+      electricity: { billing: "prepaid", connectedVa: 450, subsidised: true, monthlySpendRp: [60_000] },
+    });
+    expect(recommended(subsidised).withoutBattery.netSavingsRp).toBeLessThan(0);
+    expect(recommendedLosesMoney(subsidised)).toBe(true);
+  });
+
+  it("is false when the roof is too small to recommend anything", async () => {
+    expect(recommendedLosesMoney(await viewFor({ ...HOUSE, roof: { ...HOUSE.roof, areaM2: 4 } }))).toBe(false);
+  });
+});
+
+describe("a result saved by engine 1.0.0 (no cumulative series by cost)", () => {
+  it("is read without the band and keeps its other numbers", async () => {
+    const sun = await loadFallbackFile("yogyakarta");
+    const assessment = assess(HOUSE, { ghiWm2: sun.series, source: "live" }, CURRENT_ASSUMPTIONS);
+    const old = JSON.parse(JSON.stringify(assessment)) as typeof assessment;
+    for (const candidate of old.candidates) {
+      delete (candidate.withoutBattery.money as { cumulativeSavingsByCostRp?: unknown }).cumulativeSavingsByCostRp;
+      if (candidate.withBattery) delete (candidate.withBattery.money as { cumulativeSavingsByCostRp?: unknown }).cumulativeSavingsByCostRp;
+    }
+    const view = toResultView(old);
+    expect(view.candidates[0].withoutBattery.cumulativeSavingsByCostRp).toBeUndefined();
+    expect(view.candidates[0].withoutBattery.cumulativeSavingsRp).toEqual(assessment.candidates[0].withoutBattery.money.cumulativeSavingsRp);
+  });
+
+  it("carries the band when the engine gives it", async () => {
+    const view = await viewFor(HOUSE);
+    const option = view.candidates[0].withoutBattery;
+    expect(option.cumulativeSavingsByCostRp?.typical).toEqual(option.cumulativeSavingsRp);
   });
 });
 

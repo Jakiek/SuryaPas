@@ -31,6 +31,11 @@
       "title": "At this number of panels, solar does not pay for itself.",
       "body": "At a typical installer's price, the savings do not cover the cost within {years} years. The right fit for this home, {recommended, plural, one {# panel} other {# panels}}, does."
     },
+    "highCostDoesNotPayBack": {
+      "title": "Payback depends on the installer's price.",
+      "body": "At the highest installer price, the savings do not cover the cost within {years} years. The year shown below is the earliest, at the lowest price."
+    },
+    "lowCostNote": "Only at the lowest installer price would it pay back, in year {year}.",
     "heavyShade": {
       "title": "Your roof is heavily shaded.",
       "body": "Have an installer look at the roof before you rely on these figures. Shade can cut the panels' output by more than we allow for."
@@ -52,6 +57,7 @@
     "belowMinimum": "below the smallest system",
     "pas": "pas",
     "sayRecommended": "The right fit: the largest net saving for the power you use by day.",
+    "sayRecommendedLoses": "The right fit, with a catch: at your tariff every size loses money, and this one loses the least.",
     "sayFewer": "Fewer than the right fit. Some of your daytime use is still not covered by the panels.",
     "sayMore": "More than the right fit. {wasted}% of the panels' power goes to the grid unpaid.",
     "unit": "{count, plural, one {panel} other {panels}}",
@@ -67,8 +73,10 @@
   },
   "ledger": {
     "monthly": "Saved each month",
+    "monthlyUp": "Bill goes up each month",
     "share": "Panel power you use",
     "net": "Net saving over {years} years",
+    "netLoss": "Net loss over {years} years",
     "co2": "CO₂ avoided",
     "co2Unit": "t/year"
   },
@@ -77,7 +85,8 @@
     "captionRange": "Savings cover the upfront cost in year {low} to year {high}, depending on the installer's price.",
     "captionOne": "Savings cover the upfront cost in year {low}.",
     "captionOpen": "At the lowest installer price, savings cover the upfront cost in year {low}. At the highest, they do not within {years} years.",
-    "captionNever": "Within {years} years, savings do not cover the upfront cost at this number of panels.",
+    "captionLowOnly": "At a typical installer price, savings do not cover the upfront cost within {years} years. Only at the lowest price would they, in year {low}.",
+    "captionNever": "Within {years} years, savings do not cover the upfront cost, even at the lowest installer price.",
     "captionNet": "After {years} years, the net saving is about {net}.",
     "captionLoss": "After {years} years, at a typical price, you lose about {loss}.",
     "cost": "upfront cost",
@@ -88,16 +97,23 @@
   "battery": {
     "headingNotWorth": "A battery does not pay yet",
     "headingWorth": "A battery adds savings",
-    "headingNone": "No battery needed",
+    "headingLosesLess": "With a battery you lose less",
+    "headingNone": "No battery offered",
     "note": "A battery stores spare daytime power for the evening. It also helps during a blackout, but we do not count that in rupiah.",
-    "none": "At this number of panels, too little power is left over by day to fill the smallest battery, so we do not offer one.",
+    "none": "At this number of panels we do not offer a battery. Either too little power is left over by day, or the home uses too little at night, to fill even the smallest battery.",
     "caption": "The same system without and with a battery",
     "without": "No battery",
     "with": "With a {size} kWh battery",
     "cost": "Upfront cost",
     "monthly": "Saved each month",
+    "monthlyBill": "Monthly bill",
+    "billHigher": "up {amount}",
+    "billLower": "down {amount}",
     "payback": "Pays back in",
-    "net": "Net saving, {years} yrs"
+    "net": "Net saving, {years} yrs",
+    "netResult": "Net result, {years} yrs",
+    "netLossAmount": "loses {amount}",
+    "netGainAmount": "saves {amount}"
   },
   "next": {
     "heading": "What happens next",
@@ -127,7 +143,8 @@
     "exampleNote": "This is an example house. Its figures come from the same calculation."
   },
   "method": {
-    "margin": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 11% of PVGIS, the European Commission's solar calculator.",
+    "marginLive": "Panel output is worked out hour by hour from NASA sun data for your location. On a flat roof it comes within about 11% of PVGIS, the European Commission's solar calculator.",
+    "marginFallback": "We could not fetch NASA sun data for your location, so the nearest major city's stands in, and panel output is rougher than usual. The match of about 11% with PVGIS, the European Commission's solar calculator, was measured with data for the place itself and does not carry over to this result.",
     "version": "Calculated with assumption set version {version}."
   },
   "unsaved": {

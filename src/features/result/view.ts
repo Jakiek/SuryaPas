@@ -6,6 +6,7 @@
 // never shows. Sending only what is drawn keeps the page light on a phone.
 
 import type { Assessment, Billing, CostRange, EnergyResult, MoneyResult } from "../../engine";
+import { judgePayback, paysBackAtTypicalCost } from "./payback";
 
 /** One system (with or without a battery), as the page shows it. */
 export interface OptionView {
@@ -15,6 +16,13 @@ export interface OptionView {
   netSavingsRp: number;
   /** Year 0 to the horizon, at the typical cost. */
   cumulativeSavingsRp: number[];
+  /**
+   * The same running total at the low, typical and high cost (engine 1.1.0 and
+   * later), which the payback chart draws as a band. Absent in a result saved
+   * by engine 1.0.0: that result is shown as it was made (SPEC 4.2), so the
+   * chart falls back to the typical line alone.
+   */
+  cumulativeSavingsByCostRp?: MoneyResult["cumulativeSavingsByCostRp"];
   selfConsumedShare: number;
   co2AvoidedKgPerYear: number;
   /** Yearly energy, kWh. */
@@ -62,6 +70,8 @@ function toOptionView(energy: EnergyResult, money: MoneyResult): OptionView {
     paybackYears: money.paybackYears,
     netSavingsRp: money.netSavingsRp,
     cumulativeSavingsRp: money.cumulativeSavingsRp,
+    // Typed as always present; a stored 1.0.0 result lacks it, so it is copied only when there.
+    ...(money.cumulativeSavingsByCostRp ? { cumulativeSavingsByCostRp: money.cumulativeSavingsByCostRp } : {}),
     selfConsumedShare: money.selfConsumedShare,
     co2AvoidedKgPerYear: money.co2AvoidedKgPerYear,
     generationKwh: energy.generationKwh,
@@ -142,16 +152,24 @@ export function pickerSlots(view: ResultView): PickerSlot[] {
 
 // ---------- Honest verdicts (SPEC 2.3 and 2.5) ----------
 
-export type Verdict = "doesNotPayBack" | "sizeDoesNotPayBack" | "heavyShade" | "approximate";
+export type Verdict =
+  | "doesNotPayBack"
+  | "sizeDoesNotPayBack"
+  | "highCostDoesNotPayBack"
+  | "heavyShade"
+  | "approximate";
 
 /**
  * The warnings shown for the selected system, in the order they are shown.
+ * Payback is judged at the typical cost (judgePayback, payback.ts).
  * - doesNotPayBack: the size on show does not repay its typical cost within
  *   the horizon, and neither does the recommended one: the engine's own flag
  *   (src/engine/assess.ts). At this home's tariff, solar does not pay
  *   (SPEC 2.3 "Honest verdicts").
  * - sizeDoesNotPayBack: the size on show does not pay back, but the
  *   recommended one does. The tariff is not the reason; the size is.
+ * - highCostDoesNotPayBack: it pays back at the typical cost, but not at the
+ *   highest installer price (the headline gives the low year "or more").
  * - heavyShade: an installer must visit before the estimate can be trusted.
  * - approximate: the sun data is the nearest city's bundled series (SPEC 2.5).
  * A roof too small for any system is not a verdict on a size; the page
@@ -159,12 +177,35 @@ export type Verdict = "doesNotPayBack" | "sizeDoesNotPayBack" | "heavyShade" | "
  */
 export function verdictsFor(view: ResultView, selected: CandidateView): Verdict[] {
   const verdicts: Verdict[] = [];
-  if (selected.withoutBattery.paybackYears.typical === null) {
+  const judgment = judgePayback(selected.withoutBattery.paybackYears);
+  if (!paysBackAtTypicalCost(judgment)) {
     verdicts.push(view.flags.doesNotPayBack ? "doesNotPayBack" : "sizeDoesNotPayBack");
+  } else if (judgment.kind === "notAtHighCost") {
+    verdicts.push("highCostDoesNotPayBack");
   }
   if (view.flags.heavyShade) verdicts.push("heavyShade");
   if (view.flags.fallbackSunData) verdicts.push("approximate");
   return verdicts;
+}
+
+/**
+ * The year the lowest installer price would pay back, for a system that does
+ * not pay back at the typical cost; null otherwise. The warning may add it
+ * (SPEC 2.3), never the headline.
+ */
+export function lowCostOnlyYear(selected: CandidateView): number | null {
+  const judgment = judgePayback(selected.withoutBattery.paybackYears);
+  return judgment.kind === "onlyAtLowCost" ? judgment.lowYear : null;
+}
+
+/**
+ * True when even the recommended size has negative net savings at the typical
+ * cost. Then every size loses money, and the recommended one is the one that
+ * loses least (SPEC 2.3 "Honest verdicts").
+ */
+export function recommendedLosesMoney(view: ResultView): boolean {
+  if (view.recommendedPanels === null) return false;
+  return candidateFor(view, view.recommendedPanels).withoutBattery.netSavingsRp < 0;
 }
 
 /** What the picker's line under it says about the chosen count (SPEC 2.3 item 2). */

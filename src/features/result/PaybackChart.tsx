@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { formatMoneyRounded } from "@/lib/format";
 import { CHART_WIDTH, PAYBACK_CHART, paybackChartShapes } from "./chartGeometry";
 import { Hatch, INK_SOFT, NIGHT, PAPER, RULE, SUN, svgSafeId } from "./Hatch";
+import { judgePayback, markedYears } from "./payback";
 import type { OptionView } from "./view";
 
 type PaybackChartProps = {
@@ -16,16 +17,25 @@ type PaybackChartProps = {
 const AXIS_ROOM = 20; // space under the baseline for the year numbers
 
 // Cost against savings (SPEC 2.3 item 5): the running total of savings as a
-// navy line, the upfront cost from low to high as a hatched band, and the
-// payback years as a solid yellow column where the line crosses the band.
+// narrow flat band (its upper edge the low-cost case, its lower edge the
+// high-cost case) with the typical-cost line through it, the upfront cost from
+// low to high as a hatched band, and the payback years as a solid yellow
+// column. The column is the years the headline gives, so the two agree. A
+// result saved by engine 1.0.0 has no band; it gets the typical line only.
 export function PaybackChart({ option, caption }: PaybackChartProps) {
   const t = useTranslations("result.payback");
   const locale = useLocale();
   const captionId = useId();
   const hatchId = svgSafeId(useId(), "cost");
-  const shapes = paybackChartShapes(option.cumulativeSavingsRp, option.upfrontCostRp, option.paybackYears);
-  const baseline = PAYBACK_CHART.height;
   const horizon = option.cumulativeSavingsRp.length - 1;
+  const byCost = option.cumulativeSavingsByCostRp;
+  const shapes = paybackChartShapes({
+    typicalRp: option.cumulativeSavingsRp,
+    band: byCost ? { lowCostRp: byCost.low, highCostRp: byCost.high } : null,
+    cost: option.upfrontCostRp,
+    markedYears: markedYears(judgePayback(option.paybackYears), horizon),
+  });
+  const baseline = PAYBACK_CHART.height;
   const note = { fontSize: 11, fontWeight: 800, fill: NIGHT, stroke: PAPER, strokeWidth: 3, paintOrder: "stroke" as const };
 
   return (
@@ -65,6 +75,7 @@ export function PaybackChart({ option, caption }: PaybackChartProps) {
           </text>
         ))}
         <line x1={0} x2={CHART_WIDTH} y1={baseline} y2={baseline} stroke={NIGHT} strokeWidth={2.5} />
+        {shapes.savingsBand && <path d={shapes.savingsBand} fill={NIGHT} fillOpacity={0.25} />}
         <path d={shapes.savingsLine} fill="none" stroke={NIGHT} strokeWidth={3.5} strokeLinejoin="round" strokeLinecap="round" />
 
         <text x={CHART_WIDTH} y={shapes.costBand.y + shapes.costBand.height + 14} textAnchor="end" {...note}>

@@ -54,29 +54,65 @@ describe("dayChartShapes", () => {
 });
 
 describe("paybackChartShapes", () => {
-  const cumulative = Array.from({ length: 26 }, (_, year) => year * 4_000_000);
+  const typical = Array.from({ length: 26 }, (_, year) => year * 4_000_000);
+  // Low cost saves a little more each year, high cost a little less (upkeep follows the cost).
+  const lowCostRp = typical.map((rupiah) => rupiah * 1.05);
+  const highCostRp = typical.map((rupiah) => rupiah * 0.95);
+  const cost = { low: 20_000_000, high: 40_000_000 };
+  const yearWidth = CHART_WIDTH / 25;
 
-  it("spans the payback years with the column and the cost range with the band", () => {
-    const shapes = paybackChartShapes(cumulative, { low: 20_000_000, high: 40_000_000 }, { low: 5, high: 10 });
-    const yearWidth = CHART_WIDTH / 25;
+  it("spans the marked years with the column and the cost range with the band", () => {
+    const shapes = paybackChartShapes({ typicalRp: typical, band: null, cost, markedYears: { fromYear: 5, toYear: 10 } });
     expect(shapes.paybackColumn?.x).toBeCloseTo(5 * yearWidth, 6);
     expect(shapes.paybackColumn?.width).toBeCloseTo(5 * yearWidth, 6);
     expect(shapes.costBand.height).toBeGreaterThan(0);
     expect(shapes.yearTicks.map((tick) => tick.year)).toEqual([0, 5, 10, 15, 20, 25]);
   });
 
-  it("runs the column to the horizon when only the low cost pays back, and drops it when none does", () => {
-    const open = paybackChartShapes(cumulative, { low: 20_000_000, high: 40_000_000 }, { low: 5, high: null });
-    expect((open.paybackColumn?.x ?? 0) + (open.paybackColumn?.width ?? 0)).toBeCloseTo(CHART_WIDTH, 6);
-    const never = paybackChartShapes(cumulative, { low: 200_000_000, high: 400_000_000 }, { low: null, high: null });
-    expect(never.paybackColumn).toBeNull();
+  it("marks no column when told none, and keeps a one-year column visible", () => {
+    expect(paybackChartShapes({ typicalRp: typical, band: null, cost, markedYears: null }).paybackColumn).toBeNull();
+    const narrow = paybackChartShapes({ typicalRp: typical, band: null, cost, markedYears: { fromYear: 7, toYear: 7 } });
+    expect(narrow.paybackColumn?.width).toBeGreaterThanOrEqual(3);
+  });
+
+  it("draws the savings as a band between the low-cost and high-cost series, with the typical line inside it", () => {
+    const shapes = paybackChartShapes({ typicalRp: typical, band: { lowCostRp, highCostRp }, cost, markedYears: null });
+    expect(shapes.savingsBand).not.toBeNull();
+    // One point per year along each edge, joined, then closed: 26 + 26 points.
+    const band = shapes.savingsBand ?? "";
+    expect(band.endsWith("Z")).toBe(true);
+    expect(band.match(/[ML]/g)).toHaveLength(52);
+    // The band starts on the low-cost series (upper edge) and turns back along the high-cost series.
+    const firstUpperY = Number(band.split("L")[1].split(" ")[1]);
+    const lastLowerY = Number(band.split("L").pop()!.replace("Z", "").split(" ")[1]);
+    const lineYs = shapes.savingsLine.split("L").map((part) => Number(part.replace("M", "").split(" ")[1]));
+    expect(firstUpperY).toBeLessThanOrEqual(lineYs[1]);
+    expect(lastLowerY).toBeGreaterThanOrEqual(lineYs[0]);
+  });
+
+  it("has no band when the result carries only the typical line, or when the series do not match it", () => {
+    expect(paybackChartShapes({ typicalRp: typical, band: null, cost, markedYears: null }).savingsBand).toBeNull();
+    const mismatched = paybackChartShapes({ typicalRp: typical, band: { lowCostRp: [0, 1], highCostRp: [0, 1] }, cost, markedYears: null });
+    expect(mismatched.savingsBand).toBeNull();
+  });
+
+  it("scales to the band's upper edge so the band never leaves the chart", () => {
+    const shapes = paybackChartShapes({ typicalRp: typical, band: { lowCostRp: lowCostRp.map((value) => value * 3), highCostRp }, cost, markedYears: null });
+    const ys = (shapes.savingsBand ?? "").match(/-?\d+\.\d/g)!.map(Number);
+    expect(Math.min(...ys.filter((_, index) => index % 2 === 1))).toBeGreaterThanOrEqual(PAYBACK_CHART.top - 0.1);
   });
 
   it("draws a negative running total on the baseline", () => {
     const losing = Array.from({ length: 26 }, (_, year) => -year * 1_000_000);
-    const shapes = paybackChartShapes(losing, { low: 10_000_000, high: 20_000_000 }, { low: null, high: null });
+    const shapes = paybackChartShapes({
+      typicalRp: losing,
+      band: { lowCostRp: losing, highCostRp: losing.map((value) => value * 1.2) },
+      cost: { low: 10_000_000, high: 20_000_000 },
+      markedYears: null,
+    });
     expect(shapes.savingsLine).toContain(` ${PAYBACK_CHART.height.toFixed(1)}`);
     expect(shapes.savingsLine).not.toContain("NaN");
+    expect(shapes.savingsBand).not.toContain("NaN");
   });
 });
 

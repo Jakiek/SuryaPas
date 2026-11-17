@@ -25,6 +25,8 @@ describe("result figures", () => {
       value: { figure: "13", unit: "years", text: "13 years" },
     });
     expect(paybackFigure({ low: null, typical: null, high: null }, "id")).toEqual({ kind: "never" });
+    // Judged at the typical cost: the low-cost year alone is no headline.
+    expect(paybackFigure({ low: 22, typical: null, high: null }, "id")).toEqual({ kind: "never" });
   });
 
   it("keeps one decimal between one and ten million, and none elsewhere", () => {
