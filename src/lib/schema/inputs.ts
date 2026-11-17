@@ -70,10 +70,19 @@ export const locationSchema = z.object({
   longitude: requiredNumber("errors.longitudeInvalid").min(-180, "errors.longitudeInvalid").max(180, "errors.longitudeInvalid"),
 }) satisfies z.ZodType<LocationInput>;
 
-// ---------- Step 2: roof (stub; T12 adds tracing) ----------
+// ---------- Step 2: roof ----------
+
+/**
+ * SPEC 2.2 step 2: a roof above this many square metres is refused. It is
+ * not a house roof, and the engine would be asked for hundreds of sizes.
+ * The step shows the same limit, so the form and the server agree.
+ */
+export const MAX_ROOF_AREA_M2 = 2000;
 
 export const roofSchema = z.object({
-  areaM2: requiredNumber("errors.areaInvalid").positive("errors.areaInvalid"),
+  areaM2: requiredNumber("errors.areaInvalid")
+    .positive("errors.areaInvalid")
+    .max(MAX_ROOF_AREA_M2, "errors.areaTooLarge"),
   // SPEC 2.2: a share of the traced area, 0 to 1 (zero would leave no roof).
   usableFraction: requiredNumber("errors.usableInvalid")
     .gt(0, "errors.usableInvalid")

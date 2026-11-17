@@ -1,0 +1,79 @@
+{
+  "area": {
+    "label": "Roof area",
+    "help": "The area of the roof face you picked, in square metres, measured as seen from above.",
+    "traceLegend": "Mark your roof on the photo",
+    "traceHelp": "Tap each corner of the roof, then press Close shape. Drag a yellow square to fix a corner.",
+    "noImagery": "The satellite photo is not available yet, so you are marking on the street map. If the roof is hard to make out, type its area instead.",
+    "switchToType": "Can't mark it? Type the area instead",
+    "switchToTrace": "Mark the roof on the map instead",
+    "mapUnsupported": "The map can't be shown on this device. Type the roof's area instead."
+  },
+  "tag": {
+    "label": "Area marked",
+    "none": "–"
+  },
+  "status": "{count, plural, one {# corner marked.} other {# corners marked.}}",
+  "tools": {
+    "undo": "Undo",
+    "clear": "Clear",
+    "close": "Close shape",
+    "reopen": "Add corners"
+  },
+  "map": {
+    "label": "Map of your roof. Keyboard users can type the roof's area instead.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "corner": "Corner {number}"
+  },
+  "attribution": {
+    "esri": "Satellite photo: <esri>Powered by Esri</esri>. Imagery sources: Esri, Maxar, Earthstar Geographics and the GIS User Community.",
+    "street": "Map: <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>, data © <osm>OpenStreetMap contributors</osm>."
+  },
+  "warning": {
+    "tooSmall": {
+      "title": "This roof is very small",
+      "body": "It measures under 5 m². Check the corners you marked or the number you typed, and carry on if it is right."
+    },
+    "tooLarge": {
+      "title": "This roof is very large",
+      "body": "It measures over 500 m². Make sure you marked one roof face only, and carry on if it is right."
+    }
+  },
+  "refused": {
+    "title": "This roof is too large to calculate",
+    "body": "The limit is {max} m². That is not the size of a house roof, so enter one roof face only."
+  },
+  "slope": {
+    "legend": "How steep is the roof?",
+    "help": "Flat: barely tilted, like a concrete slab. Gentle: most tiled roofs, rising about 0.5 to 2 m for every 3 m across. Steep: rising more than 2 m for every 3 m.",
+    "flat": "Flat",
+    "flatNote": "under 10°",
+    "gentle": "Gentle",
+    "gentleNote": "10–35°",
+    "steep": "Steep",
+    "steepNote": "over 35°"
+  },
+  "facing": {
+    "legend": "Which way does it face?",
+    "help": "The direction the roof face you marked slopes down towards, where rain runs off. Your phone's compass helps if you are unsure.",
+    "north": "North",
+    "east": "East",
+    "south": "South",
+    "west": "West"
+  },
+  "shade": {
+    "legend": "Does anything shade the roof?",
+    "help": "Trees, a water tank or the building next door.",
+    "none": "None",
+    "some": "Some",
+    "someNote": "morning or afternoon",
+    "heavy": "Heavy"
+  },
+  "usable": {
+    "label": "Share of the roof that can take panels",
+    "help": "Not all of a roof can be used: the ridge, gutters and safety gaps at the edges are kept clear.",
+    "about": "about {area} m²",
+    "unknown": "enter the roof area first"
+  }
+}

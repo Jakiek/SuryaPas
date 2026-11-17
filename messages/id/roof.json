@@ -1,0 +1,79 @@
+{
+  "area": {
+    "label": "Luas atap",
+    "help": "Luas sisi atap yang dipilih, dalam meter persegi, diukur seperti dilihat dari atas.",
+    "traceLegend": "Tandai atap pada foto",
+    "traceHelp": "Ketuk tiap sudut atap, lalu tekan Tutup bentuk. Geser kotak kuning untuk memperbaiki sudut.",
+    "noImagery": "Foto satelit belum tersedia, jadi Anda menandai di atas peta jalan. Bila atap sulit dikenali, ketik luasnya saja.",
+    "switchToType": "Tidak bisa menandai? Ketik luasnya saja",
+    "switchToTrace": "Tandai atap di peta saja",
+    "mapUnsupported": "Peta tidak bisa ditampilkan di perangkat ini. Ketik luasnya saja."
+  },
+  "tag": {
+    "label": "Luas ditandai",
+    "none": "–"
+  },
+  "status": "{count} sudut ditandai.",
+  "tools": {
+    "undo": "Urungkan",
+    "clear": "Hapus",
+    "close": "Tutup bentuk",
+    "reopen": "Tambah sudut"
+  },
+  "map": {
+    "label": "Peta atap rumah Anda. Pengguna keyboard dapat mengetik luas atap sebagai gantinya.",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil",
+    "corner": "Sudut {number}"
+  },
+  "attribution": {
+    "esri": "Foto satelit: <esri>Powered by Esri</esri>. Sumber citra: Esri, Maxar, Earthstar Geographics, dan komunitas pengguna GIS.",
+    "street": "Peta: <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>, data © <osm>kontributor OpenStreetMap</osm>."
+  },
+  "warning": {
+    "tooSmall": {
+      "title": "Atap ini sangat kecil",
+      "body": "Luasnya kurang dari 5 m². Periksa lagi tandanya atau angka yang Anda ketik, lalu lanjutkan bila sudah benar."
+    },
+    "tooLarge": {
+      "title": "Atap ini sangat luas",
+      "body": "Luasnya lebih dari 500 m². Pastikan Anda hanya menandai satu sisi atap, lalu lanjutkan bila sudah benar."
+    }
+  },
+  "refused": {
+    "title": "Atap ini terlalu luas untuk dihitung",
+    "body": "Batasnya {max} m². Itu bukan luas atap rumah, jadi ketik luas satu sisi atap saja."
+  },
+  "slope": {
+    "legend": "Kemiringan atap",
+    "help": "Datar: hampir tidak miring, seperti dak beton. Landai: kebanyakan atap genteng, naik sekitar 0,5 sampai 2 m tiap 3 m ke samping. Curam: naik lebih dari 2 m tiap 3 m.",
+    "flat": "Datar",
+    "flatNote": "di bawah 10°",
+    "gentle": "Landai",
+    "gentleNote": "10–35°",
+    "steep": "Curam",
+    "steepNote": "di atas 35°"
+  },
+  "facing": {
+    "legend": "Menghadap ke mana?",
+    "help": "Ke arah mana sisi atap yang Anda tandai miring turun, yaitu ke mana air hujan mengalir. Kompas di ponsel membantu bila ragu.",
+    "north": "Utara",
+    "east": "Timur",
+    "south": "Selatan",
+    "west": "Barat"
+  },
+  "shade": {
+    "legend": "Apakah atap terkena bayangan?",
+    "help": "Dari pohon, tandon air, atau bangunan di sebelah.",
+    "none": "Tidak ada",
+    "some": "Sebagian",
+    "someNote": "pagi atau sore",
+    "heavy": "Banyak"
+  },
+  "usable": {
+    "label": "Bagian atap yang bisa dipasangi panel",
+    "help": "Tidak semua atap bisa dipakai: ada bubungan, talang, dan jarak aman di tepi.",
+    "about": "sekitar {area} m²",
+    "unknown": "isi luas atap dulu"
+  }
+}

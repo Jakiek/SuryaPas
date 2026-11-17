@@ -8,6 +8,7 @@ import {
   lifestyleSchema,
   maxMonthlySpendRp,
   messageKeysByField,
+  MAX_ROOF_AREA_M2,
   roofSchema,
 } from "./inputs";
 
@@ -119,6 +120,13 @@ describe("engine input schemas", () => {
   it("refuse a roof with no area", () => {
     expect(roofSchema.safeParse({ ...validInputs.roof, areaM2: null }).success).toBe(false);
   });
+
+  it("accept a roof of exactly 2,000 m² and refuse one just above", () => {
+    expect(roofSchema.safeParse({ ...validInputs.roof, areaM2: MAX_ROOF_AREA_M2 }).success).toBe(true);
+    const above = roofSchema.safeParse({ ...validInputs.roof, areaM2: MAX_ROOF_AREA_M2 + 0.1 });
+    expect(above.success).toBe(false);
+    expect(above.error?.issues[0].message).toBe("errors.areaTooLarge");
+  });
 });
 
 describe("error messages", () => {
@@ -135,6 +143,7 @@ describe("error messages", () => {
     "errors.latitudeInvalid",
     "errors.longitudeInvalid",
     "errors.areaInvalid",
+    "errors.areaTooLarge",
     "errors.usableInvalid",
     "errors.facingRequired",
     "errors.slopeRequired",

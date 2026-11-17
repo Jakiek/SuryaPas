@@ -8,11 +8,13 @@ import { expect, test, type Page } from "@playwright/test";
 import enLocation from "../../messages/en/location.json";
 import en from "../../messages/en/plan.json";
 import idLocation from "../../messages/id/location.json";
+import enRoof from "../../messages/en/roof.json";
+import idRoof from "../../messages/id/roof.json";
 import id from "../../messages/id/plan.json";
 
 const LOCALES = [
-  { locale: "id", m: id, loc: idLocation, decimalComma: true, typedPower: "2.2", rupiahGrouped: "12.500.000" },
-  { locale: "en", m: en, loc: enLocation, decimalComma: false, typedPower: "2,2", rupiahGrouped: "12,500,000" },
+  { locale: "id", m: id, r: idRoof, loc: idLocation, decimalComma: true, typedPower: "2.2", rupiahGrouped: "12.500.000" },
+  { locale: "en", m: en, r: enRoof, loc: enLocation, decimalComma: false, typedPower: "2,2", rupiahGrouped: "12,500,000" },
 ] as const;
 
 type Copy = (typeof LOCALES)[number];
@@ -38,10 +40,12 @@ async function fillLocationAndRoof(page: Page, c: Copy) {
   await chooseHome(page);
   await next(page, c, "location").click();
 
-  await page.getByLabel(c.m.roof.area.label).fill("48");
-  await page.getByRole("radio", { name: c.m.roof.slope.gentle }).check();
-  await page.getByRole("radio", { name: c.m.roof.facing.east }).check();
-  await page.getByRole("radio", { name: c.m.roof.shade.none }).check();
+  // Typing the area is the step's keyboard path; tracing has its own spec.
+  await page.getByRole("button", { name: c.r.area.switchToType }).click();
+  await page.getByLabel(c.r.area.label).fill("48");
+  await page.getByRole("radio", { name: c.r.slope.gentle }).check();
+  await page.getByRole("radio", { name: c.r.facing.east }).check();
+  await page.getByRole("radio", { name: c.r.shade.none }).check();
   await next(page, c, "roof").click();
 }
 
@@ -146,7 +150,7 @@ for (const c of LOCALES) {
       await expect(page.getByLabel(c.m.electricity.spend.monthLabel.replace("{number}", "2"))).toHaveValue(c.locale === "id" ? "120.000" : "120,000");
       // Back to step 2: the roof answers are still there.
       await page.getByRole("button", { name: c.m.nav.back }).click();
-      await expect(page.getByLabel(c.m.roof.area.label)).toHaveValue("48");
+      await expect(page.getByLabel(c.r.area.label)).toHaveValue("48");
     });
 
     test("submitting sends a valid body and goes to the result", async ({ page }) => {
@@ -257,13 +261,14 @@ for (const c of LOCALES) {
       await tabTo(c.m.steps.location.next);
       await page.keyboard.press("Enter");
 
-      await tabTo(c.m.roof.area.label);
+      await tabTo(c.r.area.switchToType);
+      await page.keyboard.press("Enter"); // the cursor moves into the area field
       await page.keyboard.type("48");
-      await tabTo(c.m.roof.slope.flat);
+      await tabTo(c.r.slope.flat);
       await page.keyboard.press("ArrowRight"); // flat -> gentle
-      await tabTo(c.m.roof.facing.north);
+      await tabTo(c.r.facing.north);
       await page.keyboard.press("ArrowRight"); // north -> east
-      await tabTo(c.m.roof.shade.none);
+      await tabTo(c.r.shade.none);
       await page.keyboard.press("Space");
       await expect(next(page, c, "roof")).toBeEnabled();
       await tabTo(c.m.steps.roof.next);

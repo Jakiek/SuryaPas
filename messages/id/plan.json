@@ -31,31 +31,6 @@
     "retry": "Coba lagi",
     "incomplete": "Jawab semua pertanyaan di atas untuk lanjut."
   },
-  "roof": {
-    "area": {
-      "label": "Luas atap",
-      "help": "Luas sisi atap yang dipilih, dalam meter persegi."
-    },
-    "slope": {
-      "legend": "Kemiringan atap",
-      "flat": "Datar",
-      "gentle": "Landai",
-      "steep": "Curam"
-    },
-    "facing": {
-      "legend": "Menghadap ke mana?",
-      "north": "Utara",
-      "east": "Timur",
-      "south": "Selatan",
-      "west": "Barat"
-    },
-    "shade": {
-      "legend": "Apakah atap terkena bayangan?",
-      "none": "Tidak ada",
-      "some": "Sebagian",
-      "heavy": "Banyak"
-    }
-  },
   "electricity": {
     "billing": {
       "legend": "Bagaimana Anda membayar listrik?",
@@ -127,6 +102,7 @@
     "latitudeInvalid": "Lintang harus berupa angka antara -90 dan 90, misalnya -7,78.",
     "longitudeInvalid": "Bujur harus berupa angka antara -180 dan 180, misalnya 110,37.",
     "areaInvalid": "Luas atap belum diisi. Ketik angkanya dalam meter persegi, misalnya 48.",
+    "areaTooLarge": "Atap seluas ini bukan atap rumah dan tidak bisa dihitung. Luas paling besar 2.000 m²; ketik luas satu sisi atap saja.",
     "usableInvalid": "Bagian atap yang bisa dipasangi harus lebih dari 0 dan paling banyak 100%.",
     "facingRequired": "Arah atap belum dipilih. Pilih salah satu.",
     "slopeRequired": "Kemiringan atap belum dipilih. Pilih salah satu.",

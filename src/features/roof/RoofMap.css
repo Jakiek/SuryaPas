@@ -1,0 +1,51 @@
+/* The traced roof's corner handles and the map's zoom buttons, restyled to
+   docs/DESIGN.md: square, navy and yellow, no shadow. Plain CSS because
+   MapLibre builds these elements itself, and not a CSS module because this
+   project's Turbopack rule leaves a module's class names unexported (see
+   LocationMap.css). */
+
+/* The handle is a 44 px square touch target with the visible corner, an
+   18 px yellow square in a navy outline, in its middle. */
+.roof-handle {
+  display: block;
+  width: 44px;
+  height: 44px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.roof-handle:active {
+  cursor: grabbing;
+}
+
+.roof-handle-square {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 3px solid #0f1b3d;
+  background: #ffcf33;
+}
+
+.roof-map .maplibregl-ctrl-group {
+  border: 2.5px solid #0f1b3d;
+  border-radius: 0;
+  box-shadow: none;
+  background: #ffffff;
+}
+
+.roof-map .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+}
+
+.roof-map .maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgb(15 27 61 / 20%);
+}
+
+.roof-map .maplibregl-canvas {
+  outline: none;
+}
