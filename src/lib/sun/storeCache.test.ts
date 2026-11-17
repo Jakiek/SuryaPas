@@ -65,3 +65,21 @@ describe("StoreSunCache", () => {
     expect(nasaCalls).toBe(0);
   });
 });
+
+describe("StoreSunCache when the store fails", () => {
+  function brokenStore(): MemoryStore {
+    const store = new MemoryStore();
+    const broken = async () => {
+      throw new Error("database paused");
+    };
+    store.getSunCache = broken;
+    store.putSunCache = broken;
+    return store;
+  }
+
+  it("reads as a miss and ignores a failed write", async () => {
+    const cache = new StoreSunCache(brokenStore());
+    expect(await cache.get(cacheKey("-7.75,110.25", 2025))).toBeUndefined();
+    await expect(cache.set(cacheKey("-7.75,110.25", 2025), { series: SERIES, year: 2025 })).resolves.toBeUndefined();
+  });
+});

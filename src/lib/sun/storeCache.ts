@@ -15,19 +15,31 @@ export class StoreSunCache implements SunCache {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
+  // A store that fails is a cache that has nothing: the sun service then asks
+  // NASA POWER as usual (SPEC 2.5 "Saving fails"). A cache must never be the
+  // reason sun data cannot be returned.
   async get(key: string): Promise<CachedSun | undefined> {
-    const { cellId, year } = parseCacheKey(key);
-    const entry = await this.store.getSunCache(cellId, year);
-    return entry ? { series: entry.series, year: entry.year } : undefined;
+    try {
+      const { cellId, year } = parseCacheKey(key);
+      const entry = await this.store.getSunCache(cellId, year);
+      return entry ? { series: entry.series, year: entry.year } : undefined;
+    } catch {
+      return undefined;
+    }
   }
 
+  // A failed write only means the next request asks NASA POWER again.
   async set(key: string, value: CachedSun): Promise<void> {
-    const { cellId } = parseCacheKey(key);
-    await this.store.putSunCache({
-      cellId,
-      year: value.year,
-      fetchedAt: this.now().toISOString(),
-      series: value.series,
-    });
+    try {
+      const { cellId } = parseCacheKey(key);
+      await this.store.putSunCache({
+        cellId,
+        year: value.year,
+        fetchedAt: this.now().toISOString(),
+        series: value.series,
+      });
+    } catch {
+      // Deliberately ignored: see above.
+    }
   }
 }
