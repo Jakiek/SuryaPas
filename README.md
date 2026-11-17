@@ -52,7 +52,7 @@ Rules the engine keeps, so that the same input always gives the same answer in t
 
 ### 2.0 Conventions to know before the steps
 
-**One year, 8,760 hours.** The engine's year has 365 days (no leap day), so 365 × 24 = 8,760 hours. Hour 0 is 1 January from 00:00 to 01:00. Hours are Indonesian clock time, because the sun data is requested that way and the household's day is described in clock time too. The engine's year always starts on a Monday, which only decides which days count as weekends (code: `src/engine/calendar.ts`).
+**One year, 8,760 hours.** The engine's year has 365 days (no leap day), so 365 × 24 = 8,760 hours. Hour 0 is 1 January from 00:00 to 01:00. Hours are clock time across almost all of Indonesia, because the sun data is requested in the time zone of the nearest 15° of longitude (which is the zone Indonesia's three time zones follow) and the household's day is described in clock time too. The engine's year always starts on a Monday, which only decides which days count as weekends (code: `src/engine/calendar.ts`).
 
 **Daytime means 06:00 to 18:00.** Close to the equator that is roughly sunrise to sunset all year.
 
@@ -99,7 +99,7 @@ kWh in a month  =  spend × (1 − overhead share) ÷ tariff
 - The **overhead share** is the part of what a household pays that buys no energy: mainly the regional street-lighting tax. `bill.overheadShare` = 0.05 (`judgment`): 2.4% is the lowest rate found (Jakarta), the law allows up to 10%, and no national average exists. Setting it to zero would overstate energy use and oversize the system.
 - If fewer than twelve months of spend are given, their mean is used for every month. With exactly twelve, they are read as January to December.
 
-**Tariffs in the assumption set** (October to December 2026, all `sourced`, from press reports consistent with Annex II of Energy Ministry Regulation 7/2024). In `docs/ASSUMPTIONS.md` they are the `tariff.*` rows; in code they sit in `powerClasses.classes`.
+**Tariffs in the assumption set** (October to December 2026, all `sourced`, from press reports consistent with Annex II of Energy Ministry Regulation 7/2024). In `docs/ASSUMPTIONS.md` and in code they are the `powerClasses.classes.*` entries.
 
 | Class | Connected power | Rp per kWh |
 | --- | --- | --- |
@@ -205,7 +205,7 @@ kWh per kWp in an hour  =  sunlight ÷ 1,000  ×  performance ratio  ×  orienta
 | gentle | about 10° to 35° | 25° |
 | steep | above about 35° | 45° |
 
-The direction matters relative to the equator, not as north or south. South of the equator (Java, Bali) a north-facing roof looks toward the sun's path; north of it (Medan, Manado) a south-facing roof does. East and west share one factor, the mean of the two. The factors are version 2's `orientation.table` (`sourced`), each one PVGIS's yearly yield on the tilted roof divided by its yield on a flat roof at the same place, averaged over Medan and Yogyakarta:
+The direction matters relative to the equator, not as north or south. South of the equator (Java, Bali) a north-facing roof looks toward the sun's path; north of it (Medan, Manado) a south-facing roof does. East and west share one factor, the mean of the two. A sloped roof with no facing direction given also uses that east-west factor. The factors are version 2's `orientation.table` (`sourced`), each one PVGIS's yearly yield on the tilted roof divided by its yield on a flat roof at the same place, averaged over Medan and Yogyakarta:
 
 | Slope | Toward the equator | East or west | Away from the equator |
 | --- | --- | --- | --- |
@@ -213,7 +213,7 @@ The direction matters relative to the equator, not as north or south. South of t
 | gentle (25°) | 0.97 | 0.95 | 0.90 |
 | steep (45°) | 0.85 | 0.84 | 0.72 |
 
-Close to the equator the sun is high and passes on both sides of the sky during the year, so a tilted roof only breaks even with a flat one up to about 15° when it faces the equator, and loses a little at any tilt otherwise. That is why every factor is below 1.
+The angles in this table are a judgment: each slope word is a range, and 25° and 45° are one choice inside it (see 4.2). Close to the equator the sun is high and passes on both sides of the sky during the year, so a tilted roof only breaks even with a flat one up to about 15° when it faces the equator, and loses a little at any tilt otherwise. That is why every factor is below 1.
 
 **Worked example.** One hour with 800 W/m², so 800 ÷ 1,000 = 0.8.
 
@@ -250,11 +250,13 @@ most panels  =  whole number below (usable area ÷ panel area)
 fewest panels = whole number above (smallest system in kWp ÷ kWp of one panel)
 ```
 
-`roof.usableFraction` = 0.65 (`decision`; adjustable by the user, agreed range 0.60 to 0.70). `panel.areaM2` = 2.6 m² and `panel.wattPeak` = 550 W (both `sourced`, from one 550 W module's datasheet). `system.minKwp` = 1.0 (`thin`): the smallest on-grid package the installers checked list. The engine assesses every whole panel count from the fewest to the most. No regulatory size cap applies; PLN's quota in the user's area is the only limit and the engine cannot know it.
+`roof.usableFraction` = 0.65 (`decision`; adjustable by the user within 0.60 to 0.70, the range held as `roof.usableFraction.min` and `.max` in the assumption set). `panel.areaM2` = 2.6 m² and `panel.wattPeak` = 550 W (both `sourced`, from one 550 W module's datasheet). `system.minKwp` = 1.0 (`thin`): the smallest on-grid package the installers checked list. The engine assesses every whole panel count from the fewest to the most. No regulatory size cap applies; PLN's quota in the user's area is the only limit and the engine cannot know it.
 
 **Worked example.** A 48 m² roof: usable area 48 × 0.65 = 31.2 m². Panels: 31.2 ÷ 2.6 = 12. The fewest: one panel is 0.55 kWp, so 1.0 ÷ 0.55 = 1.82, rounded up to 2 panels (1.10 kWp). Candidates: 2, 3, 4, ... 12 panels.
 
 A 4 m² roof: usable area 2.6 m², which holds 1 panel, below the 2 needed, so there is no candidate. The result says the smallest system needs 2 × 2.6 ÷ 0.65 = 8 m² of roof.
+
+**Where the inputs come from.** In the roof step the user traces the roof on the map or types the area (one value), picks the slope, facing and shade from pictures, and can adjust the usable fraction between 0.60 and 0.70. The step warns below 5 m² and above 500 m² and refuses above 2,000 m². The area is the roof as seen from above, with no slope correction (see 4.2). The map is built against the street map; Esri satellite imagery needs a key that does not exist yet, so it is not live.
 
 **Code:** `listCandidateSizes` and `kwpOfPanels` in `src/engine/energy/candidates.ts`.
 
@@ -271,7 +273,7 @@ exported      = solar − self-consumed     (surplus; earns nothing)
 grid import   = load − self-consumed
 ```
 
-Surplus has zero value because of Regulation 2/2024 Article 13 (section 1). In `docs/ASSUMPTIONS.md` this is the entry `export.valueRpPerKwh` = 0 (`sourced`); in the engine it is built into the rule above, since exports are simply left out of the savings.
+Surplus has zero value because of Regulation 2/2024 Article 13 (section 1). `docs/ASSUMPTIONS.md` lists this under "Rules built into the engine" as `export.valueRpPerKwh` = 0 (`sourced`); it is not an entry of the assumption set, since exports are simply left out of the savings.
 
 Totals are kept for the whole year and for each month. The monthly grid import is what step 7 turns into a bill.
 
@@ -295,7 +297,8 @@ Even a 100 kWp system self-consumes only 1.6 kWh: the home cannot use more than 
 ```
 battery capacity (usable)   = battery size × usable fraction        (0.90)
 stored per kWh taken in     = round-trip efficiency                 (0.90)
-charged  (from the panels)  = the smaller of: surplus, and (room left in the battery ÷ efficiency)
+charged  (from the panels)  = the smaller of: surplus, and (room left ÷ efficiency)
+                              where room left = usable capacity − energy stored
 stored  += charged × efficiency          loss += charged × (1 − efficiency)
 discharged                  = the smaller of: the shortfall, and what is stored
 ```
@@ -306,7 +309,7 @@ discharged                  = the smaller of: the shortfall, and what is stored
 
 A 10 kWp system makes 20 kWh. The battery has room for 4.5 kWh, which takes 4.5 ÷ 0.90 = 5.0 kWh from the panels (0.5 lost). The other 15.0 kWh is exported. The night's 4.0 kWh is supplied by the battery, which ends the day with 0.5 kWh and no grid purchase.
 
-**Choosing the battery size.** The engine picks the size, from the product sizes in `battery.sizesKwh` = 5 and 10 kWh (`decision`). A battery is useful up to the smaller of two amounts, each measured on the **median day** of the year: the surplus the system produces, and the energy the home uses outside 06:00 to 18:00. The engine takes the product size whose usable capacity is closest to that amount. It offers no battery when that amount would fill less than `battery.minFillShare` = 0.5 (`decision`) of the smallest battery's usable capacity (0.5 × 4.5 = 2.25 kWh).
+**Choosing the battery size.** The engine picks the size, from the product sizes in `battery.sizesKwh` = 5 and 10 kWh (`decision`). A battery is useful up to the smaller of two amounts: the surplus the system produces on a day, and the energy the home uses at night. "Night" here means the hours outside 06:00 to 18:00 of the same calendar day (00:00 to 06:00 and 18:00 to 24:00). Each amount is the median over the 365 days, taken separately, so the median surplus and the median night use may come from different days. The engine takes the product size whose usable capacity is closest to that amount. It offers no battery when that amount would fill less than `battery.minFillShare` = 0.5 (`decision`) of the smallest battery's usable capacity (0.5 × 4.5 = 2.25 kWh).
 
 Examples, on the same one-day cases: the 1 kWp system's surplus is 0.4 kWh a day, below 2.25, so no battery is offered. A 20 kWp system has a surplus of 38.4 kWh but the home uses only 4.8 kWh outside the daytime; 4.8 is closer to the 5 kWh battery's 4.5 than to the 10 kWh battery's 9, so a 5 kWh battery is chosen. With a night load of 8 kWh the 10 kWh battery is chosen.
 
@@ -327,8 +330,8 @@ bill           = charge ÷ (1 − overhead share)
 monthly savings = bill before − bill after
 ```
 
-- **The minimum charge** is PLN's lowest monthly bill: `minCharge.hours` = 40 (`sourced`, Regulation 7/2024 Annex II; written `minCharge.postpaidHours` in `docs/ASSUMPTIONS.md`) hours at full connected power:
-  `minimum = 40 × connected kVA × tariff`. It is zero in the two subsidised classes, which have a fixed charge instead.
+- **The minimum charge** is PLN's lowest monthly bill: `minCharge.hours` = 40 (`sourced`, Regulation 7/2024 Annex II) hours at full connected power:
+  `minimum = 40 × connected kVA × tariff`, where connected kVA is the connected VA ÷ 1,000. It is zero in the two subsidised classes. Postpaid subsidised homes pay a fixed charge instead; the engine does not model it (see 4.2).
 - **The minimum applies after solar to everyone in the classes that have one, prepaid homes included.** Regulation 2/2024 Article 16 moves a prepaid customer to a monthly bill when rooftop solar is approved. Before solar, a prepaid customer has no minimum (this is a reading of the table layout in Annex II, not a sentence of the regulation; it is recorded as a caveat in `docs/ASSUMPTIONS.md`). A prepaid home that spends less than the minimum today can therefore end up paying more, and the engine reports negative savings.
 - **Tax is added back.** Step 1 took the overhead share out of the spend to find the energy used. Tax is a percentage of the charge, so it falls when the charge falls. Dividing by (1 − share) puts it back in both bills, so the "before" bill equals what the household pays today.
 - Exported power earns nothing, so it is not in the savings at all.
@@ -445,6 +448,9 @@ Year 11 is above the cost of 10,000,000, but year 12 drops back below it. The pa
 - **Payback range** = the payback year at the low and high cost (with the typical in between).
 - **Net savings** = total savings − running costs − upfront cost, over the 25 years, at the typical cost. This is the cumulative total at year 25 minus the upfront cost.
 - **Share of solar used on site** = self-consumed ÷ generated.
+- **Cumulative savings at the low, typical and high cost** (engine version 1.1.0): the three year-by-year series, which the payback chart draws as a band. A result saved by engine 1.0.0 has the typical line only.
+
+When a result cannot be saved, the route still returns it; the browser shows it from the session at `/r/unsaved` with a note that there is no share link and a button to retry (SPEC 2.5).
 
 ### 2.8 Step 8: the recommendation
 
@@ -452,7 +458,7 @@ Year 11 is above the cost of 10,000,000, but year 12 drops back below it. The pa
 
 The reasoning is stated here because it is the heart of the product. "Shortest payback" would always pick the smallest system. "Cover the whole bill" is the oversizing mistake the product exists to prevent. Net savings over the horizon rewards adding a panel only while the extra saving is worth the extra cost.
 
-The result also records whether the recommended system pays back within 25 years (`flags.doesNotPayBack`). When it does not, the app says so in words instead of showing a payback number. This is expected for subsidised classes, whose tariff is low.
+The result also records whether the recommended system pays back within 25 years at the typical cost (`flags.doesNotPayBack`). When it does not, the app says so in words instead of showing a payback number. This is expected for subsidised classes, whose tariff is low.
 
 **Worked example.** See the table in section 3: net savings fall from Rp24.5 million at 2 panels to Rp20.1 million at 3 and Rp11.3 million at 4, so the 2-panel system is recommended.
 
@@ -538,13 +544,14 @@ node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/validate-pvgis.mjs
 ### 4.2 Known limits, stated plainly
 
 - **The load shape is estimated.** The hour-by-hour use of the home comes from four yes/no questions, a base share and two fixed daily shapes, all of them `judgment`. No measured Indonesian household profile was found. This drives how much solar the home can use directly, and so how many panels are worth buying, more than any other input.
-- **One roof face.** The user traces or types the area of the best side; roofs with several faces are a later stage.
-- **Three slope choices stand for ranges of angle.** Flat is under about 10°, gentle about 10° to 35° (calculated at 25°), steep above about 35° (calculated at 45°). A steep roof calculated at 35° instead of 45° would have factors 0.06 to 0.10 higher. The 25° and 45° come from the drawings in the roof step, not from a document.
+- **One roof face.** The user traces on the map or types the area (one value) of the best side; roofs with several faces are a later stage.
+- **The roof area is the footprint.** The traced or typed area is the roof as seen from above, with no correction for slope. A sloped face is larger than its footprint (about 10% at 25°, 41% at 45°), so a sloped roof's area is under-counted, which can only cap the largest size too low and never inflates a saving (SPEC 2.2, step 2).
+- **Three slope choices stand for ranges of angle.** Flat is under about 10°, gentle about 10° to 35° (calculated at 25°), steep above about 35° (calculated at 45°). A steep roof calculated at 35° instead of 45° would have factors 0.06 to 0.10 higher. The 25° and 45° come from the design mock-up `mock/atap.html` (as `docs/VALIDATION.md` says), not from a regulation or a standard.
 - **East and west share one factor**, the mean of the two. In PVGIS's runs an east roof yields 4% to 9% more than a west one, so the engine overstates a west roof and understates an east one by 2% to 5%.
 - **The orientation table is a two-site average** (Medan and Yogyakarta). A home at Kupang (10° S) or Manado (1.5° N) sits further from it.
-- **One year's pattern of sun, scaled to a twenty-year mean.** The hourly series is the latest full year's real pattern of cloud, multiplied by one factor so its total equals NASA POWER's twenty-year mean. That year's dull or bright months stay dull or bright. Its source, NASA POWER, differs from PVGIS-ERA5 by up to about 11% on the long-term mean (Makassar), and which is right is not known.
+- **One year's pattern of sun, scaled to a twenty-year mean.** The hourly series is the latest full year's real pattern of cloud, multiplied by one factor so its total equals NASA POWER's twenty-year mean. That year's dull or bright months stay dull or bright. Its source, NASA POWER, differs from PVGIS-ERA5 by −4.6% to +10.2% on the long-term sunlight (the +10.2% at Makassar), and which is right is not known.
 - **Cost evidence is thin.** Per-kWp prices come from about five installers' published ranges, not quotes. Battery prices are calculated from component prices. Maintenance (1% a year) rests on one academic study. Inverter and battery replacement years and shares are estimates. All are labelled `thin`.
-- **Subsidised classes on a monthly bill.** PLN charges those homes three blocks plus a fixed charge; the engine uses one tariff, which approximates them.
+- **Subsidised classes on a monthly bill.** PLN charges postpaid subsidised homes (450 VA and 900 VA) three blocks plus a fixed charge; the engine uses one tariff and no fixed charge, which approximates them.
 - **The prepaid reading.** That a prepaid customer has no minimum charge before solar is read from the layout of a table in the regulation, not from a sentence. It affects only whether a prepaid home that spends below the minimum is shown a negative saving.
 - **Panel fading is applied to savings**, a slight simplification explained in 2.7.3, and there is no discounting.
 - **Yearly totals only.** The comparison with PVGIS is of yearly totals. No hour-by-hour comparison was made, and the engine applies the orientation factor as one multiplier to every hour, so the daily shape on a tilted roof, and so the share used on site, is not checked.
@@ -580,7 +587,7 @@ Then open `http://localhost:3000/id` (Bahasa Indonesia) or `http://localhost:300
 | Variable | Feature it enables | Without it |
 | --- | --- | --- |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (and `SUPABASE_ANON_KEY`, which stage 1 does not read) | Saving results in a Supabase Postgres database, so share links survive a restart | Results are kept in memory and lost when the server restarts (a production build logs a warning) |
-| `NEXT_PUBLIC_ESRI_API_KEY` | Satellite imagery under the roof-tracing map | The user types the roof area instead, which is the fully supported path |
+| `NEXT_PUBLIC_ESRI_API_KEY` | Esri satellite imagery under the roof-tracing map. Not live yet: no key exists | The map shows the street map instead; the user can trace on it or type the roof area |
 
 Two further services are used with no key but need internet: NASA POWER for live sunlight (without it the app uses the bundled series and labels the result "approximate") and the Photon geocoder for address search.
 
@@ -615,4 +622,4 @@ mock/                  the static design reference
 | `docs/VALIDATION.md` | The PVGIS comparison in full |
 | `docs/DESIGN.md` | Colour, type, spacing and copy voice |
 
-**What exists today.** Stage 1, the calculator, is the only stage being built. Accounts, PDF export and an installer marketplace exist as database tables and placeholder routes only. At the time of writing the engine, the sun-data service and the PVGIS validation are finished and tested; the screens are still being completed.
+**What exists today.** Stage 1, the calculator, is the only stage being built. Accounts, PDF export and an installer marketplace exist as database tables and placeholder routes only. At the time of writing the engine, the sun-data service and the PVGIS validation are finished and tested; the roof step is built (against the street map, since the Esri key does not exist yet) and in its last fixes; other screens are still being completed.
