@@ -6,6 +6,25 @@
     "heading": "How close is it?",
     "body": "We checked the sunlight side of the model against PVGIS, the European Commission's solar yield tool, at three Indonesian cities. On a flat roof our yearly electricity figure came out within about 11% of PVGIS. So read the result as a sound estimate for planning and comparing, not as a quote: what your own roof makes depends on its shade, its angle and the weather of the year."
   },
+  "rules": {
+    "heading": "Three rules behind every result",
+    "intro": "These are not numbers you can change. They are how the rules work, and every result is built on them.",
+    "sourceLabel": "Source",
+    "items": {
+      "exportsEarnNothing": {
+        "title": "Power you send to the grid earns nothing",
+        "body": "Whatever your panels make that you do not use at that moment goes to the grid, and PLN neither pays for it nor takes it off your bill. So we count only the power you use yourself, and that is why a system sized to cover the whole bill is usually too big."
+      },
+      "minimumCharge": {
+        "title": "The minimum charge applies to everyone who has one, prepaid included",
+        "body": "After solar, your bill cannot fall below PLN's minimum charge for your class. A prepaid home is moved to a monthly bill when its solar application is approved, so it gets the minimum too. If your home spends less than that today, solar can leave you paying more, and we show that as a loss."
+      },
+      "noSizeCap": {
+        "title": "There is no size cap",
+        "body": "The old limit of your connected power was removed, so we do not hold the size down to it. What limits you is your roof, and the quota PLN opens for your area, which we cannot see."
+      }
+    }
+  },
   "confidence": {
     "heading": "How far to trust a number",
     "intro": "Each entry carries one of four labels. They describe how well we know the number, not how much it matters.",

@@ -52,6 +52,15 @@ for (const c of LOCALES) {
       }
     });
 
+    test("states the three rules, each with a source link", async ({ page }) => {
+      await open(page, c.locale);
+      await expect(page.getByRole("heading", { name: c.m.rules.heading })).toBeVisible();
+      for (const rule of Object.values(c.m.rules.items)) {
+        await expect(page.getByRole("heading", { name: rule.title })).toBeVisible();
+      }
+      await expect(page.getByRole("link", { name: /Energy Ministry Regulation 2\/2024, Article 13/ })).toBeVisible();
+    });
+
     test("a change is marked, written to the draft and reset to the set's own value", async ({ page }) => {
       await open(page, c.locale);
       const field = costField(page, c);

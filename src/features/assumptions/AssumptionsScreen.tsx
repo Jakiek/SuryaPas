@@ -15,6 +15,7 @@ import { planStore } from "../plan/planStore";
 import { submitAssessment } from "../plan/submit";
 import { AdjustField } from "./AdjustField";
 import { ConfidenceGuide } from "./ConfidenceGuide";
+import { RulesGuide } from "./RulesGuide";
 import { EntryRow, SourceLine } from "./EntryRow";
 import { SECTION_ORDER, keysInSection, type SectionId } from "./sections";
 import { showValue } from "./showValue";
@@ -132,6 +133,7 @@ function AssumptionsContent({ resultId }: Props) {
         <p className="mt-3 text-sm text-soft">{t("version", { version: assumptions.version })}</p>
 
         <MarginSection />
+        <RulesGuide />
         <ConfidenceGuide />
 
         {SECTION_ORDER.map((section) => (

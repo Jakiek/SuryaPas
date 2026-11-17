@@ -6,6 +6,25 @@
     "heading": "Seberapa dekat dengan kenyataan?",
     "body": "Bagian sinar matahari dalam perhitungan kami sudah kami cocokkan dengan PVGIS, alat perkiraan hasil panel surya dari Komisi Eropa, di tiga kota Indonesia. Pada atap datar, angka listrik tahunan kami selisihnya sekitar 11% dari PVGIS. Jadi baca hasilnya sebagai perkiraan yang layak untuk merencanakan dan membandingkan, bukan penawaran harga: hasil atap Anda sendiri bergantung pada bayangan, kemiringan, dan cuaca tahun itu."
   },
+  "rules": {
+    "heading": "Tiga aturan di balik setiap hasil",
+    "intro": "Ini bukan angka yang bisa Anda ubah. Ini cara aturannya berlaku, dan setiap hasil dibangun di atasnya.",
+    "sourceLabel": "Sumber",
+    "items": {
+      "exportsEarnNothing": {
+        "title": "Listrik yang Anda kirim ke jaringan tidak dibayar",
+        "body": "Listrik panel yang tidak terpakai saat itu mengalir ke jaringan, dan PLN tidak membayarnya maupun memotongnya dari tagihan. Karena itu kami hanya menghitung listrik yang Anda pakai sendiri. Itulah sebabnya sistem yang dibuat untuk menutup seluruh tagihan biasanya terlalu besar."
+      },
+      "minimumCharge": {
+        "title": "Tagihan minimum berlaku bagi semua golongan yang punya, termasuk prabayar",
+        "body": "Setelah memasang panel, tagihan Anda tidak bisa turun di bawah tagihan minimum PLN untuk golongan Anda. Rumah prabayar dipindah ke tagihan bulanan begitu permohonan panel suryanya disetujui, jadi ikut kena minimum itu. Kalau pemakaian rumah Anda sekarang lebih kecil dari angka itu, panel surya justru bisa membuat Anda membayar lebih, dan kami tampilkan itu sebagai rugi."
+      },
+      "noSizeCap": {
+        "title": "Tidak ada batas ukuran sistem",
+        "body": "Batas lama sebesar daya terpasang sudah dihapus, jadi kami tidak menahan ukurannya di situ. Yang membatasi Anda adalah atap, dan kuota yang dibuka PLN untuk wilayah Anda, yang tidak bisa kami lihat."
+      }
+    }
+  },
   "confidence": {
     "heading": "Seberapa jauh angka bisa dipercaya",
     "intro": "Setiap angka diberi satu dari empat label. Label ini menunjukkan seberapa pasti kami tahu angkanya, bukan seberapa penting angka itu.",
