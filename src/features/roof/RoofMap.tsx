@@ -126,6 +126,7 @@ export default function RoofMap({
         locale: {
           "NavigationControl.ZoomIn": t("zoomIn"),
           "NavigationControl.ZoomOut": t("zoomOut"),
+          "Map.Title": t("canvasTitle"),
         },
         // Rotating or tilting the photo would only confuse the tracing.
         dragRotate: false,
@@ -236,7 +237,7 @@ export default function RoofMap({
   return (
     <div
       ref={container}
-      role="region"
+      role="group"
       aria-label={t("label")}
       className="roof-map h-[420px] w-full border-t-heavy border-b-heavy border-fg lg:border-heavy"
     />

@@ -59,7 +59,7 @@ export function RoofTracer(props: RoofTracerProps) {
         <div className="pointer-events-none absolute left-0 top-0 bg-night px-3.5 pb-2 pt-2 text-paper">
           <Label as="p" className="opacity-75">{t("tag.label")}</Label>
           <p className="type-figure text-figure-md leading-none">
-            {areaM2 === null ? t("tag.none") : number.format(areaM2)} <small className="text-[0.5em]">m²</small>
+            {areaM2 === null ? t("tag.none") : <>{number.format(areaM2)} <small className="text-[0.5em]">m²</small></>}
           </p>
         </div>
 

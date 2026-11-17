@@ -112,6 +112,25 @@ for (const c of LOCALES) {
       await expect(page.getByRole("button", { name: c.plan.steps.roof.next })).toBeEnabled();
     });
 
+    test("typing replaces the traced shape, so the map tag shows the typed area", async ({ page }) => {
+      await openRoofStep(page, c);
+      const map = page.locator(".roof-map");
+      await map.scrollIntoViewIfNeeded();
+      const box = (await map.boundingBox())!;
+      for (const [dx, dy] of [[60, 100], [260, 100], [260, 220]]) {
+        await page.touchscreen.tap(box.x + dx, box.y + dy);
+      }
+      await expect(page.locator(".roof-handle")).toHaveCount(3);
+
+      await page.getByRole("button", { name: c.r.area.switchToType }).click();
+      await page.getByLabel(c.r.area.label).fill("40");
+      await page.getByRole("button", { name: c.r.area.switchToTrace }).click();
+
+      // The traced corners are gone and the tag reads the typed 40, not the old shape.
+      await expect(page.locator(".roof-handle")).toHaveCount(0);
+      await expect(page.locator(".roof-map + div")).toContainText("40");
+    });
+
     test("warns, without blocking, below 5 m² and above 500 m²", async ({ page }) => {
       await openRoofStep(page, c);
       await page.getByRole("button", { name: c.r.area.switchToType }).click();

@@ -10,7 +10,7 @@ import type { RoofDraft } from "@/features/plan/draft";
 import { ChoiceQuestion } from "@/features/plan/FieldError";
 import { useStepValidity, useVisibleErrors, type StepProps } from "@/features/plan/step";
 import { planStore } from "@/features/plan/planStore";
-import { MAX_ROOF_AREA_M2, roofSchema } from "@/lib/schema";
+import { MAX_ROOF_AREA_M2, MAX_SANE_ROOF_AREA_M2, MIN_SANE_ROOF_AREA_M2, roofSchema } from "@/lib/schema";
 import { esriApiKey } from "./imageryStyle";
 import { facingPictures, shadePictures, slopePictures } from "./pictures";
 import {
@@ -23,17 +23,12 @@ import {
 } from "./roofGeometry";
 import { RoofTracer } from "./RoofTracer";
 
-// Bounds for the usable-fraction slider. SPEC 2.2 says only "adjustable";
-// the agreed range 0.60 to 0.70 is written in docs/ASSUMPTIONS.md and in the
-// note of `roof.usableFraction`, but the entry is a fixed one with no min
-// and max, so the range is repeated here until the set carries it. An
-// adjustable entry's own min and max win as soon as it does.
-const FALLBACK_USABLE_RANGE = { min: 0.6, max: 0.7 };
+// Bounds for the usable-fraction slider: the agreed range lives in the
+// assumption set (docs/ASSUMPTIONS.md), not in this file. The step size is
+// only how finely the slider moves.
 const USABLE_STEP = 0.01;
-
-const usableEntry = CURRENT_ASSUMPTIONS.entries["roof.usableFraction"];
-const USABLE_MIN = usableEntry.min ?? FALLBACK_USABLE_RANGE.min;
-const USABLE_MAX = usableEntry.max ?? FALLBACK_USABLE_RANGE.max;
+const USABLE_MIN = CURRENT_ASSUMPTIONS.entries["roof.usableFraction.min"].value;
+const USABLE_MAX = CURRENT_ASSUMPTIONS.entries["roof.usableFraction.max"].value;
 
 type AreaMode = "trace" | "type";
 
@@ -58,7 +53,10 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
   const [areaText, setAreaText] = useState(value.areaM2 === null ? "" : formatArea(value.areaM2, locale));
   const [mapUnsupported, setMapUnsupported] = useState(false);
 
+  // One area value: the traced shape while there are corners, otherwise
+  // the draft's own (typed, or saved by an earlier visit).
   const tracedArea = footprintAreaM2(corners);
+  const tagArea = tracedArea === null ? value.areaM2 : roundArea(tracedArea);
 
   // Switching to typing puts the cursor in the field, so a keyboard user
   // who pressed the switch link can type at once. (The field sits above the
@@ -82,7 +80,10 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
     onChange({ ...value, areaM2: rounded });
   }
 
+  /** Typing replaces any traced shape, so the map never shows a stale area. */
   function typeArea(text: string) {
+    setCorners([]);
+    setClosed(false);
     setAreaText(text);
     onChange({ ...value, areaM2: parseDecimal(text) });
   }
@@ -111,7 +112,7 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
             center={center}
             corners={corners}
             closed={closed}
-            areaM2={tracedArea === null ? null : roundArea(tracedArea)}
+            areaM2={tagArea}
             imageryKey={esriApiKey}
             onTap={(corner) => applyCorners([...corners, corner])}
             onCornersChange={applyCorners}
@@ -148,7 +149,9 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
         {warning && !refused && (
           <div role="alert" className="mt-4">
             <Caveat title={t(`warning.${warning}.title`)}>
-              <p>{t(`warning.${warning}.body`)}</p>
+              <p>
+                {t(`warning.${warning}.body`, { min: MIN_SANE_ROOF_AREA_M2, max: MAX_SANE_ROOF_AREA_M2 })}
+              </p>
             </Caveat>
           </div>
         )}
@@ -217,7 +220,7 @@ export function RoofStep({ value, onChange, onValidChange }: StepProps<RoofDraft
 
       <UsableFraction
         fraction={value.usableFraction}
-        areaM2={value.areaM2}
+        areaM2={refused ? null : value.areaM2}
         onChange={(usableFraction) => onChange({ ...value, usableFraction })}
       />
     </QuestionList>

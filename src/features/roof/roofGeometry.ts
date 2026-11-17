@@ -2,6 +2,7 @@
 // be tested with fixed coordinates.
 
 import area from "@turf/area";
+import { MAX_SANE_ROOF_AREA_M2, MIN_SANE_ROOF_AREA_M2 } from "@/lib/schema";
 
 /** A corner of the traced roof: [longitude, latitude], the order GeoJSON and MapLibre use. */
 export type Corner = [longitude: number, latitude: number];
@@ -9,10 +10,6 @@ export type Corner = [longitude: number, latitude: number];
 /** A roof needs three corners to enclose anything. */
 export const MIN_CORNERS = 3;
 
-// SPEC 2.2 step 2: below 5 m² or above 500 m² the step asks the user to check
-// the area. These warn; they never block.
-export const SMALL_ROOF_M2 = 5;
-export const LARGE_ROOF_M2 = 500;
 
 /**
  * Area in square metres of the shape the corners enclose, as seen from
@@ -39,8 +36,8 @@ export type AreaWarning = "tooSmall" | "tooLarge" | null;
 /** SPEC 2.2 step 2: the sanity limits on the area. */
 export function areaWarning(areaM2: number | null): AreaWarning {
   if (areaM2 === null || areaM2 <= 0) return null;
-  if (areaM2 < SMALL_ROOF_M2) return "tooSmall";
-  if (areaM2 > LARGE_ROOF_M2) return "tooLarge";
+  if (areaM2 < MIN_SANE_ROOF_AREA_M2) return "tooSmall";
+  if (areaM2 > MAX_SANE_ROOF_AREA_M2) return "tooLarge";
   return null;
 }
 

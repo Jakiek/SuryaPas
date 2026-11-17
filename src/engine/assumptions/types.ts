@@ -69,6 +69,8 @@ export type AssumptionKey =
   | "panel.areaM2"
   | "system.minKwp"
   | "roof.usableFraction"
+  | "roof.usableFraction.min"
+  | "roof.usableFraction.max"
   | "pv.performanceRatio"
   | "pv.degradationPerYear"
   | "shade.none"

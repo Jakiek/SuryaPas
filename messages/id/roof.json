@@ -3,7 +3,7 @@
     "label": "Luas atap",
     "help": "Luas sisi atap yang dipilih, dalam meter persegi, diukur seperti dilihat dari atas.",
     "traceLegend": "Tandai atap pada foto",
-    "traceHelp": "Ketuk tiap sudut atap, lalu tekan Tutup bentuk. Geser kotak kuning untuk memperbaiki sudut.",
+    "traceHelp": "Ketuk tiap sudut atap. Tiga sudut sudah cukup untuk menghitung luas; Tutup bentuk menyelesaikan garis tepinya. Geser kotak kuning untuk memperbaiki sudut.",
     "noImagery": "Foto satelit belum tersedia, jadi Anda menandai di atas peta jalan. Bila atap sulit dikenali, ketik luasnya saja.",
     "switchToType": "Tidak bisa menandai? Ketik luasnya saja",
     "switchToTrace": "Tandai atap di peta saja",
@@ -22,6 +22,7 @@
   },
   "map": {
     "label": "Peta atap rumah Anda. Pengguna keyboard dapat mengetik luas atap sebagai gantinya.",
+    "canvasTitle": "Peta untuk menandai atap",
     "zoomIn": "Perbesar",
     "zoomOut": "Perkecil",
     "corner": "Sudut {number}"
@@ -33,20 +34,20 @@
   "warning": {
     "tooSmall": {
       "title": "Atap ini sangat kecil",
-      "body": "Luasnya kurang dari 5 m². Periksa lagi tandanya atau angka yang Anda ketik, lalu lanjutkan bila sudah benar."
+      "body": "Luasnya kurang dari {min} m². Periksa lagi tandanya atau angka yang Anda ketik, lalu lanjutkan bila sudah benar."
     },
     "tooLarge": {
       "title": "Atap ini sangat luas",
-      "body": "Luasnya lebih dari 500 m². Pastikan Anda hanya menandai satu sisi atap, lalu lanjutkan bila sudah benar."
+      "body": "Luasnya lebih dari {max} m². Pastikan Anda hanya menandai satu sisi atap, lalu lanjutkan bila sudah benar."
     }
   },
   "refused": {
     "title": "Atap ini terlalu luas untuk dihitung",
-    "body": "Batasnya {max} m². Itu bukan luas atap rumah, jadi ketik luas satu sisi atap saja."
+    "body": "Batasnya {max} m². Itu lebih luas dari atap rumah, jadi periksa luas yang Anda tandai atau ketik, dan pakai satu sisi atap saja."
   },
   "slope": {
     "legend": "Kemiringan atap",
-    "help": "Datar: hampir tidak miring, seperti dak beton. Landai: kebanyakan atap genteng, naik sekitar 0,5 sampai 2 m tiap 3 m ke samping. Curam: naik lebih dari 2 m tiap 3 m.",
+    "help": "Datar: hampir tidak miring, seperti dak beton. Landai: kebanyakan atap genteng, naik sekitar 0,5 sampai 2,1 m tiap 3 m ke samping. Curam: naik lebih dari 2,1 m tiap 3 m.",
     "flat": "Datar",
     "flatNote": "di bawah 10°",
     "gentle": "Landai",

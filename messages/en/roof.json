@@ -3,7 +3,7 @@
     "label": "Roof area",
     "help": "The area of the roof face you picked, in square metres, measured as seen from above.",
     "traceLegend": "Mark your roof on the photo",
-    "traceHelp": "Tap each corner of the roof, then press Close shape. Drag a yellow square to fix a corner.",
+    "traceHelp": "Tap each corner of the roof. Three corners are enough to give an area; Close shape finishes the outline. Drag a yellow square to fix a corner.",
     "noImagery": "The satellite photo is not available yet, so you are marking on the street map. If the roof is hard to make out, type its area instead.",
     "switchToType": "Can't mark it? Type the area instead",
     "switchToTrace": "Mark the roof on the map instead",
@@ -22,6 +22,7 @@
   },
   "map": {
     "label": "Map of your roof. Keyboard users can type the roof's area instead.",
+    "canvasTitle": "Map for marking your roof",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "corner": "Corner {number}"
@@ -33,20 +34,20 @@
   "warning": {
     "tooSmall": {
       "title": "This roof is very small",
-      "body": "It measures under 5 m². Check the corners you marked or the number you typed, and carry on if it is right."
+      "body": "It measures under {min} m². Check the corners you marked or the number you typed, and carry on if it is right."
     },
     "tooLarge": {
       "title": "This roof is very large",
-      "body": "It measures over 500 m². Make sure you marked one roof face only, and carry on if it is right."
+      "body": "It measures over {max} m². Make sure you marked one roof face only, and carry on if it is right."
     }
   },
   "refused": {
     "title": "This roof is too large to calculate",
-    "body": "The limit is {max} m². That is not the size of a house roof, so enter one roof face only."
+    "body": "The limit is {max} m². That is more than a house roof, so check the area you marked or typed and use one roof face only."
   },
   "slope": {
     "legend": "How steep is the roof?",
-    "help": "Flat: barely tilted, like a concrete slab. Gentle: most tiled roofs, rising about 0.5 to 2 m for every 3 m across. Steep: rising more than 2 m for every 3 m.",
+    "help": "Flat: barely tilted, like a concrete slab. Gentle: most tiled roofs, rising about 0.5 to 2.1 m for every 3 m across. Steep: rising more than 2.1 m for every 3 m.",
     "flat": "Flat",
     "flatNote": "under 10°",
     "gentle": "Gentle",

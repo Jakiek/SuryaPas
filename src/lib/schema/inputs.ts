@@ -79,6 +79,14 @@ export const locationSchema = z.object({
  */
 export const MAX_ROOF_AREA_M2 = 2000;
 
+/**
+ * Sanity limits on a roof's area (SPEC 2.2 step 2): below the first or above
+ * the second the step asks the user to check the number. They warn; they
+ * never block. The copy shows them, so the words and the rule cannot drift.
+ */
+export const MIN_SANE_ROOF_AREA_M2 = 5;
+export const MAX_SANE_ROOF_AREA_M2 = 500;
+
 export const roofSchema = z.object({
   areaM2: requiredNumber("errors.areaInvalid")
     .positive("errors.areaInvalid")

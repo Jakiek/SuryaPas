@@ -59,6 +59,9 @@ export const ASSUMPTIONS_V1: AssumptionSet = {
     "system.minKwp": fixed(1.0, "kWp", "thin", "Smallest on-grid package most installers list"),
     // Default only: the roof step lets the user change it, and the engine reads the roof input.
     "roof.usableFraction": fixed(0.65, "share", "decision", "Agreed default, range 0.60 to 0.70"),
+    // The slider's bounds in the roof step, read from here so no number sits in the screen.
+    "roof.usableFraction.min": fixed(0.6, "share", "decision", "Agreed range for the user's adjustment"),
+    "roof.usableFraction.max": fixed(0.7, "share", "decision", "Agreed range for the user's adjustment"),
 
     // From sunlight to electricity.
     "pv.performanceRatio": fixed(0.78, "share", "judgment", "To be calibrated against PVGIS (T07)"),

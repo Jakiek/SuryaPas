@@ -103,6 +103,8 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 �
 | `panel.areaM2` | 2.6 | sourced | Module 2,279 × 1,134 mm = 2.584 m², same datasheet; 2.6 is that rounded up. Density 213 W/m² |
 | `system.minKwp` | 1.0 | thin | 1 kWp is the smallest on-grid package listed by Zonit Solar, Powersurya, Sobatbangun, Lensolar and Suryaqua's 1.0 kW package (price table above). One outlier: Suryaqua also lists a 0.5 kWp starter at Rp9.8 million. No installer statement of a minimum was found. Unchanged |
 | `roof.usableFraction` | 0.65 | decision | Adjustable by the user; agreed range 0.60–0.70 |
+| `roof.usableFraction.min` | 0.60 | decision | Lower end of the user's adjustment, the agreed range |
+| `roof.usableFraction.max` | 0.70 | decision | Upper end of the user's adjustment, the agreed range |
 | `pv.performanceRatio` | 0.75 | thin | Version 2. PVGIS 5.3's yield ÷ irradiation on a flat roof (PVGIS-ERA5, crystalline silicon, free-standing, its default 14% system loss) at Medan, Yogyakarta and Makassar: 0.747, 0.754, 0.743; mean 0.748, rounded. Within PVGIS's loss, heat costs about 11% in this climate, which version 1's 0.78 (a judgment) did not allow for. One model with a default system loss, so `thin`. Read 2026-11-15: [PVGIS API](https://re.jrc.ec.europa.eu/api/v5_3/PVcalc); method and numbers in `docs/VALIDATION.md` |
 | `pv.degradationPerYear` | 0.005 | decision | |
 | `shade.none` | 1.00 | judgment | |
