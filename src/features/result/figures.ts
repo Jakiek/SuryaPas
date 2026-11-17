@@ -81,9 +81,35 @@ export function co2TonnesText(kgPerYear: number, locale: string): string {
   return formatDecimal(kgPerYear / KG_PER_TONNE, locale, 1, 1);
 }
 
-/** A yearly energy figure as an average day, one decimal: 1 460 kWh a year → "4" (id "4", en "4"). */
+/** A yearly energy figure as an average day, one decimal: 1 497 kWh a year → "4,1" (id) / "4.1" (en). */
 export function kwhPerDayText(kwhPerYear: number, locale: string): string {
   return formatDecimal(kwhPerYear / DAYS_PER_YEAR, locale, 1);
+}
+
+/** An average day's kWh rounded to one decimal, as a number (not text). */
+function kwhPerDayRounded(kwhPerYear: number): number {
+  return Math.round((kwhPerYear / DAYS_PER_YEAR) * 10) / 10;
+}
+
+/**
+ * The three figures of the day chart's caption. "Made" and "used" are each
+ * rounded to one decimal; "to the grid" is the rest, the difference of those
+ * two rounded figures, so the sentence always adds up on screen.
+ */
+export function dayCaptionFigures(
+  generatedKwhPerYear: number,
+  usedKwhPerYear: number,
+  locale: string,
+): { generated: string; used: string; exported: string } {
+  const generated = kwhPerDayRounded(generatedKwhPerYear);
+  const used = kwhPerDayRounded(usedKwhPerYear);
+  // Rounded again to strip floating-point noise such as 0.30000000000000004.
+  const exported = Math.max(0, Math.round((generated - used) * 10) / 10);
+  return {
+    generated: formatDecimal(generated, locale, 1),
+    used: formatDecimal(used, locale, 1),
+    exported: formatDecimal(exported, locale, 1),
+  };
 }
 
 /** System size: "1,65" kWp. */

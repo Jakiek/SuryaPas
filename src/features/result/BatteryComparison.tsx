@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { ComparisonLedger, Section } from "@/components";
+import { ComparisonLedger, Section, type ComparisonColumn } from "@/components";
+import { formatDecimal } from "@/lib/format";
 import { costRangeFigure, paybackFigure, roundedMoneyFigure, type PaybackFigure } from "./figures";
 import type { CandidateView, OptionView } from "./view";
 
@@ -59,7 +60,7 @@ export function BatteryComparison({ shown, horizon }: { shown: CandidateView; ho
       ) : (
         <ComparisonTable
           caption={t("caption")}
-          columns={[t("without"), t("with", { size: withBattery.batteryKwh })]}
+          columns={[t("without"), { heading: t("with"), detail: t("withSize", { size: formatDecimal(withBattery.batteryKwh, locale) }) }]}
           labels={[
             t("cost"),
             t(anyBillGoesUp ? "monthlyBill" : "monthly"),
@@ -75,7 +76,7 @@ export function BatteryComparison({ shown, horizon }: { shown: CandidateView; ho
 
 type ComparisonTableProps = {
   caption: string;
-  columns: string[];
+  columns: ComparisonColumn[];
   labels: string[];
   /** One list per column, one entry per label. */
   values: string[][];

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   co2TonnesText,
+  dayCaptionFigures,
   costRangeFigure,
   kwhPerDayText,
   kwpText,
@@ -53,5 +54,14 @@ describe("result figures", () => {
     expect(kwpText(1.1, "en")).toBe("1.1");
     expect(kwhPerDayText(1_460, "id")).toBe("4");
     expect(kwhPerDayText(1_533, "id")).toBe("4,2");
+  });
+
+  it("makes the day caption add up: the grid figure is the difference of the two shown", () => {
+    // 4.04 and 1.74 kWh a day round to 4.0 and 1.7; on their own the rest, 2.30, would show 2.3
+    // but 4.06 - 1.74 = 2.32 shows 2.3 while 4.1 - 1.7 = 2.4. The shown figures must agree.
+    const perYear = (kwhPerDay: number) => kwhPerDay * 365;
+    const figures = dayCaptionFigures(perYear(4.06), perYear(1.74), "en");
+    expect(figures).toEqual({ generated: "4.1", used: "1.7", exported: "2.4" });
+    expect(dayCaptionFigures(perYear(4.06), perYear(1.74), "id").exported).toBe("2,4");
   });
 });

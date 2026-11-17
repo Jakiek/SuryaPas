@@ -10,7 +10,7 @@ import { DayChart } from "./DayChart";
 import { useEased } from "./ease";
 import {
   co2TonnesText,
-  kwhPerDayText,
+  dayCaptionFigures,
   percentFigure,
   roundedMoneyFigure,
   wastedPercentText,
@@ -45,9 +45,11 @@ const CONTENT_ID = "result";
 // Exploration is local: the picker changes what is shown, never what is saved.
 export function ResultScreen(result: LoadedResult) {
   const tCommon = useTranslations("common");
-  const isOwner = useIsOwner(result.inputsFingerprint, result.isExample);
+  const savedOwner = useIsOwner(result.inputsFingerprint, result.isExample);
   // Null for every saved result; the "not saved" note for one that was not.
   const unsavedNotice = useUnsavedNotice();
+  // A result that was not saved was computed in this tab, so the viewer is its owner.
+  const isOwner = unsavedNotice !== null || savedOwner;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -101,8 +103,10 @@ function Report({ result, recommended, isOwner }: ReportProps) {
         : t("picker.sayMore", { wasted: wastedPercentText(selected.withoutBattery, locale) });
 
   return (
+    // The left column is about 900 px tall, so it is pinned only in a window at least 960 px
+    // high; in a shorter one it scrolls with the page rather than hiding its lower half.
     <main className="flex-1 lg:grid lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
-      <div className="lg:sticky lg:top-0 lg:min-h-dvh lg:bg-sun">
+      <div className="lg:bg-sun lg:[@media(min-height:960px)]:sticky lg:[@media(min-height:960px)]:top-0 lg:min-h-dvh">
         <Band tone="night" className="pb-[26px]">
           <Inner className="lg:max-w-none">
             <SiteHeader />
@@ -135,11 +139,7 @@ function Report({ result, recommended, isOwner }: ReportProps) {
               loadKwh={view.averageLoadByHourKwh}
               solarKwh={solarKwh}
               maxKw={maxKw}
-              caption={t("day.caption", {
-                generated: kwhPerDayText(option.generationKwh, locale),
-                used: kwhPerDayText(option.selfConsumedKwh, locale),
-                exported: kwhPerDayText(option.exportedKwh, locale),
-              })}
+              caption={t("day.caption", dayCaptionFigures(option.generationKwh, option.selfConsumedKwh, locale))}
             />
             <SupportingNumbers option={option} horizon={horizon} />
           </Section>

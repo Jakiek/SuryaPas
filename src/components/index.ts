@@ -14,6 +14,7 @@ export { LanguageToggle } from "./LanguageToggle";
 export {
   ComparisonLedger,
   Ledger,
+  type ComparisonColumn,
   type ComparisonRow,
   type LedgerRow,
 } from "./Ledger";

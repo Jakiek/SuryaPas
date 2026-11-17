@@ -44,6 +44,10 @@ export function Ledger({ rows, dense = false, className }: LedgerProps) {
   );
 }
 
+// A column heading is its words, or its words with a plain-case line under
+// them (the battery size), which the capitals of the heading would spoil.
+export type ComparisonColumn = string | { heading: string; detail: string };
+
 export type ComparisonRow = {
   label: string;
   // One value per column, in the order of `columns`.
@@ -54,7 +58,7 @@ type ComparisonLedgerProps = {
   // What the table compares; read by screen readers, not shown.
   caption: string;
   // The headings of the value columns, such as "Tanpa baterai".
-  columns: string[];
+  columns: ComparisonColumn[];
   rows: ComparisonRow[];
   className?: string;
 };
@@ -80,15 +84,21 @@ export function ComparisonLedger({
         <tr>
           {/* The corner above the row labels is empty. */}
           <td />
-          {columns.map((column) => (
+          {columns.map((column) => {
+            const { heading, detail } = typeof column === "string" ? { heading: column, detail: null } : column;
+            return (
             <th
-              key={column}
+              key={heading}
               scope="col"
               className="type-label py-3 pl-2 text-right align-bottom tracking-[0.1em] sm:pl-3"
             >
-              {column}
+              {heading}
+              {detail !== null && (
+                <span className="mt-0.5 block text-[14px] font-medium normal-case tracking-normal">{detail}</span>
+              )}
             </th>
-          ))}
+            );
+          })}
         </tr>
       </thead>
       <tbody>
@@ -99,7 +109,7 @@ export function ComparisonLedger({
             </th>
             {row.values.map((value, index) => (
               <td
-                key={columns[index]}
+                key={index}
                 className="whitespace-nowrap py-3 pl-2 text-right font-extrabold sm:pl-3"
               >
                 {value}
