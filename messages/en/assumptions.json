@@ -16,7 +16,7 @@
         "body": "Whatever your panels make that you do not use at that moment goes to the grid, and PLN neither pays for it nor takes it off your bill. So we count only the power you use yourself, and that is why a system sized to cover the whole bill is usually too big."
       },
       "minimumCharge": {
-        "title": "The minimum charge applies to everyone who has one, prepaid included",
+        "title": "The minimum charge applies in every class that has one, prepaid included",
         "body": "After solar, your bill cannot fall below PLN's minimum charge for your class. A prepaid home is moved to a monthly bill when its solar application is approved, so it gets the minimum too. If your home spends less than that today, solar can leave you paying more, and we show that as a loss."
       },
       "noSizeCap": {

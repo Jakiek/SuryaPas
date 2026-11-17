@@ -42,7 +42,7 @@ The R-1 450 VA and 900 VA tariffs above (415 and 605) are the prepaid column of 
 
 ## Rules built into the engine
 
-These are not entries of the assumption set. They are rules the engine code applies, so they have no key in `CURRENT_ASSUMPTIONS` and no editable value; the names below are this document's own. Each stays here with its source. The assumptions screen shows the first three (exports earn nothing, the minimum charge after solar, no size cap).
+These are not entries of the assumption set. They are rules the engine code applies, so they have no key in `CURRENT_ASSUMPTIONS` and no editable value; the names below are this document's own. Each stays here with its source. The assumptions screen shows three of them: exports earn nothing, the minimum charge after solar, and no size cap.
 
 | Rule | Value | Label | Source |
 | --- | --- | --- | --- |

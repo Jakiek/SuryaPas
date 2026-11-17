@@ -57,6 +57,9 @@ for (const c of LOCALES) {
       await expect(page.getByRole("heading", { name: c.m.rules.heading })).toBeVisible();
       for (const rule of Object.values(c.m.rules.items)) {
         await expect(page.getByRole("heading", { name: rule.title })).toBeVisible();
+        // The rule's own list item holds its source links.
+        const item = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: rule.title }) });
+        await expect(item.getByRole("link"), rule.title).not.toHaveCount(0);
       }
       await expect(page.getByRole("link", { name: /Energy Ministry Regulation 2\/2024, Article 13/ })).toBeVisible();
     });
