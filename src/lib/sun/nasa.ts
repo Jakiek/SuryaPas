@@ -6,9 +6,12 @@
 //     Irradiance", which is global horizontal irradiance.
 //   - Hourly unit is Wh/m² (energy over one hour); see whPerM2ToWattsPerM2.
 //   - A missing value is -999 (header.fill_value).
-//   - `time-standard=LST` returns NASA's "local solar time", which is in fact
-//     the time zone of the nearest 15° of longitude (SPEC 3.4); the response header
-//     repeats it as time_standard: "LST".
+//   - `time-standard=UTC` returns the hours in UTC; the response header repeats
+//     it as time_standard: "UTC" (checked against the live API on 2026-11-17).
+//     We ask in UTC and move the series to the home's legal time zone only as
+//     the last step before it leaves the sun service (SPEC 3.4, legalTime.ts).
+//     NASA's other choice, "LST", is the zone of the nearest 15° of longitude,
+//     which is an hour off the legal zone in places such as Surabaya.
 //   - Values are keyed "YYYYMMDDHH", hours 00 to 23, one key per hour.
 //
 // This file imports nothing, because scripts/build-sun-fallback.mjs loads it
@@ -18,7 +21,8 @@ export const HOURS_PER_YEAR = 8760;
 
 const NASA_HOURLY_URL = "https://power.larc.nasa.gov/api/temporal/hourly/point";
 const PARAMETER = "ALLSKY_SFC_SW_DWN";
-const LOCAL_SOLAR_TIME = "LST";
+/** SPEC 3.4: the hourly series is requested, cached and bundled in UTC. */
+export const TIME_STANDARD = "UTC";
 
 /** Anything wrong with the sun data. The service answers it with the fallback. */
 export class SunDataError extends Error {}
@@ -34,7 +38,7 @@ export function buildNasaUrl(lat: number, lon: number, year: number): string {
     start: `${year}0101`,
     end: `${year}1231`,
     format: "JSON",
-    "time-standard": LOCAL_SOLAR_TIME,
+    "time-standard": TIME_STANDARD,
   });
   return `${NASA_HOURLY_URL}?${query.toString()}`;
 }
@@ -162,10 +166,11 @@ export function parseNasaHourly(
   if (!hourly || typeof hourly !== "object") {
     throw new SunDataError(`response has no ${PARAMETER} values`);
   }
-  // The engine assumes NASA's "LST" zone time; refuse anything else.
+  // Every stored series is UTC (SPEC 3.4), and the rotation to the home's
+  // clock assumes it; refuse anything else.
   const timeStandard = body.header?.time_standard;
-  if (timeStandard !== undefined && timeStandard !== LOCAL_SOLAR_TIME) {
-    throw new SunDataError(`time standard is ${timeStandard}, expected LST`);
+  if (timeStandard !== undefined && timeStandard !== TIME_STANDARD) {
+    throw new SunDataError(`time standard is ${timeStandard}, expected ${TIME_STANDARD}`);
   }
   // Walk our own list of keys rather than trusting the response's order. A key
   // the response lacks (or marks -999) becomes a missing hour. The response's

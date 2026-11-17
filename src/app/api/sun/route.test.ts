@@ -3,6 +3,10 @@ import { loadFallbackFile } from "../../../lib/sun/fallback";
 import { getStore } from "../../../lib/store/server";
 import { GET } from "./route";
 
+// The sun service looks up the pin's legal time zone, which is "server-only";
+// that package throws outside the Next.js server build, and tests are plain Node.
+vi.mock("server-only", () => ({}));
+
 // store/server.ts is "server-only" and would build a Supabase client; the
 // route is tested with one in-memory store that the test can break.
 vi.mock("../../../lib/store/server", async () => {

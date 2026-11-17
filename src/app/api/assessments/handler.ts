@@ -15,6 +15,7 @@ import { isInsideIndonesia } from "../../../features/location/indonesia";
 import { assessmentRequestSchema } from "../../../lib/schema";
 import { jsonCopy } from "../../../lib/store/json";
 import type { JsonObject, Store } from "../../../lib/store/types";
+import { PinOutsideIndonesiaError } from "../../../lib/timezone/legalTimeZone";
 
 /**
  * The installed cost per kWp must be ordered low ≤ typical ≤ high (decided
@@ -32,7 +33,9 @@ export function costsAreOrdered(assumptions: AssumptionSet): boolean {
 
 export interface CreateAssessmentDeps {
   store: Pick<Store, "createAssessment" | "upsertAssumptionSet">;
-  /** A year of sun for the point: the sun service in the app, a fixed series in tests. */
+  /** A year of sun for the pin, in the pin's legal time (SPEC 3.4): the sun
+   *  service in the app, a fixed series in tests. Throws
+   *  PinOutsideIndonesiaError for a pin with no legal time zone. */
   sunFor: (latitude: number, longitude: number) => Promise<SunSeries>;
   /** The assumption set new results use: CURRENT_ASSUMPTIONS in the app. */
   assumptions: AssumptionSet;
@@ -139,8 +142,18 @@ export async function handleCreateAssessment(
   // Each override is within its own range, but together they may break the order of the three costs.
   if (!costsAreOrdered(assumptionsInUse)) return errorResponse("invalid_overrides", 400);
 
-  // 3. A year of sun. The service never fails: it falls back to bundled data.
-  const sun = await deps.sunFor(inputs.location.latitude, inputs.location.longitude);
+  // 3. A year of sun for the pin itself, so its hours are on the pin's own
+  //    clock (SPEC 3.4). The service does not fail for want of data: it falls
+  //    back to bundled data. It refuses only a pin with no legal time zone,
+  //    which the province outline behind the zone can find at a coast that
+  //    the check above let through.
+  let sun: SunSeries;
+  try {
+    sun = await deps.sunFor(inputs.location.latitude, inputs.location.longitude);
+  } catch (error) {
+    if (error instanceof PinOutsideIndonesiaError) return errorResponse("outside_indonesia", 400);
+    throw error;
+  }
 
   // 4. The engine.
   const result = assess(inputs, sun, assumptionsInUse);

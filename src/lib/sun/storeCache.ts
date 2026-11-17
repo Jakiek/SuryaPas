@@ -20,8 +20,8 @@ export class StoreSunCache implements SunCache {
   // reason sun data cannot be returned.
   async get(key: string): Promise<CachedSun | undefined> {
     try {
-      const { cellId, year } = parseCacheKey(key);
-      const entry = await this.store.getSunCache(cellId, year);
+      const { storeCellId, year } = parseCacheKey(key);
+      const entry = await this.store.getSunCache(storeCellId, year);
       return entry ? { series: entry.series, year: entry.year } : undefined;
     } catch {
       return undefined;
@@ -31,9 +31,9 @@ export class StoreSunCache implements SunCache {
   // A failed write only means the next request asks NASA POWER again.
   async set(key: string, value: CachedSun): Promise<void> {
     try {
-      const { cellId } = parseCacheKey(key);
+      const { storeCellId } = parseCacheKey(key);
       await this.store.putSunCache({
-        cellId,
+        cellId: storeCellId,
         year: value.year,
         fetchedAt: this.now().toISOString(),
         series: value.series,

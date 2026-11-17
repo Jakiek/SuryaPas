@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import yogyakartaResponse from "./fixtures/nasa-hourly-yogyakarta-2025.json";
+import yogyakartaResponse from "./fixtures/nasa-hourly-yogyakarta-2025-utc.json";
 import {
   buildNasaUrl,
   fetchNasaYear,
@@ -13,8 +13,11 @@ import {
   withTimeLimit,
 } from "./nasa";
 
-// The fixture is a real NASA POWER response, recorded 2026-11-14, for the 0.5°
-// cell centred on -7.75, 110.25 (Yogyakarta), 2025, local solar time.
+// The fixture is a real NASA POWER response for the 0.5° cell centred on
+// -7.75, 110.25 (Yogyakarta), 2025, in UTC, recorded 2026-11-17. It holds the
+// same values as the "LST" response recorded on 2026-11-14, seven hours
+// earlier (NASA's LST there is UTC+7), apart from the seven hours that cross
+// the year's ends.
 //
 // NASA POWER's daily endpoint, asked the same day for the same point and year,
 // gave 365 values in kWh/m²/day that add up to 1738.4702 kWh/m². That is our
@@ -25,7 +28,7 @@ const DAILY_TOTAL_KWH_PER_M2 = 1738.4702;
 const flatYear = (value: number): Record<string, number> =>
   Object.fromEntries(hourKeysOfYear(2025).map((key) => [key, value]));
 
-const responseWith = (hourly: Record<string, number>, timeStandard = "LST") => ({
+const responseWith = (hourly: Record<string, number>, timeStandard = "UTC") => ({
   header: { time_standard: timeStandard, fill_value: -999 },
   properties: { parameter: { ALLSKY_SFC_SW_DWN: hourly } },
 });
@@ -116,11 +119,10 @@ describe("parsing a recorded NASA response (Yogyakarta, 2025)", () => {
     expect(series.every((value) => value >= 0)).toBe(true);
   });
 
-  it("is dark at night and bright at midday", () => {
-    // Local solar time: hour 0 of 1 January is midnight, hour 11 is just before noon.
-    expect(series[0]).toBe(0);
-    expect(series[1]).toBe(0);
-    expect(series[11]).toBeGreaterThan(300);
+  it("is in UTC: bright at 00:00 UTC, which is 07:00 in Yogyakarta, and dark at 17:00 UTC, midnight there", () => {
+    expect(series[0]).toBeGreaterThan(200); // 07:00 WIB, 1 January
+    expect(series[4]).toBeGreaterThan(300); // 11:00 WIB, just before noon
+    expect(series[17]).toBe(0); // 00:00 WIB, 2 January
   });
 
   it("sums to the independently recorded daily total within 2%", () => {
@@ -146,8 +148,8 @@ describe("parsing problems", () => {
     expect(series[hourKeysOfYear(2025).indexOf("2025030112")]).toBe(200);
   });
 
-  it("refuses a response that is not in local solar time", () => {
-    expect(() => parseNasaHourly(responseWith(flatYear(1), "UTC"), 2025, 3)).toThrow(SunDataError);
+  it("refuses a response that is not in UTC, such as NASA's local solar time", () => {
+    expect(() => parseNasaHourly(responseWith(flatYear(1), "LST"), 2025, 3)).toThrow(SunDataError);
   });
 
   it("refuses a response without the irradiance parameter", () => {
@@ -171,7 +173,7 @@ describe("the request", () => {
     expect(url.searchParams.get("longitude")).toBe("110.25");
     expect(url.searchParams.get("start")).toBe("20250101");
     expect(url.searchParams.get("end")).toBe("20251231");
-    expect(url.searchParams.get("time-standard")).toBe("LST");
+    expect(url.searchParams.get("time-standard")).toBe("UTC");
   });
 
   describe("the year used: the latest that ended at least six months ago (SPEC 3.4)", () => {

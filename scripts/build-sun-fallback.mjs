@@ -11,11 +11,15 @@
 //      the latest that ended at least six months ago, as the service uses), and NASA POWER's monthly record for the
 //      twenty years ending with it. Only the cell's coordinates are sent. What
 //      came back is saved in data/sun-fallback/source/<id>.json with the date:
-//      the hourly series as the service parses it (unscaled, W/m²) and the
-//      monthly response as NASA sent it.
+//      the hourly series as the service parses it (unscaled, W/m², in UTC) and
+//      the monthly response as NASA sent it.
 //   2. Build (always). Scale each saved hourly series to the long-term mean
 //      with the service's own code (SPEC 3.4), and write
 //      data/sun-fallback/<id>.json with the factor and the years used.
+//
+// Every file is in UTC, like every stored series (SPEC 3.4), and says so in
+// its "timeStandard" field. The sun service moves a series to the home's
+// clock when it is used.
 //
 // Run --fetch once a year, or when the city list changes.
 
@@ -38,7 +42,7 @@ registerHooks({
 
 const { FALLBACK_CITIES } = await import("../src/lib/sun/cities.ts");
 const { gridCellFor } = await import("../src/lib/sun/grid.ts");
-const { buildNasaUrl, fetchNasaYear, latestAvailableYear, withTimeLimit, SunDataError } = await import(
+const { buildNasaUrl, fetchNasaYear, latestAvailableYear, withTimeLimit, SunDataError, TIME_STANDARD } = await import(
   "../src/lib/sun/nasa.ts"
 );
 const { buildNasaMonthlyUrl, parseNasaMonthly } = await import("../src/lib/sun/nasaMonthly.ts");
@@ -102,6 +106,7 @@ async function fetchAndSaveSources(year) {
       `  "cellCentreLat": ${cell.centreLat},`,
       `  "cellCentreLon": ${cell.centreLon},`,
       `  "year": ${year},`,
+      `  "timeStandard": ${JSON.stringify(TIME_STANDARD)},`,
       `  "hourlyUrl": ${JSON.stringify(fetched.hourlyUrl)},`,
       `  "monthlyUrl": ${JSON.stringify(fetched.monthlyUrl)},`,
       `  "monthlyResponse": ${JSON.stringify(fetched.monthly)},`,
@@ -118,6 +123,11 @@ async function fetchAndSaveSources(year) {
 
 async function buildCity(city) {
   const source = JSON.parse(await readFile(new URL(`${city.id}.json`, SOURCE_DIR), "utf8"));
+  // A source saved before T20 holds NASA's "LST" hours; building from it would
+  // label them UTC. Fetch again instead.
+  if (source.timeStandard !== TIME_STANDARD) {
+    throw new Error(`${city.id}: source is not in ${TIME_STANDARD}; run with --fetch`);
+  }
   const { firstYear, lastYear } = longTermYears(source.year);
   const record = parseNasaMonthly(source.monthlyResponse, firstYear, lastYear);
   const { series, scaling } = scaleToLongTerm(source.hourlySeries, record, source.year);
@@ -147,6 +157,7 @@ async function buildCity(city) {
     `  "cellCentreLon": ${source.cellCentreLon},`,
     `  "year": ${source.year},`,
     `  "fetchedAt": ${JSON.stringify(source.fetchedAt)},`,
+    `  "timeStandard": ${JSON.stringify(source.timeStandard)},`,
     `  "longTerm": ${JSON.stringify(longTerm)},`,
     `  "series": ${JSON.stringify(rounded)}`,
     "}",

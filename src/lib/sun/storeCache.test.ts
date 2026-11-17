@@ -1,15 +1,20 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { MemoryStore } from "../store/memory";
 import { cacheKey, parseCacheKey } from "./cache";
+import { rotateUtcToLegalTime } from "./legalTime";
 import { getSun, type SunDeps } from "./service";
 import { StoreSunCache } from "./storeCache";
+
+// The sun service looks up the pin's legal time zone, which is "server-only";
+// that package throws outside the Next.js server build, and tests are plain Node.
+vi.mock("server-only", () => ({}));
 
 const FIXED_NOW = new Date("2026-11-15T08:00:00Z");
 const SERIES = Array.from({ length: 8760 }, (_, hour) => hour % 24);
 
 describe("parseCacheKey", () => {
-  it("reverses cacheKey", () => {
-    expect(parseCacheKey(cacheKey("-7.75,110.25", 2025))).toEqual({ cellId: "-7.75,110.25", year: 2025 });
+  it("reverses cacheKey, keeping the UTC tag in the store's cell id", () => {
+    expect(parseCacheKey(cacheKey("-7.75,110.25", 2025))).toEqual({ storeCellId: "-7.75,110.25@utc", year: 2025 });
   });
 
   it("rejects text that is not a key", () => {
@@ -25,8 +30,8 @@ describe("StoreSunCache", () => {
     await cache.set(cacheKey("-7.75,110.25", 2025), { series: SERIES, year: 2025 });
 
     expect(await cache.get(cacheKey("-7.75,110.25", 2025))).toEqual({ series: SERIES, year: 2025 });
-    expect(await store.getSunCache("-7.75,110.25", 2025)).toEqual({
-      cellId: "-7.75,110.25",
+    expect(await store.getSunCache("-7.75,110.25@utc", 2025)).toEqual({
+      cellId: "-7.75,110.25@utc",
       year: 2025,
       fetchedAt: FIXED_NOW.toISOString(),
       series: SERIES,
@@ -38,6 +43,14 @@ describe("StoreSunCache", () => {
     await cache.set(cacheKey("-7.75,110.25", 2025), { series: SERIES, year: 2025 });
     expect(await cache.get(cacheKey("-7.75,110.25", 2024))).toBeUndefined();
     expect(await cache.get(cacheKey("-6.25,106.75", 2025))).toBeUndefined();
+  });
+
+  it("never reads a row written before T20, when the cache held NASA's LST hours", async () => {
+    const store = new MemoryStore();
+    // Before T20 the store's cell id was the bare cell id.
+    await store.putSunCache({ cellId: "-7.75,110.25", year: 2025, fetchedAt: FIXED_NOW.toISOString(), series: SERIES });
+    const cache = new StoreSunCache(store);
+    expect(await cache.get(cacheKey("-7.75,110.25", 2025))).toBeUndefined();
   });
 
   it("lets a second service (a restarted server) reuse the first one's fetch", async () => {
@@ -55,13 +68,20 @@ describe("StoreSunCache", () => {
       loadFallback: async () => {
         throw new Error("not expected in this test");
       },
+      legalUtcOffsetHours: () => 7, // Yogyakarta is on WIB
     });
-    // The first server fetched and stored the cell.
-    await store.putSunCache({ cellId: "-7.75,110.25", year: 2025, fetchedAt: FIXED_NOW.toISOString(), series: SERIES });
+    // The first server fetched and stored the cell, in UTC.
+    await new StoreSunCache(store).set(cacheKey("-7.75,110.25", 2025), { series: SERIES, year: 2025 });
 
     const result = await getSun(-7.7956, 110.3695, deps());
 
-    expect(result).toEqual({ series: SERIES, source: "live", cellId: "-7.75,110.25", year: 2025 });
+    expect(result).toEqual({
+      series: rotateUtcToLegalTime(SERIES, 7),
+      utcOffsetHours: 7,
+      source: "live",
+      cellId: "-7.75,110.25",
+      year: 2025,
+    });
     expect(nasaCalls).toBe(0);
   });
 });

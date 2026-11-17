@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import hourlyResponse from "./fixtures/nasa-hourly-yogyakarta-2025.json";
+import hourlyResponse from "./fixtures/nasa-hourly-yogyakarta-2025-utc.json";
 import monthlyResponse from "./fixtures/nasa-monthly-yogyakarta-2006-2025.json";
 import {
   LONG_TERM_YEARS,

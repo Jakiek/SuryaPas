@@ -6,12 +6,17 @@ import { StoreError } from "../../../lib/store/types";
 import { loadFallbackFile } from "../../../lib/sun/fallback";
 import { getSun, defaultDeps, type SunDeps } from "../../../lib/sun/service";
 import { StoreSunCache } from "../../../lib/sun/storeCache";
+import { PinOutsideIndonesiaError } from "../../../lib/timezone/legalTimeZone";
 import {
   forgetStoredVersions,
   handleCreateAssessment,
   MAX_REQUEST_BODY_BYTES,
   type CreateAssessmentDeps,
 } from "./handler";
+
+// The sun service looks up the pin's legal time zone, which is "server-only";
+// that package throws outside the Next.js server build, and tests are plain Node.
+vi.mock("server-only", () => ({}));
 
 const INPUTS = exampleHouse.inputs as EngineInputs;
 
@@ -120,6 +125,33 @@ describe("POST /api/assessments", () => {
     const outside = await at(3.139, 101.6869);
     expect(outside.status).toBe(400);
     expect(await outside.json()).toEqual({ error: "outside_indonesia" });
+  });
+
+  it("asks for the sun at the pin itself, so the series is on the pin's clock", async () => {
+    const asked: [number, number][] = [];
+    const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides: {}, locale: "id" }), {
+      ...deps(new MemoryStore()),
+      sunFor: (latitude, longitude) => {
+        asked.push([latitude, longitude]);
+        return yogyakartaSun();
+      },
+    });
+    expect(response.status).toBe(201);
+    expect(asked).toEqual([[INPUTS.location.latitude, INPUTS.location.longitude]]);
+  });
+
+  it("refuses a pin the sun service finds no legal time zone for, without saving", async () => {
+    const store = new MemoryStore();
+    const createSpy = vi.spyOn(store, "createAssessment");
+    const response = await handleCreateAssessment(post({ inputs: INPUTS, overrides: {}, locale: "id" }), {
+      ...deps(store),
+      sunFor: async (latitude, longitude) => {
+        throw new PinOutsideIndonesiaError(latitude, longitude);
+      },
+    });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "outside_indonesia" });
+    expect(createSpy).not.toHaveBeenCalled();
   });
 
   it("refuses a change to an assumption that is not adjustable", async () => {

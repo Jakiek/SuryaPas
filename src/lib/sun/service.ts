@@ -1,9 +1,15 @@
 // The sun-data service: cache first, then NASA POWER with a time limit, then
 // the bundled series of the nearest city. Whichever it returns, live or
 // fallback, is already scaled to the long-term mean (SPEC 3.4).
+//
+// Every series is fetched, cached and bundled in UTC. The last step before a
+// series leaves this service moves it to the legal time zone of the pin
+// (SPEC 3.4), so one cache cell that spans two zones serves both correctly.
+import { legalUtcOffsetHours } from "../timezone/legalTimeZone";
 import { cacheKey, type SunCache } from "./cache";
 import { loadNearestFallback, type FallbackSun } from "./fallback";
 import { gridCellFor } from "./grid";
+import { rotateUtcToLegalTime } from "./legalTime";
 import { longTermYears, scaleToLongTerm } from "./longTerm";
 import { fetchNasaYear, latestAvailableYear, withTimeLimit } from "./nasa";
 import { fetchNasaMonthly } from "./nasaMonthly";
@@ -17,10 +23,11 @@ export const DEFAULT_TIMEOUT_MS = 8000;
 export const DEFAULT_MAX_GAP_HOURS = 3;
 
 export interface SunResult {
-  /** 8,760 hourly values of global horizontal irradiance, W/m², in NASA
-   *  POWER's zone time (the time zone of the nearest 15° of longitude, SPEC
-   *  3.4), scaled to the long-term mean. */
+  /** 8,760 hourly values of global horizontal irradiance, W/m², in the legal
+   *  time of the pin (SPEC 3.4), scaled to the long-term mean. */
   series: number[];
+  /** The pin's legal clock: hour h of `series` is UTC hour h − utcOffsetHours. */
+  utcOffsetHours: number;
   source: "live" | "fallback";
   cellId: string;
   year: number;
@@ -36,6 +43,9 @@ export interface SunDeps {
   timeoutMs: number;
   maxGapHours: number;
   loadFallback: (lat: number, lon: number) => Promise<FallbackSun>;
+  /** The pin's legal UTC offset (7, 8 or 9). Throws for a pin outside
+   *  Indonesia. An argument so tests can stub it. */
+  legalUtcOffsetHours: (lat: number, lon: number) => number;
 }
 
 export function defaultDeps(cache: SunCache): SunDeps {
@@ -47,10 +57,23 @@ export function defaultDeps(cache: SunCache): SunDeps {
     timeoutMs: DEFAULT_TIMEOUT_MS,
     maxGapHours: DEFAULT_MAX_GAP_HOURS,
     loadFallback: loadNearestFallback,
+    legalUtcOffsetHours,
   };
 }
 
 export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<SunResult> {
+  // The pin's clock first: a pin outside Indonesia throws here, before any
+  // request is made.
+  const utcOffsetHours = deps.legalUtcOffsetHours(lat, lon);
+  const utcSeries = await getUtcSeries(lat, lon, deps);
+  // The last step: UTC to the pin's legal time (SPEC 3.4).
+  return { ...utcSeries, series: rotateUtcToLegalTime(utcSeries.series, utcOffsetHours), utcOffsetHours };
+}
+
+/** Everything getSun returns, with the series still in UTC. */
+type UtcSunResult = Omit<SunResult, "utcOffsetHours">;
+
+async function getUtcSeries(lat: number, lon: number, deps: SunDeps): Promise<UtcSunResult> {
   const cell = gridCellFor(lat, lon);
   // One year for everything below: the cache key, the hourly request, and the
   // end of the monthly record's twenty-year window.
@@ -76,7 +99,7 @@ export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<S
       ]),
     );
     // Scale to the long-term mean (SPEC 3.4) before caching, so the cache
-    // only ever holds the series the engine should see.
+    // only ever holds the series the engine should see, in UTC.
     const { series } = scaleToLongTerm(hourly, monthlyRecord, year);
     await deps.cache.set(key, { series, year });
     return { series, source: "live", cellId: cell.cellId, year };
@@ -85,7 +108,7 @@ export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<S
     // 3. The nearest major city, from the bundled files.
     const fallback = await deps.loadFallback(lat, lon);
     return {
-      series: fallback.series,
+      series: fallback.seriesUtc,
       source: "fallback",
       cellId: cell.cellId,
       year: fallback.year,

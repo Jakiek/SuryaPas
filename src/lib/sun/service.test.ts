@@ -1,12 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 import { cacheKey, MemorySunCache } from "./cache";
-import yogyakartaResponse from "./fixtures/nasa-hourly-yogyakarta-2025.json";
+import yogyakartaResponse from "./fixtures/nasa-hourly-yogyakarta-2025-utc.json";
 import yogyakartaMonthlyResponse from "./fixtures/nasa-monthly-yogyakarta-2006-2025.json";
-import { loadFallbackFile } from "./fallback";
+import { loadFallbackFile, readStoredFallbackFile } from "./fallback";
+import { rotateUtcToLegalTime } from "./legalTime";
 import { scaleToLongTerm, seriesIrradiation } from "./longTerm";
 import { parseNasaHourly } from "./nasa";
 import { parseNasaMonthly } from "./nasaMonthly";
 import { DEFAULT_TIMEOUT_MS, defaultDeps, getSun, type SunDeps } from "./service";
+import { PinOutsideIndonesiaError } from "../timezone/legalTimeZone";
+
+// The sun service looks up the pin's legal time zone, which is "server-only";
+// that package throws outside the Next.js server build, and tests are plain Node.
+vi.mock("server-only", () => ({}));
 
 const FIXED_NOW = new Date("2026-11-14T10:00:00Z"); // so the target year is 2025
 
@@ -112,16 +118,18 @@ describe("live data", () => {
     }
   });
 
-  it("returns the hourly year scaled to the long-term mean, and caches that scaled series", async () => {
+  it("returns the hourly year scaled to the long-term mean, and caches that scaled series in UTC", async () => {
     const fetchFn = nasaAnswers();
     const cache = new MemorySunCache();
     const result = await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { cache }));
     const { series, scaling } = expectedScaled();
     // About 7% more sun than 2025 alone gave (docs/VALIDATION.md).
     expect(scaling.factor).toBeGreaterThan(1.06);
-    expect(result.series).toEqual(series);
+    // Yogyakarta is on WIB, UTC+7: the scaled UTC year, moved seven hours.
+    expect(result.utcOffsetHours).toBe(7);
+    expect(result.series).toEqual(rotateUtcToLegalTime(series, 7));
     expect(seriesIrradiation(result.series)).toBeCloseTo(scaling.meanKwhPerM2, 6);
-    // The cache holds the scaled series, not the raw year.
+    // The cache holds the scaled series in UTC, not the raw year.
     const cached = await cache.get(cacheKey("-7.75,110.25", 2025));
     expect(cached?.series).toEqual(series);
     expect(cached?.series).not.toEqual(parseNasaHourly(yogyakartaResponse, 2025, 3));
@@ -153,6 +161,86 @@ describe("live data", () => {
     // From 1 July 2027 the year used is 2026 (SPEC 3.4), so the cached 2025 must not be reused.
     await getSun(-7.7956, 110.3695, makeDeps(fetchFn, { cache, now: () => new Date("2027-07-01T00:00:00Z") }));
     expect(fetchFn.mock.calls).toHaveLength(4);
+  });
+});
+
+/** The clock hour (0 to 23) of the brightest hour of the year's mean day. */
+function brightestClockHour(series: number[]): number {
+  const meanDay = Array.from({ length: 24 }, () => 0);
+  series.forEach((watts, hour) => (meanDay[hour % 24] += watts));
+  return meanDay.indexOf(Math.max(...meanDay));
+}
+
+describe("the pin's legal time (SPEC 3.4)", () => {
+  // The recorded Yogyakarta year is the live series for every pin below; only
+  // the clock it is read on differs. Its mean day is brightest from 04:00 to
+  // 05:00 UTC.
+  const UTC_BRIGHTEST_HOUR = brightestClockHour(expectedScaled().series);
+
+  it("asks NASA in UTC", async () => {
+    const fetchFn = nasaAnswers();
+    await getSun(-7.7956, 110.3695, makeDeps(fetchFn));
+    const hourly = askedUrls(fetchFn).find((url) => !isMonthly(url));
+    expect(hourly?.searchParams.get("time-standard")).toBe("UTC");
+    expect(UTC_BRIGHTEST_HOUR).toBe(4);
+  });
+
+  // Each row: pin, its legal offset (from the real province lookup), and the
+  // offset of NASA's own "LST" at the pin's cell before T20, read from the
+  // live API on 2026-11-17 (NASA's LST follows its 1° source grid, so its
+  // zone edges fall at 98°, 113° and 128° E).
+  it.each([
+    ["Jakarta", -6.2088, 106.8456, 7, 7],
+    ["Surabaya", -7.2575, 112.7521, 7, 7],
+    ["Banyuwangi", -8.22, 114.37, 7, 8],
+    ["Banda Aceh", 5.55, 95.32, 7, 6],
+    ["Denpasar", -8.65, 115.22, 8, 8],
+    ["Ternate", 0.79, 127.38, 9, 8],
+  ] as const)("reads the sun on %s's clock", async (_place, lat, lon, legalOffset, nasaLstOffset) => {
+    const result = await getSun(lat, lon, makeDeps(nasaAnswers()));
+    expect(result.utcOffsetHours).toBe(legalOffset);
+    const clockHour = brightestClockHour(result.series);
+    expect(clockHour).toBe(UTC_BRIGHTEST_HOUR + legalOffset);
+    // Before T20 the same sun was read on NASA's LST clock; the change is the
+    // difference of the two offsets: none at Jakarta and Surabaya, an hour
+    // earlier at Banyuwangi, an hour later at Banda Aceh and Ternate.
+    const clockHourBefore = UTC_BRIGHTEST_HOUR + nasaLstOffset;
+    expect(clockHour - clockHourBefore).toBe(legalOffset - nasaLstOffset);
+  });
+
+  it("serves one cached cell on two clocks: Banyuwangi (WIB) and Gilimanuk (WITA) share a cell", async () => {
+    const fetchFn = nasaAnswers();
+    const deps = makeDeps(fetchFn);
+    const banyuwangi = await getSun(-8.13, 114.39, deps); // Ketapang harbour, East Java
+    const gilimanuk = await getSun(-8.17, 114.44, deps); // across the strait, Bali
+    expect(gilimanuk.cellId).toBe(banyuwangi.cellId);
+    expect(fetchFn.mock.calls).toHaveLength(2); // one fetch for both
+    expect([banyuwangi.utcOffsetHours, gilimanuk.utcOffsetHours]).toEqual([7, 8]);
+    // The same UTC year, Bali's clock one hour further on.
+    expect(gilimanuk.series).toEqual(rotateUtcToLegalTime(banyuwangi.series, 1));
+  });
+
+  it("moves the fallback to the pin's clock, not the nearest city's", async () => {
+    const blocked = (async () => {
+      throw new TypeError("fetch failed");
+    }) as typeof fetch;
+    // Genteng, Banyuwangi (WIB), is nearest Denpasar (WITA).
+    const result = await getSun(-8.37, 114.15, makeDeps(blocked));
+    const denpasarUtc = await readStoredFallbackFile("denpasar");
+    expect(result.fallbackCityId).toBe("denpasar");
+    expect(result.utcOffsetHours).toBe(7);
+    expect(result.series).toEqual(rotateUtcToLegalTime(denpasarUtc.series, 7));
+  });
+
+  it("uses an injected zone lookup, so a test can choose the clock", async () => {
+    const result = await getSun(-7.7956, 110.3695, makeDeps(nasaAnswers(), { legalUtcOffsetHours: () => 9 }));
+    expect(result.series).toEqual(rotateUtcToLegalTime(expectedScaled().series, 9));
+  });
+
+  it("refuses a pin with no legal time zone before asking NASA", async () => {
+    const fetchFn = nasaAnswers();
+    await expect(getSun(1.35, 103.82, makeDeps(fetchFn))).rejects.toThrow(PinOutsideIndonesiaError); // Singapore
+    expect(fetchFn.mock.calls).toHaveLength(0);
   });
 });
 
