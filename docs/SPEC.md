@@ -46,7 +46,7 @@ Four steps, one topic per screen, with a progress indicator and back navigation.
 **Step 1: location.** Three ways to set one pin: search an address, tap "use my location", or drag the pin on the map. The pin must fall inside Indonesia; outside it, the step blocks with a clear message. The check is against a bundled country outline that includes the small inhabited islands, and a pin within 2 km of the outline counts as inside, because a simplified coastline cuts off harbours and houses built over the water. The server applies the same check.
 
 **Step 2: roof.**
-- Area: trace the roof outline on satellite imagery, or type the area in m². Typing is the full keyboard-accessible path. One roof face only; the user traces the best side.
+- Area: trace the roof outline on satellite imagery, or type the area in m². Typing is the full keyboard-accessible path. One roof face only; the user traces the best side. The area is the roof as seen from above, traced or typed; stage 1 applies no slope correction, which under-counts a sloped face (about 10% at 25°, 41% at 45°) and so can only cap the largest size too low.
 - Facing direction: north, east, south or west (hidden when the slope is flat).
 - Slope: flat, gentle or steep, chosen from pictures.
 - Shade: none, some in the morning or afternoon, or heavy, chosen from pictures.
