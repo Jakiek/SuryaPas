@@ -10,7 +10,7 @@ import type { Place } from "@/lib/geocoding/photon";
 import { locationSchema } from "@/lib/schema";
 import { AddressSearch } from "./AddressSearch";
 import { isInsideIndonesia } from "./indonesia";
-import { takePendingAddress } from "./pendingAddress";
+import { peekPendingAddress, takePendingAddress } from "./pendingAddress";
 import type { PinPoint } from "./LocationMap";
 
 // The map is fetched only when this step is on screen (MapLibre is large;
@@ -32,11 +32,16 @@ export function LocationStep({ value, onChange, onValidChange }: StepProps<Locat
   const t = useTranslations("location");
   const locale = useLocale();
 
-  // The address typed on the landing page, if any: read once, on the first
-  // render in the browser (the flow shell renders its steps only there), and
-  // forgotten from session storage at the same moment. The search box starts
-  // filled with it and lists its results; the user still picks one.
-  const [landingAddress] = useState(takePendingAddress);
+  // The address typed on the landing page, if any: read on the first render in
+  // the browser (the flow shell renders its steps only there). The search box
+  // starts filled with it and lists its results; the user still picks one.
+  // React may run a state initialiser twice, so this read must not change
+  // anything: peeking leaves the address in session storage, and the effect
+  // below forgets it once the step is mounted.
+  const [landingAddress] = useState(peekPendingAddress);
+  useEffect(() => {
+    takePendingAddress();
+  }, []);
 
   const [deviceLocation, setDeviceLocation] = useState<DeviceLocationState>("idle");
   const [mapUnsupported, setMapUnsupported] = useState(false);

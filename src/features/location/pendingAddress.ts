@@ -19,7 +19,16 @@ export function storePendingAddress(address: string): void {
   }
 }
 
-/** Step 1 calls this once. Returns the address and forgets it, or "". */
+/** Reads the address and leaves it stored, so it is safe to call twice. */
+export function peekPendingAddress(): string {
+  try {
+    return (window.sessionStorage.getItem(PENDING_ADDRESS_KEY) ?? "").trim();
+  } catch {
+    return "";
+  }
+}
+
+/** Step 1 calls this once, after it has mounted. Returns the address and forgets it, or "". */
 export function takePendingAddress(): string {
   try {
     const address = window.sessionStorage.getItem(PENDING_ADDRESS_KEY) ?? "";
