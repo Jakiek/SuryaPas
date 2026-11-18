@@ -23,7 +23,9 @@ const MARGIN_KM = 2;
 const KM_PER_DEGREE_OF_LATITUDE = 111.32;
 
 type Point = { longitude: number; latitude: number };
-type Island = { ring: Point[]; minLongitude: number; maxLongitude: number; minLatitude: number; maxLatitude: number };
+// The smallest box that holds an island, used to skip islands far from the pin.
+type BoundingBox = { minLongitude: number; maxLongitude: number; minLatitude: number; maxLatitude: number };
+type Island = BoundingBox & { ring: Point[] };
 type Province = { name: string; utcOffsetHours: LegalUtcOffsetHours; islands: Island[] };
 
 /** Turns the file's compact ring [lon0, lat0, dLon1, dLat1, ...] into points. */
@@ -86,7 +88,9 @@ function distanceToSegmentKm(pin: Point, a: Point, b: Point): number {
   const dy = end.y - start.y;
   const lengthSquared = dx * dx + dy * dy;
   // How far along a-b the closest point is, from 0 (at a) to 1 (at b); the pin is the origin.
-  const along = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, -(start.x * dx + start.y * dy) / lengthSquared));
+  const unclampedAlong = lengthSquared === 0 ? 0 : -(start.x * dx + start.y * dy) / lengthSquared;
+  // Clamped to the segment: past either end, the closest point is that end.
+  const along = Math.max(0, Math.min(1, unclampedAlong));
   return Math.hypot(start.x + along * dx, start.y + along * dy);
 }
 

@@ -67,7 +67,8 @@ export async function getSun(lat: number, lon: number, deps: SunDeps): Promise<S
   const utcOffsetHours = deps.legalUtcOffsetHours(lat, lon);
   const utcSeries = await getUtcSeries(lat, lon, deps);
   // The last step: UTC to the pin's legal time (SPEC 3.4).
-  return { ...utcSeries, series: rotateUtcToLegalTime(utcSeries.series, utcOffsetHours), utcOffsetHours };
+  const legalTimeSeries = rotateUtcToLegalTime(utcSeries.series, utcOffsetHours);
+  return { ...utcSeries, series: legalTimeSeries, utcOffsetHours };
 }
 
 /** Everything getSun returns, with the series still in UTC. */
