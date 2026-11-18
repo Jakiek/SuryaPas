@@ -13,6 +13,7 @@ import idPlan from "../../messages/id/plan.json";
 import id from "../../messages/id/result.json";
 import { assess, CURRENT_ASSUMPTIONS, type EngineInputs } from "../../src/engine";
 import { costRangeFigure, kwpText, paybackFigure } from "../../src/features/result/figures";
+import { BASE_URL } from "./support/server";
 
 const HOUSE = exampleHouse.inputs as EngineInputs;
 const AXE_SCRIPT = path.join(process.cwd(), "node_modules/axe-core/axe.min.js");
@@ -83,9 +84,9 @@ test("reloading the link, and opening it in a fresh browser profile, shows the s
   await page.reload();
   expect(await figuresOf(page)).toBe(first);
 
-  const fresh = await browser.newContext({ viewport: { width: 375, height: 812 } });
+  const fresh = await browser.newContext({ viewport: { width: 375, height: 812 }, baseURL: BASE_URL });
   const visitor = await fresh.newPage();
-  await visitor.goto(`http://localhost:3100/id/r/${resultId}`);
+  await visitor.goto(`${BASE_URL}/id/r/${resultId}`);
   expect(await figuresOf(visitor)).toBe(first);
   // The visitor gets the read-only view: "plan your own" in place of "edit".
   await expect(visitor.getByText(id.actions.shared)).toBeVisible();
@@ -126,9 +127,9 @@ test("picking another count updates every number and both charts, quickly on a t
 });
 
 test("/r/example renders with the network blocked", async ({ page }) => {
-  // Everything that is not this dev server fails. The page itself computes the
+  // Everything that is not this server fails. The page itself computes the
   // example from bundled files on the server (unit test: exampleHouse.test.ts).
-  await page.route(/^(?!http:\/\/localhost:3100).*/, (route) => route.abort());
+  await page.route((url) => url.origin !== BASE_URL, (route) => route.abort());
   await page.goto("/id/r/example");
   await expect(page.locator("h1")).toContainText(" panel");
   await expect(page.getByText(id.day.heading)).toBeVisible();
