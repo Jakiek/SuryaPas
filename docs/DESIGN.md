@@ -63,7 +63,7 @@ Two families, both through `next/font`, both with tabular numerals (confirmed in
 - Touch targets are at least 44 × 44 px. One exception: the panel picker's panels, eight to a row as approved in the mock, are about 37 px wide at 375 px and about 90 px tall. They stay above the 24 px minimum of WCAG 2.2.
 - Rules are 2.5 px `night` above each section and each question, 1 px `rule` between rows.
 - Text blocks and charts stop at about 680 px wide, so nothing stretches on tablets.
-- From 880 px: the roof step shows the map beside the questions; the result page pins the verdict and picker in a left column and scrolls the report on the right; the landing page sets the headline text beside the comparison.
+- From 880 px: the roof step shows the map beside the questions; the result page pins the verdict and picker in a left column and scrolls the report on the right. The landing page keeps its statement above the comparison at every width and sets the two sides of the comparison side by side from 768 px, so neither chart is ever narrower than at 375 px.
 - On phones the flow's primary action sits in a bar fixed to the bottom of the screen.
 
 ## Components
