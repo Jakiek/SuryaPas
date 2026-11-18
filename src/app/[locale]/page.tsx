@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { PageShell } from "@/components";
 import { ArgumentSection } from "@/features/landing/ArgumentSection";
 import { compareExampleHouse } from "@/features/landing/exampleComparison";
@@ -30,10 +31,17 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
     bill: formatMoneyExact(comparison.monthlySpendRp, locale),
   });
 
+  // The browser receives only the messages this page's client components read
+  // (the header, the hero form, the day band and chart), not every screen's.
+  const { common, landing, result } = (await getMessages()) as unknown as Record<string, Record<string, unknown>>;
+  const clientMessages = { common, landing, result: { day: result.day } };
+
   return (
-    <PageShell headerTone="sun" footerTone="night" footerNote={exampleLine}>
-      <Hero />
-      <ArgumentSection comparison={comparison} />
-    </PageShell>
+    <NextIntlClientProvider messages={clientMessages}>
+      <PageShell headerTone="sun" footerTone="night" footerNote={exampleLine}>
+        <Hero />
+        <ArgumentSection comparison={comparison} />
+      </PageShell>
+    </NextIntlClientProvider>
   );
 }

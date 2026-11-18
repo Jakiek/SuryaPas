@@ -105,6 +105,10 @@ for (const { locale, landing, common, plan, location } of cases) {
     });
 
     test("an address goes to step 1 through session storage, never the URL", async ({ page }) => {
+      // Every URL the browser asks for, to prove the address is in none of them
+      // (a URL is kept in server logs and browser history).
+      const requested: string[] = [];
+      page.on("request", (request) => requested.push(request.url()));
       await page.goto(`/${locale}`);
       await page.getByLabel(landing.hero.label).fill(ADDRESS);
       await page.getByRole("button", { name: landing.hero.button }).click();
@@ -115,6 +119,10 @@ for (const { locale, landing, common, plan, location } of cases) {
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(plan.steps.location.heading);
       // Step 1's search field starts with the address.
       await expect(page.getByLabel(location.search.label)).toHaveValue(ADDRESS);
+      const encoded = [ADDRESS, encodeURIComponent(ADDRESS), ADDRESS.replace(/ /g, "+"), "Kaliurang"];
+      for (const url of requested) {
+        for (const form of encoded) expect(url).not.toContain(form);
+      }
     });
 
     test("an empty field starts step 1 with nothing filled", async ({ page }) => {
