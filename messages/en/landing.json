@@ -13,7 +13,7 @@
     "time": "About 3 minutes",
     "noSignup": "No sign-up",
     "example": "See an example result",
-    "lede": "How many panels, what they cost, and when they pay you back. Worked out from your roof and the power you use by day.",
+    "lede": "How many panels, what they cost, and when they pay you back. Worked out from your roof, your bill and your daily habits.",
     "dayLabel": "Day · panels at work"
   },
   "continue": {
@@ -23,16 +23,16 @@
   },
   "argument": {
     "heading": "More panels do not always save more",
-    "lead": "Since 2024, solar power sent back to the PLN grid <mark>earns you nothing</mark>. Only the power you use yourself while the sun is up lowers your bill.",
+    "lead": "Since 2024, solar power sent back to the PLN grid <mark>earns you nothing</mark>. Only the solar power you use yourself lowers your bill.",
     "sourceLabel": "Source:",
     "sourceLink": "Energy Ministry Regulation 2/2024, Article 13 (PDF, in Indonesian)",
-    "comparisonLabel": "The same home with two numbers of panels",
+    "comparisonLabel": "The same home with two system sizes",
     "fitsTag": "The right fit",
     "tooManyTag": "Far too many",
     "panelsUnit": "{count, plural, one {panel} other {panels}}",
     "caption": "With {count, plural, one {# panel} other {# panels}} this home makes {generated} kWh a day: {used} kWh is used as it is made and {exported} kWh goes to the grid unpaid.",
     "rows": {
-      "wasted": "Solar power that goes unused",
+      "wasted": "Solar power lost to the grid",
       "cost": "Upfront cost",
       "payback": "Payback"
     },

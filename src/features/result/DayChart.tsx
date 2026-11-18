@@ -4,7 +4,7 @@ import { useId } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { DayBand } from "@/components";
 import { formatDecimal } from "@/lib/format";
-import { CHART_WIDTH, DAY_CHART, dayChartShapes } from "./chartGeometry";
+import { CHART_WIDTH, DAY_CHART, dayChartShapes, labelPlacement } from "./chartGeometry";
 import { Hatch, INK_SOFT, NIGHT, PAPER, RULE, SUN, svgSafeId } from "./Hatch";
 
 type DayChartProps = {
@@ -28,6 +28,7 @@ export function DayChart({ loadKwh, solarKwh, maxKw, caption }: DayChartProps) {
   const captionId = useId();
   const hatchId = svgSafeId(useId(), "surplus");
   const shapes = dayChartShapes(loadKwh, solarKwh, maxKw);
+  const loadLabel = labelPlacement(shapes.labels.load.x, t("load"));
   const halo = { stroke: PAPER, strokeWidth: 3, paintOrder: "stroke" as const };
 
   return (
@@ -67,7 +68,7 @@ export function DayChart({ loadKwh, solarKwh, maxKw, caption }: DayChartProps) {
             {t("surplus")}
           </text>
         )}
-        <text x={shapes.labels.load.x} y={shapes.labels.load.y} textAnchor="middle" fontSize={11} fontWeight={800} fill={NIGHT} {...halo}>
+        <text x={loadLabel.x} y={shapes.labels.load.y} textAnchor={loadLabel.anchor} fontSize={11} fontWeight={800} fill={NIGHT} {...halo}>
           {t("load")}
         </text>
       </svg>

@@ -85,21 +85,23 @@ export function Button({
 
 // The arrow at the right of a button. Drawn here, and not typed as "→",
 // because the text font has no arrow and each device would fall back to
-// a different one. Same line weight as the drawings in a segmented choice.
+// a different one. Matches the approved mock's heavy arrow (a 22 px "→" in
+// weight 800): about 18 px wide, 3 px stroke, rounded ends.
 function Arrow() {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 22 16"
-      width={22}
-      height={16}
+      viewBox="0 0 17 14"
+      width={18}
+      height={15}
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="square"
+      strokeWidth={3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="shrink-0"
     >
-      <path d="M2 8h17M13 2l6 6-6 6" />
+      <path d="M2 7h13M9.5 1.8 14.7 7l-5.2 5.2" />
     </svg>
   );
 }

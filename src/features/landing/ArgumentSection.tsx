@@ -14,14 +14,17 @@ type ArgumentSectionProps = { comparison: ExampleComparison };
 
 // The page's argument (SPEC 2.1): a statement that exported power is no longer
 // paid for, then the example house shown twice with the engine's own figures.
-// From 880 px the statement sits beside the comparison.
+// The statement is always above the comparison: beside it, each chart would be
+// narrower than the 340 px it is drawn for and its labels would shrink below
+// 10 px. The two sides stack on phones and sit side by side from 768 px, the
+// first width where each side is still as wide as at 375 px (335 px).
 export function ArgumentSection({ comparison }: ArgumentSectionProps) {
   const t = useTranslations("landing.argument");
   const headingId = useId();
 
   return (
     <Band tone="paper" as="section" aria-labelledby={headingId}>
-      <Inner className="pb-[52px] pt-11 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16 lg:pb-[90px] lg:pt-20">
+      <Inner className="pb-[52px] pt-11 lg:pb-[90px] lg:pt-20">
         <div>
           <PosterHeading as="h2" size="statement" id={headingId} className="max-w-[9em]">
             {t("heading")}
@@ -39,7 +42,7 @@ export function ArgumentSection({ comparison }: ArgumentSectionProps) {
           </p>
         </div>
 
-        <div role="group" aria-label={t("comparisonLabel")} className="mt-9 grid gap-[34px] lg:mt-0 lg:grid-cols-2 lg:gap-7">
+        <div role="group" aria-label={t("comparisonLabel")} className="mt-9 grid max-w-[520px] gap-[34px] md:max-w-none md:grid-cols-2 md:gap-7 lg:mt-12">
           <Side side={comparison.fits} comparison={comparison} tag={t("fitsTag")} />
           <Side side={comparison.tooMany} comparison={comparison} tag={t("tooManyTag")} />
         </div>
@@ -57,7 +60,7 @@ function Side({ side, comparison, tag }: SideProps) {
   const text = sideText(side, locale);
 
   return (
-    <div className="max-w-[520px] border-fg border-t-heavy pt-3">
+    <div className="border-fg border-t-heavy pt-3">
       <h3 className="flex items-baseline justify-between gap-3">
         <Figure value={String(side.panels)} unit={t("panelsUnit", { count: side.panels })} size="md" />
         <Label className="text-right">{tag}</Label>

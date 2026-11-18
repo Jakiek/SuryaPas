@@ -166,6 +166,8 @@ for (const { locale, landing, common, plan, location } of cases) {
       await saveDraft(page, savedDraft(3));
       await page.goto(`/${locale}`);
       await page.getByRole("button", { name: landing.continue.startOver }).click();
+      // The button that was pressed is gone; focus moves to the address field.
+      await expect(page.getByLabel(landing.hero.label)).toBeFocused();
       await page.getByLabel(landing.hero.label).fill(ADDRESS);
       await page.getByRole("button", { name: landing.hero.button }).click();
 

@@ -13,7 +13,7 @@
     "time": "± 3 menit",
     "noSignup": "Tanpa daftar",
     "example": "Lihat contoh hasil",
-    "lede": "Berapa panel, berapa biayanya, kapan balik modal. Dihitung dari atap dan pemakaian listrik siang Anda.",
+    "lede": "Berapa panel, berapa biayanya, kapan balik modal. Dihitung dari atap, tagihan, dan kebiasaan listrik Anda.",
     "dayLabel": "Siang · panel bekerja"
   },
   "continue": {
@@ -23,9 +23,9 @@
   },
   "argument": {
     "heading": "Lebih banyak panel belum tentu lebih hemat",
-    "lead": "Sejak 2024, listrik surya yang mengalir ke jaringan PLN <mark>tidak lagi dibayar</mark>. Yang menghemat tagihan hanyalah listrik yang langsung Anda pakai pada siang hari.",
+    "lead": "Sejak 2024, listrik surya yang mengalir ke jaringan PLN <mark>tidak lagi dibayar</mark>. Yang menghemat tagihan hanyalah listrik surya yang Anda pakai sendiri.",
     "sourceLabel": "Dasar:",
-    "sourceLink": "Peraturan Menteri ESDM No. 2/2024, Pasal 13",
+    "sourceLink": "Peraturan Menteri ESDM No. 2/2024, Pasal 13 (PDF)",
     "comparisonLabel": "Rumah yang sama dengan dua jumlah panel",
     "fitsTag": "Yang pas",
     "tooManyTag": "Terlalu banyak",

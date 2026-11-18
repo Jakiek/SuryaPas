@@ -13,7 +13,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   return {
     title: { absolute: t("title") },
     description: t("description"),
-    openGraph: { title: t("title"), description: t("description"), locale, type: "website" },
+    // Open Graph writes a locale as language_REGION.
+    openGraph: { title: t("title"), description: t("description"), locale: locale === "en" ? "en_US" : "id_ID", type: "website" },
   };
 }
 

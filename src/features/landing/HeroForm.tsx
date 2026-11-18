@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button, HeroInput, TextLink } from "@/components";
 import { storePendingAddress } from "@/features/location/pendingAddress";
@@ -26,6 +26,13 @@ export function HeroForm() {
   // draft then replaces it (the same pattern as the plan flow).
   const draft = useSyncExternalStore(planStore.subscribe, planStore.getSnapshot, planStore.getServerSnapshot);
   const returning = hasSavedInputs(draft) && !startedOver;
+
+  // "Start over" removes its own button, which would drop keyboard focus onto
+  // the page body. Put it in the address field that takes its place.
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (startedOver) formRef.current?.querySelector("input")?.focus();
+  }, [startedOver]);
 
   // "Continue" is a real link to /plan. Before it navigates, the draft is set
   // to the step to resume, which differs from the step it was saved on only
@@ -65,7 +72,7 @@ export function HeroForm() {
   return (
     // No name on the field: with scripts off, a plain submit goes to /plan
     // and the address is not put in the URL.
-    <form action={`/${locale}/plan`} onSubmit={startWithAddress} className="mt-[26px]">
+    <form ref={formRef} action={`/${locale}/plan`} onSubmit={startWithAddress} className="mt-[26px]">
       <HeroInput
         label={t("hero.label")}
         buttonLabel={t("hero.button")}

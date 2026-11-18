@@ -123,6 +123,17 @@ export function dayChartShapes(loadKwh: number[], solarKwh: number[], maxKw: num
   };
 }
 
+// Chart labels are centred on a point. A long label near the right edge would
+// run past the chart into the page gutter, so it is right-aligned to the edge
+// instead. The width is an estimate (11 px labels at weight 800 average about
+// 8.5 units a character in the 340-wide drawing), kept generous on purpose.
+const LABEL_UNITS_PER_CHARACTER = 8.5;
+
+export function labelPlacement(centreX: number, text: string): { x: number; anchor: "middle" | "end" } {
+  const halfWidth = (text.length * LABEL_UNITS_PER_CHARACTER) / 2;
+  return centreX + halfWidth > CHART_WIDTH ? { x: CHART_WIDTH, anchor: "end" } : { x: centreX, anchor: "middle" };
+}
+
 /** The top of the day chart's scale: the highest of the home's use and the largest system's output, plus room. */
 export function dayChartMaxKw(loadKwh: number[], solarPerKwp: number[], largestKwp: number): number {
   const HEADROOM = 1.1;
