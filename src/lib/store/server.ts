@@ -6,6 +6,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { MemoryStore } from "./memory";
+import { fetchWithTimeout } from "./requestTimeout";
 import { SupabaseStore } from "./supabase";
 import type { Store } from "./types";
 
@@ -30,6 +31,10 @@ function createStore(): Store {
   const client = createClient(url, serviceRoleKey, {
     // No user sessions: this client acts as the server, not as a visitor.
     auth: { persistSession: false, autoRefreshToken: false },
+    // A time limit on every request, and no automatic retry: a failing
+    // database is reported as "not saved" within seconds (requestTimeout.ts).
+    global: { fetch: fetchWithTimeout() },
+    db: { retry: false },
   });
   return new SupabaseStore(client);
 }
