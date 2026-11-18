@@ -1,5 +1,5 @@
-// The result page (T13), driven in a real browser at 375 px against the dev
-// server, which uses the in-memory store (no account).
+// The result page (T13), driven in a real browser at 375 px against the
+// production build, which uses the in-memory store (no account).
 //
 // The headline test computes the expected figures itself with the engine and
 // the page's own formatters, from the same year of sun the server used
@@ -151,8 +151,8 @@ test.describe("honest verdicts", () => {
       await expect(page.locator("main")).toContainText(text);
     });
   }
-  // The fourth, fallback sun data ("approximate"), cannot be forced through
-  // the live route from here; view.test.ts runs it through the engine.
+  // The fourth, fallback sun data ("approximate"), is checked in failures.spec.ts
+  // (a Makassar pin, where the fixture sun service answers 503).
 });
 
 test("tapping the quote button records exactly one event and sends no personal data", async ({ page }) => {

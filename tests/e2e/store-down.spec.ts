@@ -23,17 +23,18 @@ test("the route computes the result and says it was not saved", async ({ request
 for (const c of COPIES) {
   test(`the journey ends on the not-saved result, with the note and a retry, in ${c.locale}`, async ({ page }) => {
     await submitJourney(page, c);
-    await expect(page).toHaveURL(new RegExp(`/${c.locale}/r/unsaved$`), { timeout: 30_000 });
+    // The database client has a 4 s limit and no retry, so the not-saved page comes within seconds.
+    await expect(page).toHaveURL(new RegExp(`/${c.locale}/r/unsaved$`), { timeout: 6_000 });
 
     // The report is there, with the note that there is no share link.
-    await expectPlausible(await readHeadline(page, c), HOUSE.areaM2);
+    await expectPlausible(await readHeadline(page, c), HOUSE.areaM2, { paysBack: true });
     await expect(page.getByText(c.result.unsaved.title)).toBeVisible();
     await expect(page.getByText(c.result.unsaved.body)).toBeVisible();
     await expect(page.getByRole("button", { name: c.result.actions.copy })).toHaveCount(0);
     // The tab keeps the result for the session.
     expect(await page.evaluate((key) => sessionStorage.getItem(key) !== null, UNSAVED_KEY)).toBe(true);
     await page.reload();
-    await expectPlausible(await readHeadline(page, c), HOUSE.areaM2);
+    await expectPlausible(await readHeadline(page, c), HOUSE.areaM2, { paysBack: true });
 
     // Retrying while the database is still down says so and keeps the result.
     await page.getByRole("button", { name: c.result.unsaved.retry }).click();

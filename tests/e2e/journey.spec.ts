@@ -18,13 +18,21 @@ import {
   stepHeading,
 } from "./support/journey";
 
-/** Every response that came from outside the test server. There must be none. */
-function watchOutsideResponses(page: Page): string[] {
+/**
+ * Every request the browser tried to send outside the test server. There must be none.
+ * It listens for requests, not responses: a request to a host that cannot be
+ * resolved never gets a response, so a response listener could not fail.
+ */
+// The map asks its tile host for the style and tiles. The test browser cannot resolve that
+// host, so the request fails at once, as offline; it is the one outside request the app is
+// expected to attempt, and it is the only host named here.
+const MAP_TILE_HOST = "https://tiles.openfreemap.org/";
+
+function watchOutsideRequests(page: Page): string[] {
   const outside: string[] = [];
-  page.on("response", (response) => {
-    if (!response.url().startsWith(BASE_URL) && !response.url().startsWith("data:") && !response.url().startsWith("blob:")) {
-      outside.push(response.url());
-    }
+  page.on("request", (request) => {
+    const url = request.url();
+    if (!url.startsWith(BASE_URL) && !url.startsWith("data:") && !url.startsWith("blob:") && !url.startsWith(MAP_TILE_HOST)) outside.push(url);
   });
   return outside;
 }
@@ -32,7 +40,7 @@ function watchOutsideResponses(page: Page): string[] {
 for (const c of COPIES) {
   test.describe(`journey in ${c.locale}`, () => {
     test("landing, four steps by typing the roof area, submit, result with plausible headline numbers", async ({ page }) => {
-      const outside = watchOutsideResponses(page);
+      const outside = watchOutsideRequests(page);
 
       await startFromLanding(page, c);
       // The address typed on the landing page is waiting in step 1's search box.
@@ -45,7 +53,7 @@ for (const c of COPIES) {
 
       // The result: the page is in the language we started in, and shows a saved result.
       await expect(page.locator("html")).toHaveAttribute("lang", c.locale);
-      await expectPlausible(await readHeadline(page, c), HOUSE.areaM2);
+      await expectPlausible(await readHeadline(page, c), HOUSE.areaM2, { paysBack: true });
       // Sun data came from the (fixture) live service, so nothing says "approximate".
       await expect(page.getByText(c.result.warnings.approximate.title)).toHaveCount(0);
       // A saved result can be shared and changed by the browser that made it.

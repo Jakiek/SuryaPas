@@ -28,7 +28,7 @@ const NEXT = "./node_modules/.bin/next";
 const nodeOptions = `NODE_OPTIONS="${serverEnv.NODE_OPTIONS}"`;
 // E2E_REUSE_SERVER=1 reuses servers already running on the two ports, for
 // writing a test without waiting for a build each time. Never set in a real run.
-const reuse = Boolean(process.env.E2E_REUSE_SERVER);
+const reuse = process.env.E2E_REUSE_SERVER === "1";
 const storeDownSpec = /store-down\.spec\.ts$/;
 
 export default defineConfig({

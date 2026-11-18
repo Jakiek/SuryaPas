@@ -81,10 +81,10 @@ globalThis.fetch = async function fixtureFetch(input, init) {
 
   if (url.hostname === "photon.komoot.io") return json(photonBody(url.searchParams.get("q") ?? ""));
 
-  // The second test server's database: every call is an error. It answers 500
-  // and not 503 because the Supabase client retries a 503 with growing pauses,
-  // which makes each save take 14 seconds.
-  if (url.hostname === "supabase.test") return json('{"message":"database unavailable"}', 500);
+  // The second test server's database: every call is an error, 503 as a paused
+  // project answers. The client is built with retry off (src/lib/store/server.ts),
+  // so a failing save is reported within seconds.
+  if (url.hostname === "supabase.test") return json('{"message":"database unavailable"}', 503);
 
   console.error(`[e2e] outside request refused: ${url.origin}${url.pathname}`);
   throw new TypeError(`network blocked in the end-to-end tests: ${url.origin}`);

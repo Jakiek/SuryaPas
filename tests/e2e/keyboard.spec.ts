@@ -62,7 +62,7 @@ for (const c of COPIES) {
     // The result, and a different panel count chosen from the picker with Enter.
     await expect(page).toHaveURL(new RegExp(`/${c.locale}/r/[A-Za-z0-9_-]{22}$`), { timeout: 30_000 });
     const recommended = await readHeadline(page, c);
-    expectPlausible(recommended, HOUSE.areaM2);
+    expectPlausible(recommended, HOUSE.areaM2, { paysBack: true });
     for (let presses = 0; presses < 80; presses++) {
       await page.keyboard.press("Tab");
       if (await page.evaluate(() => document.activeElement?.getAttribute("aria-pressed") === "false")) break;

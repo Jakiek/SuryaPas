@@ -41,11 +41,16 @@ const planStep =
   };
 
 const savedResult =
-  (inputs: typeof HOUSE_INPUTS): Setup =>
+  (inputs: typeof HOUSE_INPUTS, confirm?: (page: Page, c: Copy) => Promise<void>): Setup =>
   async (page, c, request) => {
     await page.goto(`/${c.locale}/r/${await saveResult(request, inputs, c.locale)}`);
     await h1(page);
+    await confirm?.(page, c);
   };
+
+// The fixture sun service answers 503 around Makassar (server-fixtures.cjs), so a house
+// pinned there is computed from the bundled city figures and labelled approximate.
+const MAKASSAR_HOUSE = { ...HOUSE_INPUTS, location: { latitude: -5.1442, longitude: 119.4079 } };
 
 const SCREENS: { name: string; setup: Setup }[] = [
   { name: "landing", setup: visit("") },
@@ -58,6 +63,13 @@ const SCREENS: { name: string; setup: Setup }[] = [
     },
   },
   { name: "step 1, pin placed", setup: planStep(1) },
+  {
+    name: "step 1, search results showing",
+    setup: planStep(1, async (page, c) => {
+      await page.getByRole("combobox", { name: c.location.search.label }).fill("Malioboro");
+      await expect(page.getByRole("option").first()).toBeVisible();
+    }),
+  },
   { name: "step 1, nothing chosen yet", setup: planStep(1, undefined, { step: 1 }) },
   {
     name: "step 1, pin outside Indonesia",
@@ -125,8 +137,21 @@ const SCREENS: { name: string; setup: Setup }[] = [
   { name: "result", setup: savedResult(HOUSE_INPUTS) },
   { name: "example result", setup: visit("/r/example") },
   { name: "result, roof too small", setup: savedResult(VARIANTS.tooSmall) },
-  { name: "result, does not pay back", setup: savedResult(VARIANTS.doesNotPayBack) },
-  { name: "result, heavy shade", setup: savedResult(VARIANTS.heavyShade) },
+  {
+    name: "result, does not pay back",
+    setup: savedResult(VARIANTS.doesNotPayBack, (page, c) => expect(page.getByText(c.result.warnings.doesNotPayBack.title)).toBeVisible()),
+  },
+  {
+    name: "result, heavy shade",
+    setup: savedResult(VARIANTS.heavyShade, (page, c) => expect(page.getByText(c.result.warnings.heavyShade.title)).toBeVisible()),
+  },
+  {
+    name: "result, approximate sun data",
+    setup: savedResult(MAKASSAR_HOUSE, async (page, c) => {
+      await expect(page.getByText(c.result.warnings.approximate.title)).toBeVisible();
+      await expect(page.getByText(c.result.warnings.approximate.body)).toBeVisible();
+    }),
+  },
   {
     name: "result, not saved",
     setup: async (page, c, request) => {

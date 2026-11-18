@@ -151,9 +151,10 @@ export async function readHeadline(page: Page, c: Copy): Promise<Headline> {
  * The bounds come from the inputs and from arithmetic, never from a copied figure:
  * at least the smallest system, no more panels than the roof can hold, a cost
  * of a plausible size per kWp, and a payback that is a year range inside the
- * horizon or the words that say it does not pay back.
+ * horizon or the words that say it does not pay back. With `{ paysBack: true }`
+ * the words are not accepted: the house given must pay back within the horizon.
  */
-export function expectPlausible(headline: Headline, roofAreaM2: number) {
+export function expectPlausible(headline: Headline, roofAreaM2: number, options: { paysBack?: boolean } = {}) {
   const { panels, kwp, usedAreaM2, costMillions, payback } = headline;
   expect(Number.isInteger(panels) && panels >= 2, `panel count ${panels}`).toBe(true);
   expect(usedAreaM2, "roof the panels take").toBeGreaterThan(0);
@@ -166,6 +167,7 @@ export function expectPlausible(headline: Headline, roofAreaM2: number) {
   // Rooftop systems here cost somewhere between 3 and 40 million rupiah per kWp.
   expect(costMillions.low / kwp).toBeGreaterThan(3);
   expect(costMillions.high / kwp).toBeLessThan(40);
+  if (options.paysBack) expect(payback.kind, "payback kind").not.toBe("never");
   if (payback.kind === "range") {
     expect(payback.low).toBeGreaterThanOrEqual(1);
     expect(payback.high).toBeGreaterThanOrEqual(payback.low);
