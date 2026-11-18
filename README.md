@@ -623,3 +623,14 @@ mock/                  the static design reference
 | `docs/DESIGN.md` | Colour, type, spacing and copy voice |
 
 **What exists today.** Stage 1, the calculator, is the only stage being built. Accounts, PDF export and an installer marketplace exist as database tables and placeholder routes only. At the time of writing the engine, the sun-data service and the PVGIS validation are finished and tested; the roof step is built (against the street map, since the Esri key does not exist yet) and in its last fixes; other screens are still being completed.
+
+## Data sources and credits
+
+- **geoBoundaries gbOpen, Indonesia districts (ADM2)**: the country outline that the location step checks a pin against. Original data from BPS (Statistics Indonesia), WFP and OCHA ROAP. Licence: Creative Commons Attribution 3.0 IGO. Credit: "Indonesia outline: geoBoundaries, from BPS, WFP and OCHA ROAP (CC BY 3.0 IGO)". Link: https://www.geoboundaries.org
+- **geoBoundaries gbOpen, Indonesia provinces (ADM1)**: the province outline the server reads to find a pin's legal time zone. Same origin, licence and credit as the district outline. Link: https://www.geoboundaries.org
+- **OpenFreeMap**: vector map tiles under the location step's map. Terms: see link. Link: https://openfreemap.org
+- **OpenStreetMap contributors**: the map data in those tiles and in the address search results. The repo's credit lines name "OpenStreetMap contributors" and link to the copyright page; the licence name is not written out in the repo. Terms: see link. Link: https://www.openstreetmap.org/copyright
+- **Photon by komoot**: the address search, called through a server route and limited to Indonesia. The repo notes its terms ask for fair use. Terms: see link. Link: https://photon.komoot.io
+- **NASA POWER**: the hourly and monthly sunlight series (all-sky surface shortwave irradiance, CERES SYN1deg) behind the sun service, with a bundled fallback series. Terms: see link. Link: https://power.larc.nasa.gov
+- **PVGIS (European Commission, Joint Research Centre)**: the reference model the engine is validated against. It is used by the validation script and is not called by the app. Terms: see link. Link: https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-releases/pvgis-53_en
+- **Esri satellite imagery (planned, not live)**: the satellite photo for roof tracing, which needs an Esri developer key (`NEXT_PUBLIC_ESRI_API_KEY`). No key exists yet, so the app shows the street map instead. Terms and attribution wording: see link. Link: https://developers.arcgis.com/documentation/esri-and-data-attribution/
