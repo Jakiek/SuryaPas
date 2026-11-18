@@ -18,6 +18,8 @@ const archivo = localFont({
   src: "../fonts/Archivo-latin-variable.woff2",
   weight: "100 900",
   style: "normal",
+  // Tells every browser the width axis runs 62% to 125%, as the old Google CSS did.
+  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
   variable: "--font-archivo",
   display: "swap",
 });

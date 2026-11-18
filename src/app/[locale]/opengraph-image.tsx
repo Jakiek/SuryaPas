@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import commonEn from "../../../messages/en/common.json";
 import commonId from "../../../messages/id/common.json";
@@ -44,13 +46,17 @@ const PAPER = "#FFFFFF";
 
 // The static poster-style Archivo (width 62%, weight 800), kept in the repo.
 // ImageResponse cannot read the variable woff2 the page uses, hence this copy.
-const POSTER_FONT_URL = new URL("../fonts/Archivo-poster-62-800.ttf", import.meta.url);
+// It is read from disk, as Next.js's opengraph-image page shows; Node's fetch
+// does not accept file: URLs. The path is relative to the project root, which
+// is the working directory of both `next build` and `next start`.
+const POSTER_FONT_PATH = join(process.cwd(), "src/app/fonts/Archivo-poster-62-800.ttf");
 
-async function loadPosterFont(): Promise<ArrayBuffer | null> {
+async function loadPosterFont(): Promise<Buffer | null> {
   try {
-    const file = await fetch(POSTER_FONT_URL);
-    return file.ok ? await file.arrayBuffer() : null;
-  } catch {
+    return await readFile(POSTER_FONT_PATH);
+  } catch (error) {
+    // The image still renders (in Geist), but the failure must be visible.
+    console.error(`[opengraph-image] could not read ${POSTER_FONT_PATH}; falling back to Geist`, error);
     return null;
   }
 }
