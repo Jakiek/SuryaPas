@@ -1,27 +1,32 @@
 import type { Metadata } from "next";
-import { Archivo, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-// The two families of docs/DESIGN.md "Type". next/font downloads them at
-// build time and serves them from this site, so the browser never calls
-// Google. Each font is exposed as a CSS variable that globals.css reads.
+// The two families of docs/DESIGN.md "Type", kept in src/app/fonts (both are
+// under the SIL Open Font License; the licence texts sit beside the files).
+// They are self-hosted with next/font/local, so a build needs no network and
+// the browser never calls Google. Each font is exposed as a CSS variable that
+// globals.css reads. Both files are the latin subset of the variable fonts.
 
-// Archivo is a variable font. "wdth" adds its width axis (62% to 125%),
-// which the poster (62%), wordmark (75%) and figure (88%) styles need.
-// Weight is variable by default.
-const archivo = Archivo({
-  subsets: ["latin"],
-  axes: ["wdth"],
+// Archivo is a variable font. Its width axis (62% to 125%) is what the poster
+// (62%), wordmark (75%) and figure (88%) styles need; weight runs 100 to 900.
+const archivo = localFont({
+  src: "../fonts/Archivo-latin-variable.woff2",
+  weight: "100 900",
+  style: "normal",
   variable: "--font-archivo",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+// Plus Jakarta Sans, weight 200 to 800.
+const jakarta = localFont({
+  src: "../fonts/PlusJakartaSans-latin-variable.woff2",
+  weight: "200 800",
+  style: "normal",
   variable: "--font-jakarta",
   display: "swap",
 });

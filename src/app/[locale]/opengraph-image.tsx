@@ -10,8 +10,9 @@ import landingId from "../../../messages/id/landing.json";
 // as the page, in the language of the URL.
 //
 // The headline is set in the design's poster style (Archivo, width 62%, weight
-// 800). ImageResponse carries only Geist, so the Archivo file is fetched from
-// Google Fonts when the image is built, as next/font does for the page. If
+// 800). ImageResponse carries only Geist, so the Archivo file is read from
+// src/app/fonts (a static width-62, weight-800 copy of the OFL-licensed
+// variable font, cut from it for this image). No network is needed. If
 // that fails, the image falls back to Geist with a text stroke, so the share
 // image never breaks the build.
 
@@ -41,19 +42,13 @@ const SUN = "#FFCF33";
 const NIGHT = "#0F1B3D";
 const PAPER = "#FFFFFF";
 
-// Google Fonts answers with a TTF only to an old browser's User-Agent. Asking
-// for just the letters used keeps the download to a few kilobytes.
-const OLD_BROWSER = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 Version/5.0.5 Safari/533.21.1";
+// The static poster-style Archivo (width 62%, weight 800), kept in the repo.
+// ImageResponse cannot read the variable woff2 the page uses, hence this copy.
+const POSTER_FONT_URL = new URL("../fonts/Archivo-poster-62-800.ttf", import.meta.url);
 
-async function loadPosterFont(text: string): Promise<ArrayBuffer | null> {
+async function loadPosterFont(): Promise<ArrayBuffer | null> {
   try {
-    const letters = encodeURIComponent([...new Set(text)].join(""));
-    const css = await fetch(`https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,800&text=${letters}`, {
-      headers: { "User-Agent": OLD_BROWSER },
-    }).then((response) => response.text());
-    const fileUrl = /src: url\((.+?)\) format\('(?:opentype|truetype)'\)/.exec(css)?.[1];
-    if (!fileUrl) return null;
-    const file = await fetch(fileUrl);
+    const file = await fetch(POSTER_FONT_URL);
     return file.ok ? await file.arrayBuffer() : null;
   } catch {
     return null;
@@ -63,9 +58,7 @@ async function loadPosterFont(text: string): Promise<ArrayBuffer | null> {
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const { landing, common } = messagesFor(locale);
-  // Uppercase is done here, not with textTransform, so the font is asked for the capitals.
-  const posterText = [landing.share.before, landing.share.boxed, landing.share.after, "SURYAPAS"].join("").toUpperCase();
-  const posterFont = await loadPosterFont(posterText);
+  const posterFont = await loadPosterFont();
   const poster = posterFont
     ? ({ fontFamily: "Archivo", fontWeight: 800 } as const)
     : ({ WebkitTextStroke: `4px ${NIGHT}` } as const);
