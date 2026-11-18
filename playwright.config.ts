@@ -65,7 +65,9 @@ export default defineConfig({
       reuseExistingServer: reuse,
       timeout: 600_000,
       // NODE_OPTIONS is in the command, so that it reaches `next start` and not the build or npm.
-      env: { NEXT_TELEMETRY_DISABLED: "1", SUPABASE_URL: "", SUPABASE_SERVICE_ROLE_KEY: "" },
+      // SURYAPAS_DEV_PAGES=1 lets /dev/components be built, for tests/e2e/components.spec.ts;
+      // a production build without it answers 404 there. It must be set for the build.
+      env: { NEXT_TELEMETRY_DISABLED: "1", SURYAPAS_DEV_PAGES: "1", SUPABASE_URL: "", SUPABASE_SERVICE_ROLE_KEY: "" },
     },
     {
       command: `${NEXT} start --port ${STORE_DOWN_PORT}`,
