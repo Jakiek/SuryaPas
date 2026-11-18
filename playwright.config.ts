@@ -64,7 +64,8 @@ export default defineConfig({
       url: `${BASE_URL}/id`,
       reuseExistingServer: reuse,
       timeout: 600_000,
-      env: { ...serverEnv, SUPABASE_URL: "", SUPABASE_SERVICE_ROLE_KEY: "" },
+      // NODE_OPTIONS is in the command, so that it reaches `next start` and not the build or npm.
+      env: { NEXT_TELEMETRY_DISABLED: "1", SUPABASE_URL: "", SUPABASE_SERVICE_ROLE_KEY: "" },
     },
     {
       command: `${NEXT} start --port ${STORE_DOWN_PORT}`,
