@@ -111,8 +111,8 @@ test("picking another count updates every number and both charts, quickly on a t
   const before = await snapshot();
 
   const started = Date.now();
-  await page.getByRole("button", { name: "5 panel", exact: true }).click();
-  await expect(page.locator("h1")).toContainText("5 panel");
+  await page.getByRole("button", { name: "6 panel", exact: true }).click();
+  await expect(page.locator("h1")).toContainText("6 panel");
   // Let the 200 ms ease finish, then read the settled values.
   await expect.poll(async () => (await snapshot()).charts, { intervals: [50] }).not.toBe(before.charts);
   const elapsed = Date.now() - started;

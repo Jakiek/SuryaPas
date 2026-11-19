@@ -18,6 +18,15 @@ import {
 
 const HOUSE = exampleHouse.inputs as EngineInputs;
 
+// A modest home (2,200 VA, Rp650,000 a month, no daytime air conditioning) that
+// the verdict tests need: its larger systems do not pay back, which the example
+// house's do. It is a fixture for those tests, not the example house.
+const MODEST_HOUSE: EngineInputs = {
+  ...HOUSE,
+  electricity: { ...HOUSE.electricity, connectedVa: 2200, monthlySpendRp: [650_000] },
+  lifestyle: { ...HOUSE.lifestyle, daytimeAc: false },
+};
+
 async function viewFor(inputs: EngineInputs, source: SunSeries["source"] = "live"): Promise<ResultView> {
   const sun = await loadFallbackFile("yogyakarta");
   return toResultView(assess(inputs, { ghiWm2: sun.series, source }, CURRENT_ASSUMPTIONS));
@@ -83,30 +92,30 @@ describe("honest verdicts, each for an input that triggers it", () => {
   });
 
   it("judges the size the user picked, not only the recommended one", async () => {
-    const view = await viewFor(HOUSE);
+    const view = await viewFor(MODEST_HOUSE);
     const largest = view.candidates[view.candidates.length - 1];
     expect(largest.withoutBattery.paybackYears.typical).toBeNull();
     expect(verdictsFor(view, largest)).toEqual(["sizeDoesNotPayBack"]);
   });
 });
 
-describe("payback verdicts follow the typical cost, size by size (example house)", () => {
-  // Engine paybacks for the example house (low / typical / high cost):
+describe("payback verdicts follow the typical cost, size by size (a modest 2,200 VA home)", () => {
+  // Engine paybacks for the modest home (low / typical / high cost):
   // 2 panels 7 / 10 / 15, 4 panels 13 / 20 / none, 6 panels 19 / none / none, 8 panels none.
   it("pays back at every cost: no payback verdict", async () => {
-    const view = await viewFor(HOUSE);
+    const view = await viewFor(MODEST_HOUSE);
     expect(verdictsFor(view, candidateFor(view, 2))).toEqual([]);
     expect(lowCostOnlyYear(candidateFor(view, 2))).toBeNull();
   });
 
   it("pays back at the typical cost but not the highest: a note, and the headline keeps its year", async () => {
-    const view = await viewFor(HOUSE);
+    const view = await viewFor(MODEST_HOUSE);
     expect(verdictsFor(view, candidateFor(view, 4))).toEqual(["highCostDoesNotPayBack"]);
     expect(lowCostOnlyYear(candidateFor(view, 4))).toBeNull();
   });
 
   it("does not pay back at the typical cost though the lowest price would: the size verdict, with that year for the note", async () => {
-    const view = await viewFor(HOUSE);
+    const view = await viewFor(MODEST_HOUSE);
     const six = candidateFor(view, 6);
     expect(six.withoutBattery.paybackYears).toEqual({ low: 19, typical: null, high: null });
     expect(verdictsFor(view, six)).toEqual(["sizeDoesNotPayBack"]);
@@ -114,7 +123,7 @@ describe("payback verdicts follow the typical cost, size by size (example house)
   });
 
   it("does not pay back at any cost: no low-cost year to add", async () => {
-    const view = await viewFor(HOUSE);
+    const view = await viewFor(MODEST_HOUSE);
     expect(lowCostOnlyYear(candidateFor(view, 8))).toBeNull();
   });
 });

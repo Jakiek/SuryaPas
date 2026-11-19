@@ -1,5 +1,5 @@
 {
-  "about": "The example house behind /r/example and the landing page (SPEC 2.1, 5.1): a 2,200 VA postpaid home in Yogyakarta. The pin is the city centre, inside the 0.5° cell (-7.75, 110.25) whose NASA POWER series is bundled in data/sun-fallback/yogyakarta.json. The usable fraction is the assumption set's default (roof.usableFraction).",
+  "about": "The example house behind /r/example and the landing page (SPEC 2.1, 5.1): a 3,500 VA postpaid home in Yogyakarta that spends about Rp1,200,000 a month and runs air conditioning in the daytime, with someone home on weekdays. The pin is the city centre, inside the 0.5° cell (-7.75, 110.25) whose NASA POWER series is bundled in data/sun-fallback/yogyakarta.json. The usable fraction is the assumption set's default (roof.usableFraction).",
   "place": "Yogyakarta",
   "inputs": {
     "location": { "latitude": -7.7956, "longitude": 110.3695 },
@@ -12,13 +12,13 @@
     },
     "electricity": {
       "billing": "postpaid",
-      "connectedVa": 2200,
+      "connectedVa": 3500,
       "subsidised": false,
-      "monthlySpendRp": [650000]
+      "monthlySpendRp": [1200000]
     },
     "lifestyle": {
       "homeOnWeekdays": true,
-      "daytimeAc": false,
+      "daytimeAc": true,
       "workFromHome": false,
       "electricVehicle": false
     }
