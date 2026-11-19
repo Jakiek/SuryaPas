@@ -460,7 +460,7 @@ The reasoning is stated here because it is the heart of the product. "Shortest p
 
 The result also records whether the recommended system pays back within 25 years at the typical cost (`flags.doesNotPayBack`). When it does not, the app says so in words instead of showing a payback number. This is expected for subsidised classes, whose tariff is low.
 
-**Worked example.** See the table in section 3: net savings fall from Rp24.5 million at 2 panels to Rp20.1 million at 3 and Rp11.3 million at 4, so the 2-panel system is recommended.
+**Worked example.** See the table in section 3: net savings rise from Rp38.1 million at 2 panels to Rp57.0 million at 3 and Rp70.0 million at 4, peak at Rp71.8 million at 5 panels, then fall to Rp67.9 million at 6, so the 5-panel system is recommended.
 
 **Code:** `recommend` in `src/engine/assess.ts`.
 
@@ -472,7 +472,7 @@ CO₂ avoided per year  =  self-consumed solar energy × grid emission factor
 
 `grid.emissionKgCo2PerKwh` = 0.87 kg per kWh (`thin`): the Java-Madura-Bali grid factor from Energy Ministry Decree 163.K/HK.02/MEM.S/2021, read second-hand (the decree's annex was not found online) and from 2019 data. It covers the Java-Bali grid only; other grids may differ. Exported surplus is left out, which keeps the claim conservative.
 
-**Worked example.** A system that self-consumes 1,370.43 kWh a year avoids 1,370.43 × 0.87 = 1,192.27 kg of CO₂ a year (the 2-panel example house in section 3).
+**Worked example.** A system that self-consumes 3,165.45 kWh a year avoids 3,165.45 × 0.87 = 2,753.94 kg of CO₂ a year (the 5-panel example house in section 3).
 
 **Code:** inside `assessMoney`, `src/engine/money/index.ts`.
 
@@ -480,19 +480,19 @@ CO₂ avoided per year  =  self-consumed solar energy × grid emission factor
 
 ## 3. A whole house, start to finish
 
-This is the example house behind `/id/r/example` and the landing page (`data/example-house.json`): a 2,200 VA postpaid home in Yogyakarta, spending Rp650,000 a month, someone home on weekdays, no daytime air conditioning, no electric vehicle, no home work. The roof is 48 m², gentle slope, facing north (toward the equator at that latitude), with no shade. The sunlight is the bundled Yogyakarta series (`data/sun-fallback/yogyakarta.json`), so the result is flagged as using fallback sun data. Numbers come from running `assess` with assumption set version 2.
+This is the example house behind `/id/r/example` and the landing page (`data/example-house.json`): a 3,500 VA postpaid home in Yogyakarta, spending Rp1,200,000 a month, someone home on weekdays, air conditioning running in the daytime, no electric vehicle, no home work. The roof is 48 m², gentle slope, facing north (toward the equator at that latitude), with no shade. The sunlight is the bundled Yogyakarta series (`data/sun-fallback/yogyakarta.json`), which is NASA POWER's series for the house's own 0.5° cell, so the example is labelled with live sun data, not as an approximation. Numbers come from running `assess` with assumption set version 2.
 
 ### 3.1 What each step gave
 
 | Step | Result |
 | --- | --- |
-| 1 Monthly energy | 427.42 kWh a month (Rp650,000 × 0.95 ÷ 1,444.70) |
-| 2 Daytime share | 0.40 on weekdays and weekends |
+| 1 Monthly energy | 670.77 kWh a month (Rp1,200,000 × 0.95 ÷ 1,699.53, class `R2_3500_5500`) |
+| 2 Daytime share | 0.55 on weekdays and weekends (0.30 base + 0.10 someone home + 0.15 air conditioning) |
 | 3 Yearly yield | 1,352.84 kWh per kWp (1,395 on a flat roof; the gentle north roof's factor is 0.97) |
 | 4 Candidates | 2 to 12 panels (1.10 to 6.60 kWp) |
-| 7 Minimum charge after solar | Rp127,133.60 a month |
+| 7 Minimum charge after solar | Rp237,934.20 a month |
 
-For the recommended system, the monthly bill before solar is Rp650,000 in every month, and after solar it falls to between about Rp464,000 and Rp489,000, depending on the month's sunlight and the month's length.
+For the recommended system, the monthly bill before solar is Rp1,200,000 in every month, and after solar it falls to between about Rp699,000 and Rp757,000, depending on the month's sunlight and the month's length.
 
 ### 3.2 Every size, without a battery
 
@@ -500,20 +500,22 @@ Cost, payback and net savings are "low / typical / high" where a range is shown;
 
 | Panels | kWp | Share of solar used on site | Typical upfront cost | Payback (low / typical / high cost) | Net savings over 25 years |
 | --- | --- | --- | --- | --- | --- |
-| **2 (recommended)** | 1.10 | 92.1% | Rp17.6 m | 7 / 10 / 15 years | **Rp24.5 m** |
-| 3 | 1.65 | 71.3% | Rp26.4 m | 9 / 15 / 20 years | Rp20.1 m |
-| 4 | 2.20 | 56.8% | Rp35.2 m | 13 / 20 / no | Rp11.3 m |
-| 5 | 2.75 | 47.0% | Rp44.0 m | 16 / 25 / no | Rp1.1 m |
-| 6 | 3.30 | 40.1% | Rp52.8 m | 19 / no / no | −Rp9.7 m |
-| 12 (the roof's largest) | 6.60 | 21.4% | Rp105.6 m | no / no / no | −Rp79.5 m |
+| 2 | 1.10 | 100.0% | Rp17.6 m | 5 / 8 / 10 years | Rp38.1 m |
+| 3 | 1.65 | 99.9% | Rp26.4 m | 5 / 8 / 10 years | Rp57.0 m |
+| 4 | 2.20 | 95.1% | Rp35.2 m | 6 / 8 / 10 years | Rp70.0 m |
+| **5 (recommended)** | 2.75 | 85.1% | Rp44.0 m | 6 / 9 / 13 years | **Rp71.8 m** |
+| 6 | 3.30 | 75.4% | Rp52.8 m | 7 / 10 / 15 years | Rp67.9 m |
+| 8 | 4.40 | 60.5% | Rp70.4 m | 9 / 15 / 20 years | Rp53.1 m |
+| 10 | 5.50 | 50.2% | Rp88.0 m | 11 / 19 / 25 years | Rp34.2 m |
+| 12 (the roof's largest) | 6.60 | 42.9% | Rp105.6 m | 15 / 23 / no | Rp13.6 m |
 
-Read down the table: every extra panel costs Rp8.8 million (0.55 kWp × Rp16,000,000) and adds only a little saving, because the home's daytime use is mostly covered after the first two panels and more output is mostly exported. The recommended 2-panel system saves Rp173,672 a month in the first year (Rp2,084,058 a year ÷ 12), exports 117.70 kWh of its 1,488.12 kWh a year, costs Rp12.1 to 22.0 million, and avoids 1,192 kg of CO₂ a year.
+Read down the table: every extra panel costs Rp8.8 million (0.55 kWp × Rp16,000,000), and after the fourth panel it adds less saving than before, because the home's daytime use is mostly covered and more output is mostly exported. The recommended 5-panel system saves Rp471,910 a month in the first year (Rp5,662,920 a year ÷ 12), exports 554.86 kWh of its 3,720.31 kWh a year, costs Rp30.3 to 55.0 million, and avoids 2,754 kg of CO₂ a year. The net savings peak at 5 panels (Rp71.8 million against Rp70.0 million at 4), but the curve is flat there, so a 4-panel system gives nearly the same result for Rp8.8 million less.
 
-**With a battery.** The engine offers a 5 kWh battery from 4 panels up and a 10 kWh battery from 6 panels up. At 4 panels the battery raises first-year savings (Rp359,247 a month against Rp214,289), but the upfront cost goes from Rp35.2 million to Rp67.6 million, payback becomes 25 years at the low cost and "does not pay back" at the typical and high costs, and net savings are −Rp12.4 million against +Rp11.3 million. For this home, the battery does not pay for itself on savings alone. Backup power during outages is mentioned in the app as a benefit and given no rupiah value.
+**With a battery.** At 5 panels the engine offers no battery. It offers a 5 kWh battery from 6 panels up and a 10 kWh battery from 9 panels up. At 6 panels the battery raises first-year savings (Rp647,230 a month against Rp501,814), but the upfront cost goes from Rp52.8 million to Rp85.2 million, payback goes from 10 years to 19 years at the typical cost, and net savings fall from Rp67.9 million to Rp44.3 million. For this home, the battery does not pay for itself on savings alone. Backup power during outages is mentioned in the app as a benefit and given no rupiah value.
 
 ### 3.3 Two edge cases
 
-**A home where solar does not pay back.** A prepaid 900 VA subsidised home spending Rp150,000 a month uses 150,000 × 0.95 ÷ 605 = 235.54 kWh a month at a tariff of Rp605. The same roof there returns no payback within 25 years at any cost for even the smallest system, and the typical-cost net savings of the best size (the smallest) are −Rp10,910,588. The engine flags `doesNotPayBack`, and the result page states it in words.
+**A home where solar does not pay back.** A prepaid 900 VA subsidised home spending Rp150,000 a month uses 150,000 × 0.95 ÷ 605 = 235.54 kWh a month at a tariff of Rp605. The same roof, with the example house's lifestyle answers, repays even the smallest system only in year 25 at the lowest cost and not at the typical or high cost, and the typical-cost net savings of the best size (the smallest) are −Rp7,184,724. The engine flags `doesNotPayBack`, and the result page states it in words.
 
 **A roof too small.** The same house with a 4 m² roof returns no candidates and `roofTooSmall` with `requiredAreaM2` = 8.
 
