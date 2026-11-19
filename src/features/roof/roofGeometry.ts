@@ -13,7 +13,7 @@ export const MIN_CORNERS = 3;
 /**
  * Area in square metres of the shape the corners enclose, as seen from
  * above (the footprint). It is NOT corrected for the slope of the roof:
- * whether it should be is a choice recorded in SPEC.
+ * SPEC 2.2 step 2 leaves it uncorrected in stage 1.
  *
  * Turf measures on the Earth's surface, so a house-sized shape is accurate
  * to well under 1%. Fewer than three corners enclose nothing: returns null.

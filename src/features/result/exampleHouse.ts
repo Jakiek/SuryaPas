@@ -16,8 +16,8 @@ export const EXAMPLE_PLACE = house.place;
  * Yogyakarta file is NASA POWER's series for the example house's own 0.5°
  * cell (-7.75, 110.25), the same data a live fetch for this pin returns; it
  * is not the nearest city standing in for somewhere else, which is what
- * "fallback" and the "approximate" label mean (SPEC 2.5). Recorded under
- * This label is our reading of SPEC 2.5, not a rule it states.
+ * "fallback" and the "approximate" label mean (SPEC 2.5). This label is our
+ * reading of SPEC 2.5, not a rule it states.
  */
 export async function assessExampleHouse(): Promise<Assessment> {
   const sun = await loadFallbackFile("yogyakarta");

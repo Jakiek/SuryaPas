@@ -38,7 +38,7 @@ These are press reports of the tariff, consistent across outlets, and not PLN's 
 
 Worked values of the minimum bill, from the formula above and the tariff table (our arithmetic): 900 VA-RTM, 40 × 0.9 × 1,352 = Rp48,672; 1,300 VA, 40 × 1.3 × 1,444.70 = Rp75,124; 2,200 VA, 40 × 2.2 × 1,444.70 = Rp127,134; 3,500 VA, 40 × 3.5 × 1,699.53 = Rp237,934.
 
-The R-1 450 VA and 900 VA tariffs above (415 and 605) are the prepaid column of Annex II. The postpaid column for those two classes is a three-block tariff plus the fixed charge. Stage 1 converts spend with the single prepaid rate for both, a known limit stated in SPEC 3.2 step 1.
+The R-1 450 VA and 900 VA tariffs above (415 and 605) are the prepaid column of Annex II. The postpaid column for those two classes is a three-block tariff plus the fixed charge; the postpaid figures are not yet in this set.
 
 ## Rules built into the engine
 
@@ -49,7 +49,7 @@ These are not entries of the assumption set. They are rules the engine code appl
 | `export.valueRpPerKwh` | 0 | sourced | Net metering abolished by Energy Ministry Regulation 2/2024: [ABNR](https://www.abnrlaw.com/news/indonesia-issues-new-rules-on-operation-of-rooftop-solar-abolishes-net-metering) |
 | `size.regulatoryCap` | none | sourced | The limit of 100% of connected power was removed; size follows PLN quota: [ESDM](https://www.esdm.go.id/id/media-center/arsip-berita/aturan-terbaru-plts-atap-terbit-kini-kapasitas-pemasangan-tidak-dibatasi) |
 | `minCharge.afterSolarAppliesToAll` | true | sourced | Regulation 2/2024 Article 16: a prepaid customer's rooftop solar application counts as a request to move to postpaid, and PLN must agree. Checked against the regulation's text on 2026-11-14. So after installation the minimum charge applies in every class listed under `minCharge.classes`, whatever the customer pays by today |
-| `minCharge.prepaidBeforeSolar` | false | sourced | In Annex II the footnote *) sits in the postpaid ("reguler") fixed-charge column; the prepaid ("prabayar") column lists only the energy rate. Same source. This is a reading of the table layout; no sentence of the regulation says it in words. It matters only before solar: a prepaid home that applies for rooftop solar moves to postpaid (Regulation 2/2024 Article 16), so SPEC 3.2 step 7 applies the minimum charge after solar. |
+| `minCharge.prepaidBeforeSolar` | false | sourced | In Annex II the footnote *) sits in the postpaid ("reguler") fixed-charge column; the prepaid ("prabayar") column lists only the energy rate. Same source. This is a reading of the table layout; no sentence of the regulation says it in words. Treat the prepaid-to-postpaid reading as an open caveat |
 | `minCharge.classes` | R-1 900 VA-RTM, R-1 1,300 VA, R-1 2,200 VA, R-2, R-3 | sourced | Same Annex II. The subsidised R-1 450 VA and 900 VA postpaid classes have a fixed charge (biaya beban) of Rp11,000 and Rp20,000 per kVA per month instead, and no minimum charge. New key added by T03 |
 
 ## Cost
@@ -121,7 +121,7 @@ Our arithmetic, using Rp19.6m for the hybrid inverter: 5 kWh costs 18.0 + 19.6 �
 | --- | --- |
 | `orientation.table` | sourced |
 
-Version 2, `sourced`, 2026-11-15. Each value is PVGIS 5.3's yearly yield on the tilted roof ÷ its yield on a flat roof at the same place, averaged over Medan (3.6° N) and Yogyakarta (7.8° S), and over east and west. Gentle is taken as 25° and steep as 45°, the angles of the roof-step pictures in `mock/atap.html` rounded to 5°; no document gives the slopes an angle, which SPEC 3.2 step 3 now fixes. `scripts/validate-pvgis.mjs` reproduces the table, and `docs/VALIDATION.md` shows it for every 5° from 5° to 45°.
+Version 2, `sourced`, 2026-11-15. Each value is PVGIS 5.3's yearly yield on the tilted roof ÷ its yield on a flat roof at the same place, averaged over Medan (3.6° N) and Yogyakarta (7.8° S), and over east and west. Gentle is taken as 25° and steep as 45°, the angles of the roof-step pictures in `mock/atap.html` rounded to 5°; no source gives the slopes an angle, so the choice is ours (SPEC 3.2 step 3). `scripts/validate-pvgis.mjs` reproduces the table, and `docs/VALIDATION.md` shows it for every 5° from 5° to 45°.
 
 | Slope | Facing the equator | East or west | Facing away |
 | --- | --- | --- | --- |

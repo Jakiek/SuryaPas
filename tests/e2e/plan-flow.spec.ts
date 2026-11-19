@@ -1,5 +1,5 @@
-// The input flow (T10), driven in a real browser at 375 px. These are the
-// component-level checks the task asks for (wording change, months up to
+// The input flow, driven in a real browser at 375 px. These are the
+// component-level checks (wording change, months up to
 // twelve, next-button gating) plus restore, keyboard-only and submit.
 // They live here, not beside the components, because Vitest has no DOM and
 // no "@/" alias in this repo.

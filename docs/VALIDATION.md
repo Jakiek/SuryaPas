@@ -141,7 +141,7 @@ Each factor is PVGIS's yearly yield on a tilted roof ÷ its flat-roof yield at t
 
 Every factor fell. The largest change is steep facing away from the equator, 0.88 to 0.72, an 18% cut in that roof's output. Version 1 assumed a tilt toward the equator gains a little, as it does at higher latitudes; near the equator the sun is high and spends part of the year on each side of the sky, so a roof facing the equator only breaks even with a flat one up to about 15°, and every other facing loses at every tilt.
 
-**Gentle 25°, steep 45°.** No document gives the slope choices an angle. These are the angles drawn in the roof-step pictures (`mock/atap.html`: about 26° and 46°), rounded to 5°, and the by-tilt table above lets a different choice be read off without a new fetch. SPEC 3.2 step 3 now fixes it, and it matters: steep at 35° instead of 45° would raise its factors by 0.06 to 0.10.
+**Gentle 25°, steep 45°.** No document gives the slope choices an angle. These are the angles drawn in the roof-step pictures (`mock/atap.html`: about 26° and 46°), rounded to 5°, and the by-tilt table above lets a different choice be read off without a new fetch. The choice is fixed in SPEC 3.2 step 3, and it matters: steep at 35° instead of 45° would raise its factors by 0.06 to 0.10.
 
 Two things in these runs that the engine's table cannot hold:
 

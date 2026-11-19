@@ -129,7 +129,7 @@ export interface PickerSlot {
  * The counts the picker shows: from one up to the most the roof holds, at
  * most twelve. If the roof holds more than twelve and the recommended count
  * lies beyond twelve, the twelve slide up so the recommendation is in view
- * (SPEC is silent on this case; our reading).
+ * (SPEC is silent on this case, so keeping the recommendation visible is our choice).
  */
 export function pickerSlots(view: ResultView): PickerSlot[] {
   if (view.candidates.length === 0 || view.recommendedPanels === null) return [];

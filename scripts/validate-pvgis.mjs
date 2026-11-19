@@ -68,8 +68,8 @@ const YIELD_CITIES = ["medan", "yogyakarta", "makassar"];
 const ORIENTATION_SITES = ["medan", "yogyakarta"];
 
 // The roof step offers "gentle" and "steep" as pictures, and no document gives them an angle.
-// These are the pictures' angles (mock/atap.html: about 26° and 46°), rounded to 5°. This is an
-// a choice recorded in SPEC 3.2 step 3; change it here and rerun to get the table for other angles.
+// These are the pictures' angles (mock/atap.html: about 26° and 46°), rounded to 5°. The choice is
+// fixed in SPEC 3.2 step 3; change it here and rerun to get the table for other angles.
 const SLOPE_DEGREES = { gentle: 25, steep: 45 };
 const TILT_SWEEP_DEGREES = [5, 10, 15, 20, 25, 30, 35, 40, 45];
 

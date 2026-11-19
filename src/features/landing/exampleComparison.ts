@@ -2,8 +2,8 @@
 // at the recommended panel count and once with far too many. Every figure is
 // read from the engine's output for the example house; none is typed here.
 //
-// "Far too many" is the largest count the example roof holds (SPEC 2.1 does
-// not give a rule; our reading). It is read
+// "Far too many" is the largest count the example roof holds (SPEC 2.1 gives
+// no numeric rule, so the largest count the roof holds is our reading). It is read
 // from the engine's candidate list, so it follows the assumption set.
 
 import { dayChartMaxKw } from "../result/chartGeometry";

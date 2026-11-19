@@ -32,7 +32,7 @@ export const ASSUMPTIONS_V2: AssumptionSet = {
 
   // PVGIS yield on a tilted roof ÷ yield on a flat roof, at Medan (north of the equator) and
   // Yogyakarta (south of it), averaged over the two sites, and over east and west.
-  // Gentle is taken as 25° and steep as 45°: a choice recorded in SPEC.
+  // Gentle is taken as 25° and steep as 45°: SPEC 3.2 step 3.
   orientation: {
     note: {
       label: "sourced",
