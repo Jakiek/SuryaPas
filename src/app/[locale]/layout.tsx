@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { siteUrl } from "@/lib/siteUrl";
 import "../globals.css";
 
 // The two families of docs/DESIGN.md "Type", kept in src/app/fonts (both are
@@ -42,7 +43,7 @@ export async function generateMetadata({
 }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
-  return { title: t("appName") };
+  return { metadataBase: siteUrl(), title: t("appName") };
 }
 
 export default async function LocaleLayout({
