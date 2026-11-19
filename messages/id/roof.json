@@ -28,7 +28,7 @@
     "corner": "Sudut {number}"
   },
   "attribution": {
-    "esri": "Foto satelit: <esri>Powered by Esri</esri>. Sumber citra: Esri, Maxar, Earthstar Geographics, dan komunitas pengguna GIS.",
+    "esri": "Foto satelit: <esri>Powered by Esri</esri>. Sumber citra: Esri, Vantor, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, dan komunitas pengguna GIS.",
     "street": "Peta: <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>, data © <osm>kontributor OpenStreetMap</osm>."
   },
   "warning": {

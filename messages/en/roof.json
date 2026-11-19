@@ -28,7 +28,7 @@
     "corner": "Corner {number}"
   },
   "attribution": {
-    "esri": "Satellite photo: <esri>Powered by Esri</esri>. Imagery sources: Esri, Maxar, Earthstar Geographics and the GIS User Community.",
+    "esri": "Satellite photo: <esri>Powered by Esri</esri>. Imagery sources: Esri, Vantor, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN and the GIS User Community.",
     "street": "Map: <ofm>OpenFreeMap</ofm>, © <omt>OpenMapTiles</omt>, data © <osm>OpenStreetMap contributors</osm>."
   },
   "warning": {
